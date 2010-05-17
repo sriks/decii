@@ -54,13 +54,9 @@ private slots:
     void on_getsettings_entered();
     void on_httprequest_entered();
     void on_displaycontent_entered();
-    /*void on_showselection_entered();
-*/
 
 private slots:
     void on_http_requestFinished (int id,bool error);
-    // this will emit selection changed signal
-    void on_selectionwebview_linkClicked(const QUrl& aSelectedUrl);
     void on_webview_linkClicked(const QUrl & url);
 
 private:
@@ -71,7 +67,6 @@ private:
     QState* iDisplayContentState;
     QState* iDisplaySelectionState;
 
-    QGraphicsWebView* iSelectionWebView;
     QHttp* iHttp;
     QPoint dragPosition;
     QString iCurrentZodiacSign;
