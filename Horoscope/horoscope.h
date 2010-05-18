@@ -1,13 +1,16 @@
+// Author: Srikanth Sombhatla
+
 #ifndef HOROSCOPE_H
 #define HOROSCOPE_H
 
 #include <QtGui/QWidget>
-#include <QHttp>
-#include <QLabel>
-#include <QListWidget>
-#include <QComboBox>
 #include <QGraphicsWebView>
-#include <QState>
+
+#ifdef Q_OS_SYMBIAN
+    #include "S60QHttp.h"
+#else
+    #include <QHttp>
+#endif
 
 /*!
   Horoscope graphics view widget.
@@ -35,9 +38,6 @@ public:
 public:
     // Required to exit upon Esc
     void keyPressEvent(QKeyEvent*);
-    // Required to move window around since we have a frameless window
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
 
 Q_SIGNALS:
     // Transition signals
@@ -58,7 +58,7 @@ private slots:
 private slots:
     void on_http_requestFinished (int id,bool error);
     void on_webview_linkClicked(const QUrl & url);
-
+    void updateMessage(const QString& aMessage);
 private:
     // States
     QState* iGroupState;
@@ -67,7 +67,12 @@ private:
     QState* iDisplayContentState;
     QState* iDisplaySelectionState;
 
+#ifdef Q_OS_SYMBIAN
+    S60QHttp* iHttp;
+#else
     QHttp* iHttp;
+#endif
+
     QPoint dragPosition;
     QString iCurrentZodiacSign;
     QString iPrevHtmlContent;

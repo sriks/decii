@@ -1,7 +1,5 @@
-#include "horoscope.h"
-#include <QGridLayout>
-#include <QPixmap>
-#include <QPainter>
+// Author: Srikanth Sombhatla
+
 #include <QKeyEvent>
 #include <QXmlStreamReader>
 #include <QGraphicsWebView>
@@ -12,19 +10,23 @@
 #include <QWebFrame>
 #include <QApplication>
 #include <QSettings>
-#include <QDesktopWidget>
+#include "horoscope.h"
 
 // HTTP, HTML Specific declarations
 const QString KHoroscopeRequestUrl("http://www.astroyogi.com/gadget/horoscopetodayXML.asp?up_zsign=%1");
 const QString KSelectionRequested("selectionrequested");
 const QString KCancelRequested("cancelrequested");
 const QString KSelectionViewSource("selectionwebview_source.html");
+// setting key
 const QString KSavedZodiacSign("savedzodiacsign");
 
 // HTML template from which main display page has to be constructed
-const QString KHoroscopeHTMLTemplateSource("<html><head><title>%1</title></head><p style=\"text-align: center;\"><font size = 6><a href = \"selectionrequested\" style=\"color:#99FF33 \">%2</font></a></br><font size = 3  color = \"white\">%3</font></br></br><font size = 3 color = \"white\">%4</font></p></html>");
-//const QString KHoroscopeSelectionPageSource("<html><head><title>Select your sign</title></head><p style=\"text-align: center\"><font size = 6 color = #99FF33>Select your sign</font></br><font size = 4></br><a href = \"Aries\">Aries: Mar 21-Apr 20</a></br><a href = \"Taurus\">Taurus: Apr 21-May 21</a></br><a href =\"Gemini\">Gemini: May 22-Jun 21</a></br><a href = \"Cancer\">Cancer: June 22-Jul 22</a></br><a href = \"Leo\">Leo: July 23-Aug 21</a></br><a href = \"Virgo\">Virgo: Aug 22-Sep 23</a></br><a href= \"Libra\">Libra: Sept 24-Oct 23</a></br><a href = \"Scorpio\">Scorpio: Oct 24-Nov 22</a></br><a href= \"Sagittarius\">Sagittarius: Nov 23-Dec 22</a></br><a href = \"Capricorn\">Capricorn: Dec 23-Jan 20</a></br><a href = \"Aquarius\">Aquarius: Jan 21-Feb 19</a></br><a href = \"Pisces\">Pisces: Feb 20- Mar 20</a></br><a href=\"cancelrequested\">Cancel</a></font></p></html>");
-const QString KHoroscopeSelectionPageSource("<html><head><title>Select your sign</title></head><p style=\"text-align: center\"><font size = 6 color = #99FF33>Select your sign</font></br><font size = 4></br><a href = \"Aries\" style=\"color:#FFFFFF \">Aries: Mar 21-Apr 20</a></br><a href = \"Taurus\"style=\"color:#FFFFFF \">Taurus: Apr 21-May 21</a></br><a href =\"Gemini\"style=\"color:#FFFFFF \">Gemini: May 22-Jun 21</a></br><a href = \"Cancer\"style=\"color:#FFFFFF \">Cancer: June 22-Jul 22</a></br><a href = \"Leo\"style=\"color:#FFFFFF \">Leo: July 23-Aug 21</a></br><a href = \"Virgo\"style=\"color:#FFFFFF \">Virgo: Aug 22-Sep 23</a></br><a href= \"Libra\"style=\"color:#FFFFFF \">Libra: Sept 24-Oct 23</a></br><a href = \"Scorpio\"style=\"color:#FFFFFF \">Scorpio: Oct 24-Nov 22</a></br><a href= \"Sagittarius\"style=\"color:#FFFFFF \">Sagittarius: Nov 23-Dec 22</a></br><a href = \"Capricorn\"style=\"color:#FFFFFF \">Capricorn: Dec 23-Jan 20</a></br><a href = \"Aquarius\"style=\"color:#FFFFFF \">Aquarius: Jan 21-Feb 19</a></br><a href = \"Pisces\"style=\"color:#FFFFFF \">Pisces: Feb 20- Mar 20</a></br><a href=\"cancelrequested\"style=\"color:#99FF33 \">Cancel</a></font></p></html>");
+const QString KHoroscopeHTMLTemplateSource("<html><head><title>%1</title></head><p style=\"text-align: center;\" ><font size = 7><a href = \"selectionrequested\" style=\"color:#99FF33 \">%2</font></a></br><font size = 5  color = \"white\">%3</font></br></br><font size = 5 color = \"white\">%4</font></p></html>");
+// HTML Template to display a message
+const QString KMessageHTMLTemplateSource("<html><font color = #FFFFFF size = 5>%1</font></html>");
+// Selection view HTML source
+const QString KHoroscopeSelectionPageSource("<html><head><title>Select your sign</title></head><p style=\"text-align: center\"><font size = 6 color = #99FF33>Select your sign</font></br><font size = 5></br><a href = \"Aries\" style=\"color:#FFFFFF \">Aries: Mar 21-Apr 20</a></br></br><a href = \"Taurus\"style=\"color:#FFFFFF \">Taurus: Apr 21-May 21</a></br></br><a href =\"Gemini\"style=\"color:#FFFFFF \">Gemini: May 22-Jun 21</a></br></br><a href = \"Cancer\"style=\"color:#FFFFFF \">Cancer: June 22-Jul 22</a></br></br><a href = \"Leo\"style=\"color:#FFFFFF \">Leo: July 23-Aug 21</a></br></br><a href = \"Virgo\"style=\"color:#FFFFFF \">Virgo: Aug 22-Sep 23</a></br></br><a href= \"Libra\"style=\"color:#FFFFFF \">Libra: Sept 24-Oct 23</a></br></br><a href = \"Scorpio\"style=\"color:#FFFFFF \">Scorpio: Oct 24-Nov 22</a></br></br><a href= \"Sagittarius\"style=\"color:#FFFFFF \">Sagittarius: Nov 23-Dec 22</a></br></br><a href = \"Capricorn\"style=\"color:#FFFFFF \">Capricorn: Dec 23-Jan 20</a></br></br><a href = \"Aquarius\"style=\"color:#FFFFFF \">Aquarius: Jan 21-Feb 19</a></br></br><a href = \"Pisces\"style=\"color:#FFFFFF \">Pisces: Feb 20- Mar 20</a></br></br><a href=\"cancelrequested\"style=\"color:#99FF33 \">Cancel</a></font></p></html>");
+
 const QString KElementSign("sign");
 const QString KElementDate("date");
 const QString KElementContent("content");
@@ -33,18 +35,22 @@ const QString KImagesRoot(":/resources/images/");
 Horoscope::Horoscope(QGraphicsItem *parent)
     : QGraphicsWebView(parent)
 {
-
     // Give an object name
     setObjectName("webview");
 
     // Delegate link policy to ourself
     QWebPage* webpage = this->page();
     webpage->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
-    this->setPage(webpage);
+    webpage->setContentEditable(false);
+    setPage(webpage);
     connect(this,SIGNAL(linkClicked(QUrl)),this,SLOT(on_webview_linkClicked(QUrl)),Qt::UniqueConnection);
 
     // Create http instance
+#ifdef Q_OS_SYMBIAN
+    iHttp = new S60QHttp(this);
+#else
     iHttp = new QHttp(this);
+#endif
     iHttp->setObjectName("http");
 
     // Create states and assign object names
@@ -77,6 +83,8 @@ Horoscope::Horoscope(QGraphicsItem *parent)
     // Now connect signals to slots
     QMetaObject::connectSlotsByName(this);
 
+    updateMessage(tr("Loading..."));
+
     // Add states to statemachine
     statemachine->setInitialState(iGroupState);
     statemachine->start();
@@ -102,26 +110,6 @@ void Horoscope::keyPressEvent(QKeyEvent* keyevent)
             qApp->quit();
         }
         break;
-    }
-}
-
-void Horoscope::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
-        dragPosition = (event->globalPos() - this->geometry().topLeft().toPoint());
-        event->accept();
-    }
-}
-
-void Horoscope::mouseMoveEvent(QMouseEvent *event)
-{
-    if (event->buttons() & Qt::LeftButton)
-    {
-        QPoint newpos = event->globalPos() - dragPosition;
-
-        this->moveBy(newpos.x(),newpos.y());
-        event->accept();
     }
 }
 
@@ -151,20 +139,31 @@ qDebug()<<"on_getsettings_entered<-";
 void Horoscope::on_httprequest_entered()
 {
 qDebug()<<"Horoscope::on_httprequest_entered->";
+updateMessage(tr("Loading..."));
+
     // Prepare request url
     QString requestUrl = KHoroscopeRequestUrl.arg(iCurrentZodiacSign);
     qDebug()<<"request url:"<<requestUrl;
     iHttp->setHost("www.astroyogi.com");
+#ifdef Q_OS_SYMBIAN
+    iCurrentResponse.clear();
+    iHttp->get(requestUrl,iCurrentResponse);
+#else
     iHttp->get(requestUrl);
+#endif
 qDebug()<<"Horoscope::on_httprequest_entered<-";
 }
 
 void Horoscope::on_http_requestFinished (int id,bool error)
 {
 qDebug()<<"Horoscope::on_http_requestFinished ->";
-qDebug()<<"error"<<error;
+qDebug()<<"error"<<error<<" description"<<iHttp->errorString();
+
+#ifndef Q_OS_SYMBIAN
 iCurrentResponse.clear();
 iCurrentResponse = iHttp->readAll();
+#endif
+
 qDebug()<<iCurrentResponse;
 if(!error && !iCurrentResponse.isEmpty())
 {
@@ -206,14 +205,13 @@ if(!error && !iCurrentResponse.isEmpty())
                 }
             }
         } // while
-
     emit displayContentReady();
+
     qDebug()<<"Horoscope::on_parsexml_entered<-";
+
 }
 qDebug()<<"Horoscope::on_http_requestFinished <-";
 }
-
-
 
 void Horoscope::on_displaycontent_entered()
 {
@@ -230,16 +228,17 @@ qDebug()<<"Horoscope::on_displaycontent_entered->";
                                                           .arg(iHoroscopeData.iDate)
                                                           .arg(iHoroscopeData.iDescription);
     qDebug()<<"\nDisplay content\n"<<displayContent;
+    setHtml(displayContent);
     }
 
     // update with error
     else
     {
-    displayContent += "Opps! Error in fetching your horoscope!";
+    displayContent += "Opps! Error in fetching your horoscope!\n"+iHttp->errorString();
+    updateMessage(displayContent);
     }
 
-    this->setHtml(displayContent);
-    this->update();
+    update();
 qDebug()<<"Horoscope::on_displaycontent_entered<-";
 }
 
@@ -289,5 +288,10 @@ void Horoscope::on_webview_linkClicked(const QUrl & url)
     }
 }
 
+void Horoscope::updateMessage(const QString& aMessage)
+{
+    setHtml(KMessageHTMLTemplateSource.arg(aMessage));
+    update();
+}
 
 // eof
