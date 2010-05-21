@@ -12,10 +12,32 @@ int main(int argc, char *argv[])
 
     QGraphicsView gv;
     QGraphicsScene scene;
+
+    ClockWidget clockwidget;
+    scene.addItem(&clockwidget);
+    gv.setScene(&scene);
+
+#if defined(Q_WS_S60)
+    //w.showMaximized();
+#else
+    //w.show();
+#endif
+    gv.showMaximized();
+    return a.exec();
+}
+
+
+/*
+ Reference code, remove once finalized
     //clockwidget w;
-    analoghand secondsHand(QLine(0,0,0,40));
+    AnalogHand secondsHand(QLine(0,0,0,60));
+
     scene.addItem(&secondsHand);
     gv.setScene(&scene);
+    QTransform transform;
+    transform = transform.translate(gv.width(),gv.height());
+    secondsHand.setTransform(transform);
+    //secondsHand.setTransformOriginPoint(gv.width()/2,gv.height()/2);
     // add animations
     QPropertyAnimation* anim = new QPropertyAnimation(&secondsHand,"rotation");
     anim->setDuration(10*1000); // 60 secs
@@ -23,12 +45,4 @@ int main(int argc, char *argv[])
     anim->setEndValue(qreal(360));
     anim->setEasingCurve(QEasingCurve::Linear);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
-
-#if defined(Q_WS_S60)
-    //w.showMaximized();
-#else
-    //w.show();
-#endif
-    gv.show();
-    return a.exec();
-}
+*/
