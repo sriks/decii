@@ -1,28 +1,25 @@
 #ifndef ANALOGHAND_H
 #define ANALOGHAND_H
-#include <QGraphicsTextItem>
+
+
+/*
+ This class holds a generic anoalog hands. Properties are
+ inherited from graphicswidget for animation of hand movement.
+ */
 
 #include <QGraphicsLineItem>
 #include <QGraphicsWidget>
-class analoghand : public QGraphicsWidget
+#include <QPen>
 
+class QLine;
+class AnalogHand : public QGraphicsWidget
 {
     Q_OBJECT;
-    //Q_PROPERTY(qreal rotation READ rotation WRITE setRotation);
+
 public:
-    analoghand(QLine aLine, QGraphicsItem* aParent = 0);
-
-    // Properties
-    //qreal rotation() const{return QGraphicsLineItem::rotation();}
-    //void setRotation(qreal aRotation);
-
-    //void setTargetAngle(qreal aTargetAngle){iTargetAngle = aTargetAngle;}
-
-//Q_SIGNALS:
-    //void rotatedToTargetAngle();
+    AnalogHand(QLine aLine, QPen aPen = QPen(),QGraphicsItem* aParent = 0);
 
 private:
-    qreal iTargetAngle;
     QGraphicsLineItem* iLineItem;
 };
 

@@ -1,17 +1,32 @@
 #ifndef CLOCKWIDGET_H
 #define CLOCKWIDGET_H
 
-
 #include <QGraphicsWidget>
+#include "analoghand.h"
 
-class QGraphicsWidget;
-class clockwidget : public QGraphicsWidget
+/*
+ Holds a clock frame onto which analog hands
+ are drawn. Any text items like date etc can
+ be added to this class.
+ */
+class QStateMachine;
+class QState;
+class ClockWidget : public QGraphicsWidget
 {
     Q_OBJECT
 
 public:
-    clockwidget(QObject *parent = 0);
-    ~clockwidget();
+    ClockWidget(QGraphicsItem *parent = 0);
+    ~ClockWidget();
+
+private:
+    AnalogHand* iSecondsHand;
+    AnalogHand* iMinutesHand;
+
+    QStateMachine* iStateMachine;
+    QState*        iSecondsHandState;
+    QState*        iMinutesHandState;
+
 };
 
 #endif // CLOCKWIDGET_H
