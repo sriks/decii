@@ -10,6 +10,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QWidget parentWidget;
+    parentWidget.resize(400,400);
+    ClockWidget* clockWidget = new ClockWidget(&parentWidget);
+clockWidget->resize(400,400);
+#ifdef xx
     QGraphicsView gv;
     QGraphicsScene scene;
 
@@ -22,7 +27,11 @@ int main(int argc, char *argv[])
 #else
     //w.show();
 #endif
-    gv.showMaximized();
+#endif
+    //clockWidget->rotate(6);
+
+    clockWidget->showMaximized();
+//clockWidget->show();
     return a.exec();
 }
 
