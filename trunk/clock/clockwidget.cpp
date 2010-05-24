@@ -12,8 +12,11 @@
 #include <QGraphicsEllipseItem>
 #include <QDateTime>
 #include <QGraphicsDropShadowEffect>
-#include <QGraphicsColorizeEffect>
-
+#include <QGraphicsBlurEffect>
+//#include <qtsvgslideswitch.h>
+#include <QGraphicsProxyWidget>
+#include <QLinearGradient>
+#include <QVBoxLayout>
 #include "clockwidget.h"
 
 // No z value beyond this shd be allowed
@@ -25,9 +28,32 @@ const int KLongestHandLength(45);
 ClockWidget::ClockWidget(QObject *parent)
 {
 iScene = new QGraphicsScene(this);
-
 iScene->setSceneRect(rect());
 setScene(iScene);
+/*
+QVBoxLayout *layout = new QVBoxLayout(this);
+QtSvgSlideSwitch* slideSwitch = new QtSvgSlideSwitch(this);
+slideSwitch->setSkin("Beryl");
+QGraphicsProxyWidget* proxySlide = iScene->addWidget(slideSwitch);
+proxySlide->resize(slideSwitch->width()*2,slideSwitch->height()*2);
+layout->addWidget(slideSwitch);
+//slideSwitch->show();*/
+
+// Make this view transparent
+setAttribute(Qt::WA_TranslucentBackground,true);
+setAttribute(Qt::WA_OpaquePaintEvent,false);
+setWindowFlags(Qt::FramelessWindowHint);
+
+QLinearGradient gradient(0, 0, 0, this->height());
+gradient.setSpread(QGradient::ReflectSpread);
+gradient.setColorAt(0.0, Qt::white);
+gradient.setColorAt(0.4, Qt::black);
+gradient.setColorAt(0.6, Qt::white);
+gradient.setColorAt(1.0, Qt::white);
+QBrush b(gradient);
+QPalette palette = this->palette();
+palette.setBrush(QPalette::Base,QBrush(QColor(255,255,255,128)));
+setPalette(palette);
 
 // Create Analog Hands
 QPen secPen(QColor(Qt::blue));
@@ -56,8 +82,12 @@ QRect circle(QPoint(width()/2,height()/2),QSize(250,250));
 circle.moveCenter(QPoint(width()/2,height()/2));
 QGraphicsEllipseItem* frameCircle = new QGraphicsEllipseItem(circle);
 frameCircle->setOpacity(0.6);
-frameCircle->setBrush(QBrush(QColor(Qt::blue)));
+frameCircle->setBrush(QBrush(QColor(Qt::white)));
 frameCircle->setZValue(clockFrameZValue);
+QGraphicsBlurEffect* blurEffect = new QGraphicsBlurEffect(this);
+blurEffect->setBlurHints(QGraphicsBlurEffect::QualityHint);
+//setGraphicsEffect(blurEffect);
+//frameCircle->setGraphicsEffect(blurEffect);
 
 circle.setSize(QSize(circle.width()-50,circle.height()-50));
 circle.moveCenter(QPoint(width()/2,height()/2));
@@ -96,24 +126,9 @@ iHoursHand->setTransform(transform);
 // Create minute markings
 const int markingStart = KLongestHandLength + 5;
 const int markingLength = 5;
-QPen markingPen(QBrush(Qt::black),3);
+QPen markingPen(QBrush(Qt::black),3,Qt::SolidLine,Qt::RoundCap);
 for(int i=0;i<12;i++)
 {
-    /*AnalogHand* minuteMarking = new AnalogHand(QLine(0,-markingStart,0,-(markingStart+markingLength)),
-                                               markingPen);
-    minuteMarking->setParent(this);
-    minuteMarking->setTransform(transform);
-    //minuteMarking->setLine(0,-markingStart,0,-(markingStart+markingLength));
-    markingPen.setColor(Qt::red);
-    minuteMarking->lineItem().setPen(markingPen);
-
-    minuteMarking->setRotation(i*30);
-    qDebug()<<i<<" minute marking angle "<<minuteMarking->rotation();
-    minuteMarking->setOpacity(0.7);
-    minuteMarking->setZValue(KHoursHandZValue);
-    iScene->addItem(minuteMarking);*/
-
-
     QGraphicsLineItem* minuteMarking = new QGraphicsLineItem(
                                            QLine(0,-markingStart,0,-(markingStart+markingLength)));
     //minuteMarking->s`setParent(this);
@@ -131,8 +146,7 @@ iScene->addItem(iSecondsHand);
 iScene->addItem(iMinutesHand);
 iScene->addItem(iHoursHand);
 iScene->addItem(frameCircle);
-iScene->addItem(clockFace);
-
+//iScene->addItem(clockFace);
 
 // Create states
 iStateMachine = new QStateMachine(this);
