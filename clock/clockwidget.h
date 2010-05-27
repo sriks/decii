@@ -23,11 +23,17 @@ public:
     ClockWidget(QObject *parent = 0);
     ~ClockWidget();
 
+public:
+    //void mouseMoveEvent( QMouseEvent * event ){/*handleInterruption();*/}
+    //void keyPressEvent ( QKeyEvent * event){handleInterruption();}
+
 private slots:
     void on_syncstate_entered();
     void on_secondshand_entered();
     void on_secondshand_exited();
-    void on_minuteshand_exited();
+
+private:
+    void handleInterruption();
 
 private:
     AnalogHand* iSecondsHand;

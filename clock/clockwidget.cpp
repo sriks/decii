@@ -1,6 +1,3 @@
-
-#define TEST_ANIMATION
-
 #include <QDebug>
 #include <QState>
 #include <QStateMachine>
@@ -10,19 +7,27 @@
 #include <QParallelAnimationGroup>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
 #include <QDateTime>
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsBlurEffect>
+#include <QDesktopWidget>
 //#include <qtsvgslideswitch.h>
 #include <QGraphicsProxyWidget>
 #include <QLinearGradient>
 #include <QVBoxLayout>
 #include "clockwidget.h"
 
+//#define ALLOW_SHADOW_EFFECT
+
 // No z value beyond this shd be allowed
-const int KSecondsHandZValue(5);
+const int KHoldingScrewZValue(5);
+const int KSecondsHandZValue(KHoldingScrewZValue-1);
 const int KMinutesHansZValue(KSecondsHandZValue-1);
 const int KHoursHandZValue(KMinutesHansZValue-1);
+const int KClockFrameZValue(KHoursHandZValue-1);
+const int KBaseRectZValue(KClockFrameZValue);
+
 const int KLongestHandLength(45);
 
 ClockWidget::ClockWidget(QObject *parent)
@@ -30,84 +35,73 @@ ClockWidget::ClockWidget(QObject *parent)
 iScene = new QGraphicsScene(this);
 iScene->setSceneRect(rect());
 setScene(iScene);
-/*
-QVBoxLayout *layout = new QVBoxLayout(this);
-QtSvgSlideSwitch* slideSwitch = new QtSvgSlideSwitch(this);
-slideSwitch->setSkin("Beryl");
-QGraphicsProxyWidget* proxySlide = iScene->addWidget(slideSwitch);
-proxySlide->resize(slideSwitch->width()*2,slideSwitch->height()*2);
-layout->addWidget(slideSwitch);
-//slideSwitch->show();*/
+setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+setRenderHints(QPainter::Antialiasing|QPainter::TextAntialiasing);
+QPalette palette = this->palette();
+palette.setBrush(QPalette::Base,QBrush(QColor(0,0,0,0)));
+setPalette(palette);
 
 // Make this view transparent
 setAttribute(Qt::WA_TranslucentBackground,true);
 setAttribute(Qt::WA_OpaquePaintEvent,false);
 setWindowFlags(Qt::FramelessWindowHint);
 
-QLinearGradient gradient(0, 0, 0, this->height());
-gradient.setSpread(QGradient::ReflectSpread);
-gradient.setColorAt(0.0, Qt::white);
-gradient.setColorAt(0.4, Qt::black);
-gradient.setColorAt(0.6, Qt::white);
-gradient.setColorAt(1.0, Qt::white);
-QBrush b(gradient);
-QPalette palette = this->palette();
-palette.setBrush(QPalette::Base,QBrush(QColor(255,255,255,128)));
-setPalette(palette);
-
 // Create Analog Hands
-QPen secPen(QColor(Qt::blue));
-secPen.setCapStyle(Qt::RoundCap);
-secPen.setWidthF(1);
-iSecondsHand = new AnalogHand(QLine(0,5,0,-(KLongestHandLength-5)),secPen);
+iSecondsHand = new AnalogHand(QLine(0,5,0,-(KLongestHandLength-5)),
+                              QPen(QBrush(QColor(Qt::red)),1,Qt::SolidLine,Qt::RoundCap));
 iSecondsHand->setZValue(KSecondsHandZValue);
-
-QPen minPen;
-minPen.setColor(QColor(Qt::red));
-minPen.setWidth(2);
-minPen.setCapStyle(Qt::RoundCap);
-iMinutesHand = new AnalogHand(QLine(0,5,0,-KLongestHandLength),minPen);
-iMinutesHand->setParent(this);
+iSecondsHand->setOpacity(0.7);
+iMinutesHand = new AnalogHand(QLine(0,5,0,-KLongestHandLength),
+                              QPen(QBrush(QColor(Qt::green)),2,Qt::SolidLine,Qt::RoundCap));
 iMinutesHand->setZValue(KMinutesHansZValue);
 iMinutesHand->setOpacity(0.7);
-
-minPen.setColor(Qt::black);
-minPen.setWidth(2);
-iHoursHand = new AnalogHand(QLine(0,5,0,-(KLongestHandLength-15)),minPen);
+iHoursHand = new AnalogHand(QLine(0,5,0,-(KLongestHandLength-15)),
+                            QPen(QBrush(QColor(Qt::green)),3,Qt::SolidLine,Qt::RoundCap));
 iHoursHand->setZValue(KHoursHandZValue);
-setRenderHint(QPainter::Antialiasing,true);
+iHoursHand->setOpacity(0.7);
 
-const int clockFrameZValue(0);
+QRect screwCircle(QPoint(width()/2,height()/2),QSize(10,10));
+screwCircle.moveCenter(QPoint(width()/2,height()/2));
+QGraphicsEllipseItem* holdingScrew = new QGraphicsEllipseItem(screwCircle);
+holdingScrew->setBrush(QBrush(QColor(Qt::black)));
+holdingScrew->setZValue(KHoldingScrewZValue);
+
+// Create clock frame and place it at center
 QRect circle(QPoint(width()/2,height()/2),QSize(250,250));
 circle.moveCenter(QPoint(width()/2,height()/2));
 QGraphicsEllipseItem* frameCircle = new QGraphicsEllipseItem(circle);
-frameCircle->setOpacity(0.6);
-frameCircle->setBrush(QBrush(QColor(Qt::white)));
-frameCircle->setZValue(clockFrameZValue);
-QGraphicsBlurEffect* blurEffect = new QGraphicsBlurEffect(this);
-blurEffect->setBlurHints(QGraphicsBlurEffect::QualityHint);
-//setGraphicsEffect(blurEffect);
-//frameCircle->setGraphicsEffect(blurEffect);
+frameCircle->setPen(QPen(QBrush(QColor(Qt::green)),3));
+frameCircle->setBrush(QBrush(QColor(Qt::black)));
+frameCircle->setOpacity(0.9);
+frameCircle->setZValue(KClockFrameZValue);
+frameCircle->setGraphicsEffect(new QGraphicsBlurEffect);
 
-circle.setSize(QSize(circle.width()-50,circle.height()-50));
-circle.moveCenter(QPoint(width()/2,height()/2));
-QGraphicsEllipseItem* clockFace = new QGraphicsEllipseItem(circle);
-clockFace->setBrush(QBrush(QColor(Qt::black)));
-clockFace->setOpacity(0.6);
-clockFace->setZValue(clockFrameZValue+1);
-
+QGraphicsTextItem* clocktext = new QGraphicsTextItem(tr("Qt Clock"));
+clocktext->setDefaultTextColor(QColor(Qt::green));
+clocktext->setPos(width()/2 - clocktext->boundingRect().width()/2,(height()/2)-60);
+clocktext->setZValue(KClockFrameZValue);
 
 #ifdef ALLOW_SHADOW_EFFECT
 const int shadowBlurRadius(10);
 const int shadowOffset(10);
-QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(this);
-shadow->setBlurRadius(shadowBlurRadius);
-shadow->setOffset(shadowOffset);
+QColor shadowColor(Qt::lightGray);
+QGraphicsDropShadowEffect* secShadow = new QGraphicsDropShadowEffect(this);
+secShadow->setBlurRadius(shadowBlurRadius);
+secShadow->setOffset(shadowOffset);
+secShadow->setColor(shadowColor);
+iSecondsHand->setGraphicsEffect(secShadow);
 QGraphicsDropShadowEffect* minShadow = new QGraphicsDropShadowEffect(this);
 minShadow->setBlurRadius(shadowBlurRadius);
 minShadow->setOffset(shadowOffset);
+minShadow->setColor(shadowColor);
 iMinutesHand->setGraphicsEffect(minShadow);
-iSecondsHand->setGraphicsEffect(shadow);
+QGraphicsDropShadowEffect* hrShadow = new QGraphicsDropShadowEffect(this);
+hrShadow->setBlurRadius(shadowBlurRadius);
+hrShadow->setOffset(shadowOffset);
+hrShadow->setColor(shadowColor);
+iHoursHand->setGraphicsEffect(hrShadow);
 #endif
 
 // Apply transformation
@@ -126,27 +120,31 @@ iHoursHand->setTransform(transform);
 // Create minute markings
 const int markingStart = KLongestHandLength + 5;
 const int markingLength = 5;
-QPen markingPen(QBrush(Qt::black),3,Qt::SolidLine,Qt::RoundCap);
+QPen markingPen(QBrush(Qt::green),3,Qt::SolidLine,Qt::RoundCap);
 for(int i=0;i<12;i++)
 {
     QGraphicsLineItem* minuteMarking = new QGraphicsLineItem(
                                            QLine(0,-markingStart,0,-(markingStart+markingLength)));
-    //minuteMarking->s`setParent(this);
     minuteMarking->setTransform(transform);
     minuteMarking->setPen(markingPen);
-
     minuteMarking->setRotation(i*30);
-    qDebug()<<i<<" minute marking angle "<<minuteMarking->rotation();
+#ifdef BLUR_MARKINGS
+    QGraphicsBlurEffect* blurEffect = new QGraphicsBlurEffect;
+    blurEffect->setBlurRadius(1);
+    minuteMarking->setGraphicsEffect(blurEffect);
+#endif
     minuteMarking->setOpacity(0.7);
     minuteMarking->setZValue(KHoursHandZValue);
     iScene->addItem(minuteMarking);
 }
 
+// Add items to scene
 iScene->addItem(iSecondsHand);
 iScene->addItem(iMinutesHand);
 iScene->addItem(iHoursHand);
 iScene->addItem(frameCircle);
-//iScene->addItem(clockFace);
+iScene->addItem(holdingScrew);
+iScene->addItem(clocktext);
 
 // Create states
 iStateMachine = new QStateMachine(this);
@@ -175,16 +173,17 @@ iSyncState->addTransition(iStartupAnimation,SIGNAL(finished()),iSecondsHandState
 iSecondsHandState->addTransition(iSecHandAnimation,SIGNAL(finished()),iSecondsHandState);
 iParentState->setInitialState(iSyncState);
 iStateMachine->setInitialState(iParentState);
-//iStateMachine->setGlobalRestorePolicy(QStateMachine::RestoreProperties);
 QMetaObject::connectSlotsByName(this);
 iStateMachine->start();
-this->setTransform(transform);//scale(width()/100,height()/100);
 
+#ifndef Q_OS_SYMBIAN
+setTransform(transform);
+#endif
 }
 
 ClockWidget::~ClockWidget()
 {
-
+// left blank
 }
 
 
@@ -216,7 +215,6 @@ void ClockWidget::on_syncstate_entered()
     hrAnim->setEasingCurve(easingCurve);
     qDebug()<<"hr:"<<iHoursHand->rotation()<<" min:"<<iMinutesHand->rotation()<<" sec:"<<iSecondsHand->rotation();
 
-    //int newDuration = ((360-iSecondsHand->rotation())*60)/360;
     int newDuration = ((360- (iSecHandAnimation->startValue().toInt()))*60)/360;
     qDebug()<<"newDuration :"<<newDuration;
     iSecHandAnimation->setDuration(newDuration*1000);
@@ -233,14 +231,7 @@ void ClockWidget::on_secondshand_entered()
 qDebug()<<"ClockWidget::on_secondshand_entered()";
     if(iSecHandAnimation)
     {
-        qDebug()<<"iSecHandAnimation not null";
-
     iSecHandAnimation->start(QAbstractAnimation::KeepWhenStopped);
-    }
-
-    else
-    {
-        qDebug()<<"iSecHandAnimation NULL";
     }
 }
 
@@ -249,7 +240,6 @@ void ClockWidget::on_secondshand_exited()
 qDebug()<<"on_secondshand_exited()";
 if(iSecHandAnimation)
 {
-    qDebug()<<"iSecHandAnimation not null";
     // Reset start value and start again
     iSecHandAnimation->setStartValue(0);
     iSecHandAnimation->setEndValue(360);
@@ -262,7 +252,7 @@ if(iSecHandAnimation)
     iMinHandAnimation->start();
 
     // Animate hours hand
-    if(0 == iMinutesHand->rotation()/12)
+    if(0 == int(iMinutesHand->rotation())%72)
     {
         iHourHandAnimation->setStartValue(iHoursHand->rotation());
         iHourHandAnimation->setEndValue(iHoursHand->rotation()+6);
@@ -270,16 +260,15 @@ if(iSecHandAnimation)
     }
 }
 
-else
-{
-    qDebug()<<"iSecHandAnimation NULL";
 }
 
-}
 
-void ClockWidget::on_minuteshand_exited()
+void ClockWidget::handleInterruption()
 {
-qDebug()<<"ClockWidget::on_minuteshand_exited()";
+// Lock screen
+#ifdef Q_OS_WIN32
+    system("rundll32.exe user32.dll, LockWorkStation");
+#endif
 }
 
 
