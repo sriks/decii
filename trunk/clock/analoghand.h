@@ -18,8 +18,7 @@ class AnalogHand : public QGraphicsWidget
 
 public:
     AnalogHand(QLine aLine, QPen aPen = QPen(),QGraphicsItem* aParent = 0);
-    void setLine(QLine aLine){iLineItem->setLine(aLine);}
-    QGraphicsLineItem& lineItem(){return *iLineItem;}
+
 private:
     QGraphicsLineItem* iLineItem;
 };
