@@ -3,7 +3,7 @@
 #include <QtGui/QApplication>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
 #include <QGraphicsBlurEffect>
 #include <QGraphicsProxyWidget>
 #include <QPalette>
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     QGraphicsProxyWidget* proxyDlg = scene.addWidget(msgBox);
 
     const int offset = 0;
-    QGraphicsEllipseItem backLight;
+    QGraphicsRectItem backLight;
     QRect backLightRect(proxyDlg->boundingRect().toRect());
     backLightRect.setSize(QSize(backLightRect.width()+offset,
                                 backLightRect.height()+offset));
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     backLight.setBrush(QBrush(QColor(Qt::green)));
     backLight.setPen(QPen(Qt::NoPen));
     QGraphicsBlurEffect blurEffect;
-    blurEffect.setBlurRadius(30);
+    blurEffect.setBlurRadius(20);
     backLight.setGraphicsEffect(&blurEffect);
 
     // Reposition dlg and backlight to screen center
