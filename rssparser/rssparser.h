@@ -2,16 +2,8 @@
 #define RSSPARSER_H
 
 #include <QObject>
-#include <QXmlQuery>
 
-struct RSSChannel
-{
-    QString title;
-    QString link;
-    QString description;
-    QString imageUrl;
-};
-
+class QUrl;
 class QXmlQuery;
 class QIODevice;
 class RSSParser : public QObject
@@ -34,7 +26,6 @@ public:
         copyright,
         skipHours,
         skipDays,
-
         // Pure Item elements
         author,
         comments,
@@ -44,11 +35,11 @@ public:
 signals:
 
 public slots:
-    void setSource(QIODevice* xmlSource);
-    QUrl imageUrl();
-    QString channelElement(RSSElement aElement);
-    QString itemElement(int itemIndex,RSSElement aElement);
-    int itemCount();
+    Q_INVOKABLE void setSource(QIODevice* xmlSource);
+    Q_INVOKABLE QUrl imageUrl();
+    Q_INVOKABLE QString channelElement(RSSElement aElement);
+    Q_INVOKABLE QString itemElement(int itemIndex,RSSElement aElement);
+    Q_INVOKABLE int itemCount();
 
 private slots:
     QString executeQuery(const QString& aQuery);
