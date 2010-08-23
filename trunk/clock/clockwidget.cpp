@@ -12,10 +12,10 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsBlurEffect>
 #include <QDesktopWidget>
-//#include <qtsvgslideswitch.h>
 #include <QGraphicsProxyWidget>
 #include <QLinearGradient>
 #include <QVBoxLayout>
+#include <QMetaObject>
 #include "clockwidget.h"
 
 //#define ALLOW_SHADOW_EFFECT
@@ -27,7 +27,6 @@ const int KMinutesHansZValue(KSecondsHandZValue-1);
 const int KHoursHandZValue(KMinutesHansZValue-1);
 const int KClockFrameZValue(KHoursHandZValue-1);
 const int KBaseRectZValue(KClockFrameZValue);
-
 const int KLongestHandLength(45);
 
 ClockWidget::ClockWidget(QObject *parent)
@@ -40,13 +39,12 @@ setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 setRenderHints(QPainter::Antialiasing|QPainter::TextAntialiasing);
 QPalette palette = this->palette();
-palette.setBrush(QPalette::Base,QBrush(QColor(0,0,0,0)));
+palette.setBrush(QPalette::Base,QBrush(QColor(0,0,0,128)));
 setPalette(palette);
 
 // Make this view transparent
-setAttribute(Qt::WA_TranslucentBackground,true);
-setAttribute(Qt::WA_OpaquePaintEvent,false);
 setWindowFlags(Qt::FramelessWindowHint);
+setAttribute(Qt::WA_TranslucentBackground,true);
 
 // Create Analog Hands
 iSecondsHand = new AnalogHand(QLine(0,5,0,-(KLongestHandLength-5)),
@@ -146,17 +144,7 @@ iScene->addItem(frameCircle);
 iScene->addItem(holdingScrew);
 iScene->addItem(clocktext);
 
-// Create states
-iStateMachine = new QStateMachine(this);
-iParentState = new QState(iStateMachine);
-iSyncState = new QState(iParentState);
-iSyncState->setObjectName("syncstate");
-iSecondsHandState = new QState(iParentState);
-iSecondsHandState->setObjectName("secondshand");
-iMinutesHandState = new QState(iParentState);
-iMinutesHandState->setObjectName("minuteshand");
-iHoursHandState = new QState(iParentState);
-
+// Create animations
 iStartupAnimation = new QParallelAnimationGroup(this);
 iSecHandAnimation = new QPropertyAnimation(iSecondsHand,"rotation",this);
 iSecHandAnimation->setEndValue(360);
@@ -169,16 +157,18 @@ iHourHandAnimation = new QPropertyAnimation(iHoursHand,"rotation");
 iHourHandAnimation->setDuration(1*1000);
 iHourHandAnimation->setEasingCurve(QEasingCurve::OutQuad);
 
-iSyncState->addTransition(iStartupAnimation,SIGNAL(finished()),iSecondsHandState);
-iSecondsHandState->addTransition(iSecHandAnimation,SIGNAL(finished()),iSecondsHandState);
-iParentState->setInitialState(iSyncState);
-iStateMachine->setInitialState(iParentState);
+// When startup animation is finished, it should start clock ticking
+connect(iStartupAnimation,SIGNAL(finished()),this, SLOT(on_secondshand_entered()));
+connect(iSecHandAnimation,SIGNAL(finished()),this,SLOT(on_secondshand_exited()));
+// connect slots to signals
 QMetaObject::connectSlotsByName(this);
-iStateMachine->start();
 
 #ifndef Q_OS_SYMBIAN
 setTransform(transform);
 #endif
+
+// sync with system time and start clock
+on_sync_entered();
 }
 
 ClockWidget::~ClockWidget()
@@ -187,7 +177,7 @@ ClockWidget::~ClockWidget()
 }
 
 
-void ClockWidget::on_syncstate_entered()
+void ClockWidget::on_sync_entered()
 {
     qDebug()<<"ClockWidget::on_syncstate_entered()->";
 
