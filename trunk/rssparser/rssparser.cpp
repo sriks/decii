@@ -1,27 +1,25 @@
 #include <QXmlQuery>
 #include <QIODevice>
-#include <QXmlResultItems>
-#include <QXmlItem>
-#include <QFile>
-#include <QBuffer>
+#include <QUrl>
 #include <QMetaEnum>
 #include <QMetaObject>
 #include <QDebug>
 #include "rssparser.h"
 
 // XQueries
-const QString KXqChannelRequired("let $channel := doc($xmlSource)//channel return (data($channel/title),data($channel/link),data($channel/description))");
+//
+// Get channel image url
 const QString KXqChannelImageUrl("let $image := doc($xmlSource)//channel/image return (data($image/url))");
+// Query an element in channel other than image
 const QString KXqChannelElementQuery("let $channel := doc($xmlSource)//channel return (data($channel/%1))");
+// Query Item count
 const QString KXqItemCount("let $x := doc($xmlSource)//item return count($x)");
+// Query element of an item identified with index
 const QString KXqItemQuery("let $item := doc($xmlSource)//item[%1] return (data($item/%2))");
-
-QBuffer buffer;
 
 RSSParser::RSSParser(QObject *parent) :
     QObject(parent)
 {
-
 }
 
 void RSSParser::setSource(QIODevice* xmlSource)
