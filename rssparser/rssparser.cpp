@@ -1,4 +1,4 @@
-#include <QXmlQuery>
+
 #include <QIODevice>
 #include <QUrl>
 #include <QMetaEnum>

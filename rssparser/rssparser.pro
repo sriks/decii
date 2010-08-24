@@ -11,6 +11,6 @@ QT      += core xmlpatterns
 
 # Input
 HEADERS += rssparser.h
-SOURCES += main.cpp rssparser.cpp
+SOURCES += rssparser.cpp
 
 DESTDIR = c:/mylibs
