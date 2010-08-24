@@ -2,9 +2,9 @@
 #define RSSPARSER_H
 
 #include <QObject>
+#include <QXmlQuery>
 
 class QUrl;
-class QXmlQuery;
 class QIODevice;
 class RSSParser : public QObject
 {
@@ -43,7 +43,8 @@ public slots:
 
 private slots:
     QString executeQuery(const QString& aQuery);
-    inline QString enumToString(RSSElement aElement);
+    QString enumToString(RSSElement aElement);
+
 private:
     QXmlQuery m_xmlQuery;
     QIODevice* m_xmlSource;
