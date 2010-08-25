@@ -3,15 +3,25 @@
 #include <QBuffer>
 #include <QDebug>
 #include <QtTest/QtTest>
+#include <QList>
+#include <QLabel>
 
 test_rssparser::test_rssparser()
 {
-    mRSSParser = new RSSParser(this);
-    mBuffer = new QBuffer(this);
+    initTestCase();
 }
 
-void test_rssparser::endtoendtest()
+void test_rssparser::initTestCase()
 {
+    mRSSParser = new RSSParser(this);
+    mBuffer = new QBuffer(this);
+    mIntrestedItemElements<<RSSParser::title<<RSSParser::link<<RSSParser::description<<RSSParser::author;
+    mUpdatedCount = 4;
+}
+
+void test_rssparser::cleanupTestCase()
+{
+
 }
 
 void test_rssparser::test_setSource()
@@ -63,6 +73,28 @@ void test_rssparser::test_channelElement_desc()
         result = mRSSParser->channelElement(RSSParser::description);
     }
     qDebug()<<result;
+}
+
+void test_rssparser::test_feedmanager_getintresteditems()
+{
+    QList<QStringList> resultList;
+    int intrestedElementCount = mIntrestedItemElements.count();
+    for(int i=0;i<mUpdatedCount;i++)
+    {
+        QStringList resultStrings;
+        for(int j=0;j<intrestedElementCount;j++)
+        {
+        QString result = mRSSParser->itemElement(i,mIntrestedItemElements.at(j));
+        resultStrings.append(result);
+        qDebug()<<result;
+        }
+        resultList.append(resultStrings);
+    }
+
+    for(int i = 0;i<resultList.count();i++)
+    {
+        qDebug()<<resultList.at(i);
+    }
 }
 
 // eof

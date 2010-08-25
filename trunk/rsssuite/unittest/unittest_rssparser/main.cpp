@@ -5,7 +5,7 @@
 #define USE_TESTLIB
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication a(argc, argv);
     test_rssparser test;
 
 #ifdef USE_TESTLIB

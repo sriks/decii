@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "rssparser.h"
 
+// FIXME: handle encoding properly
 // XQueries
 //
 // Get channel image url
@@ -35,7 +36,7 @@ QString RSSParser::executeQuery(const QString& aQuery)
 
     if(m_xmlQuery.isValid())
     {
-        m_xmlQuery.evaluateTo(&result);
+       qDebug()<<m_xmlQuery.evaluateTo(&result);
     }
 
     else

@@ -1,7 +1,6 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-08-25T11:13:26
 # -------------------------------------------------
-QT -= gui
 QT += testlib
 TARGET = unittest_rssparser
 CONFIG += console
