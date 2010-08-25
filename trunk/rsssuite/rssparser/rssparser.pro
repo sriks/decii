@@ -13,4 +13,12 @@ QT      += core xmlpatterns
 HEADERS += rssparser.h
 SOURCES += rssparser.cpp
 
+win32:{
 DESTDIR = c:/mylibs
+}
+
+unix:{
+# ensure the specified path has write permission
+# sudo chmod 777 <destdir_path>
+DESTDIR = /usr/lib
+}

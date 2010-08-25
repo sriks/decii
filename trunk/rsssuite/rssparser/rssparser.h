@@ -43,7 +43,7 @@ public slots:
 
 private slots:
     QString executeQuery(const QString& aQuery);
-    QString enumToString(RSSElement aElement);
+    QString enumToString(RSSParser::RSSElement aElement);
 
 private:
     QXmlQuery m_xmlQuery;
