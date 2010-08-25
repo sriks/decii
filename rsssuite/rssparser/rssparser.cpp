@@ -70,7 +70,7 @@ int RSSParser::itemCount()
     return executeQuery(KXqItemCount).toInt();
 }
 
-inline QString RSSParser::enumToString(RSSElement aElement)
+QString RSSParser::enumToString(RSSParser::RSSElement aElement)
 {
     int index = metaObject()->indexOfEnumerator("RSSElement");
     QMetaEnum menum = metaObject()->enumerator(index);
