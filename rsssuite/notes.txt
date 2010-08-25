@@ -1,0 +1,9 @@
+feedmanager api
+
+// This will fetch elements mentioned in intrestedElements among the updatedElements 
+// returns list of updatedElements with a stringlist of strings for intrestedelements
+QList<QStringList> getItems(QList<RSSElement> intrestedElements);
+
+client fills as
+mIntrestedItemElements<<RSSParser::title<<RSSParser::link<<RSSParser::description<<RSSParser::author;
+
