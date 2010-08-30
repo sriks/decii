@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QXmlQuery>
+#include <QStringList>
 
 class QUrl;
 class QIODevice;
@@ -39,16 +40,17 @@ public slots:
     Q_INVOKABLE QUrl imageUrl();
     Q_INVOKABLE QString channelElement(RSSElement aElement);
     Q_INVOKABLE QString itemElement(int itemIndex,RSSElement aElement);
+    Q_INVOKABLE QStringList itemElements(RSSElement aElement);
     Q_INVOKABLE int itemCount();
 
 private slots:
     QString executeQuery(const QString& aQuery);
+    QStringList executeQueryAsList(const QString& aQuery);
     QString enumToString(RSSParser::RSSElement aElement);
 
 private:
     QXmlQuery m_xmlQuery;
     QIODevice* m_xmlSource;
-    bool m_updateRequired;
 };
 
 #endif // RSSPARSER_H
