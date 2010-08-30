@@ -29,6 +29,7 @@ public:
         skipDays,
         // Pure Item elements
         author,
+        creator, // TODO: Check diff ns like dublin
         comments,
         guid
     };
@@ -43,6 +44,7 @@ public slots:
     Q_INVOKABLE QStringList itemElements(RSSElement aElement);
     Q_INVOKABLE int itemCount();
 
+    // TODO: add method to query if an element exists
 private slots:
     QString executeQuery(const QString& aQuery);
     QStringList executeQueryAsList(const QString& aQuery);

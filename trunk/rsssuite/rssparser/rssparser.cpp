@@ -17,10 +17,14 @@ const QString KXqChannelElementQuery("let $channel := doc($xmlSource)//channel r
 const QString KXqItemCount("let $x := doc($xmlSource)//item return count($x)");
 // Query element of an item identified with index
 const QString KXqItemQuery("let $item := doc($xmlSource)//item[%1] return (data($item/%2))");
-
-// FIXME: string requires index, comeup with a general query that doest need index
 // Query all item elements
-const QString KXqAllItemElementsQuery("let $root := doc($xmlSource) return xs:string($root//channel/item[1]/%1)");
+// fn:string is required by QXmlQuery to evaluate to QSrtringList
+// fn:string requires index, so running a for loop.
+// TODO: can this query be optimized?
+const QString KXqAllItemElementsQuery("for $root in doc($xmlSource)//channel/item return string($root/%1)");
+//declare namespace dc="http://purl.org/dc/elements/1.1/"; for $root in doc("http://labs.trolltech.com/blogs/feed/")//channel/item return exists($root//dc:creator)
+
+
 
 RSSParser::RSSParser(QObject *parent) :
     QObject(parent)
