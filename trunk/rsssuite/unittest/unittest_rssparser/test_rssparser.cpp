@@ -101,7 +101,7 @@ void test_rssparser::test_allitemelements()
 {
     QStringList result;
     result = mRSSParser->itemElements(RSSParser::title);
-    qDebug()<<result;
+    qDebug()<<result.count();
 }
 
 // eof
