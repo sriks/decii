@@ -21,6 +21,7 @@ private slots:
     void test_channelElement_link();
     void test_channelElement_desc();
     void test_feedmanager_getintresteditems();
+    void test_allitemelements();
     void cleanupTestCase();
 
 private:

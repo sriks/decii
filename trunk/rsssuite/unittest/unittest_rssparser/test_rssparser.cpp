@@ -97,4 +97,11 @@ void test_rssparser::test_feedmanager_getintresteditems()
     }
 }
 
+void test_rssparser::test_allitemelements()
+{
+    QStringList result;
+    result = mRSSParser->itemElements(RSSParser::title);
+    qDebug()<<result;
+}
+
 // eof
