@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     test_rssparser test;
 
 #ifdef USE_TESTLIB
-    QTest::qExec(&test);
+    QTest::qExec(&test,argc,argv);
     return a.exec();
 #else
     test.endtoendtest();

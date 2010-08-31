@@ -24,6 +24,8 @@ const QString KXqItemQuery("let $item := doc($xmlSource)//item[%1] return (data(
 const QString KXqAllItemElementsQuery("for $root in doc($xmlSource)//channel/item return string($root/%1)");
 //declare namespace dc="http://purl.org/dc/elements/1.1/"; for $root in doc("http://labs.trolltech.com/blogs/feed/")//channel/item return exists($root//dc:creator)
 
+// Query categories in an item
+const QString KXqItemCategories("let $category := doc($xmlSource)//channel/item[%1]/category for $categorylist in $category return string($categorylist)");
 
 
 RSSParser::RSSParser(QObject *parent) :
@@ -101,6 +103,27 @@ QStringList RSSParser::itemElements(RSSElement aElement)
 {
     QString enumString = enumToString(aElement);
     return executeQueryAsList(KXqAllItemElementsQuery.arg(enumString));
+}
+
+QStringList RSSParser::category(int itemIndex)
+{
+    // Query all items
+    if(itemIndex)
+    {
+    return executeQueryAsList(KXqItemCategories.arg(QString().number(itemIndex)));
+    }
+return QStringList();
+}
+
+QList<QStringList> RSSParser::categories()
+{
+    QList<QStringList> list;
+    int count = itemCount();
+    for(int i=1;i<=count;i++)
+    {
+        list<<category(i);
+    }
+    return list;
 }
 
 int RSSParser::itemCount()
