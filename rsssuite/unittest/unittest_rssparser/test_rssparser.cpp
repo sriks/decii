@@ -97,10 +97,29 @@ void test_rssparser::test_feedmanager_getintresteditems()
     }
 }
 
+void test_rssparser::test_category()
+{
+    QStringList list = mRSSParser->category(1);
+    qDebug()<<mRSSParser->itemElement(1,RSSParser::title);
+    qDebug()<<"Count:"<<list.count();
+    qDebug()<<list;
+
+}
+
+void test_rssparser::test_categories()
+{
+    QList<QStringList> list;
+    QBENCHMARK_ONCE{
+         list = mRSSParser->categories();}
+    qDebug()<<"categories count:"<<list.count();
+    qDebug()<<list;
+}
+
 void test_rssparser::test_allitemelements()
 {
     QStringList result;
-    result = mRSSParser->itemElements(RSSParser::title);
+    QBENCHMARK_ONCE{
+    result = mRSSParser->itemElements(RSSParser::title);}
     qDebug()<<result.count();
 }
 
