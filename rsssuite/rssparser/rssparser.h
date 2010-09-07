@@ -42,8 +42,11 @@ public slots:
     Q_INVOKABLE QString itemElement(int itemIndex,RSSElement aElement);
     // queries aElement from all items, like titles of all items
     Q_INVOKABLE QStringList itemElements(RSSElement aElement);
+    // returns list of categories for a item identified by itemIndex
     Q_INVOKABLE QStringList category(int itemIndex);
     // convinience method to query all categories
+    // returns a list of stringlist of categories for all items.
+    // if an item doest have a category, stringlist in its index will be empty.
     Q_INVOKABLE QList<QStringList> categories();
     Q_INVOKABLE int itemCount();
 
