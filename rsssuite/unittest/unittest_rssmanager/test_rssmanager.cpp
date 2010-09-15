@@ -16,22 +16,10 @@ void test_rssmanager::initTestCase()
 void test_rssmanager::testAll()
 {
     // add subscription
-    mRSSManager->addSubscription(FeedSubscription(QUrl("http://labs.trolltech.com/blogs/feed/"),0.01));
-    mRSSManager->addSubscription(FeedSubscription(QUrl("http://mobile.engadget.com/rss.xml"),0.01));
+    mRSSManager->addSubscription(FeedSubscription(QUrl("http://labs.trolltech.com/blogs/feed/"),1));
+    mRSSManager->addSubscription(FeedSubscription(QUrl("http://mobile.engadget.com/rss.xml"),1));
     listAllSubscriptions();
-    int count = mRSSManager->subscriptionCount();
-    // this tries to modify a subscription
-    for(int i=0;i<count;i++)
-    {
-         // Get the feed uniquely identified by url
-         FeedSubscription feed = mRSSManager->subscription(QUrl("http://labs.trolltech.com/blogs/feed/"));
-         feed.setSourceUrl(QUrl("http://feeds.feedburner.com/TheQtBlog"));
-
-         // Add updated feed
-         mRSSManager->addSubscription(feed);
-    }
-    qDebug()<<"After modification";
-    listAllSubscriptions();
+    testRemoveSubscriptions();
 }
 
 void test_rssmanager::listAllSubscriptions()
@@ -46,11 +34,28 @@ void test_rssmanager::listAllSubscriptions()
     }
 }
 
+
+void test_rssmanager::testRemoveSubscriptions()
+{
+    // delete all subscriptions
+    QList<FeedSubscription> subList = mRSSManager->subscriptions();
+    mRSSManager->removeSubscription(subList[0].sourceUrl());
+
+//    for(int i = 0;i<subList.count();i++)
+//    {
+//    mRSSManager->removeSubscription(subList[i].sourceUrl());
+//    }
+
+    qDebug()<<"After removing subscriptions";
+    listAllSubscriptions();
+}
+
 void test_rssmanager::handleUpdateAvailable(RSSParser* parser, int updateditems)
 {
     qDebug()<<__FUNCTION__;
     qDebug()<<"updated items:"<<updateditems;
     qDebug()<<parser->channelElement(RSSParser::title);
+    parser->deleteLater();
 }
 
 // eof

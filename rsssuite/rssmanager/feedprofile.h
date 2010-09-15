@@ -16,12 +16,16 @@ class FeedProfile : public QObject
     Q_OBJECT
 public:
     explicit FeedProfile(FeedSubscription subscription,QObject *parent = 0);
+    ~FeedProfile();
     bool isValid(){return !mSubscription.sourceUrl().toString().isEmpty();}
 signals:
     void updateAvailable(RSSParser* parser, int updatedItems);
     void error(QString errorDescription);
 public slots:
     FeedSubscription subscription(){return mSubscription;}
+
+    /** \param mins a value less than zero stops the timer
+     **/
     void changeTimer(int mins);
     QString lastestItemTitle(){return mLatestElementTitle;}
 

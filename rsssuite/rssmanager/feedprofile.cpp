@@ -22,29 +22,38 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
     handleTimeOut();
 }
 
+FeedProfile::~FeedProfile()
+{
+    mTimer.stop();
+    delete mNetworkManager;
+    mNetworkManager = NULL;
+}
+
 void FeedProfile::changeTimer(int mins)
 {
     mTimer.stop();
+
+    // restart timer if it is a valid interval
+    if(mins)
+    {
     mTimer.setInterval(mins * KOneMinInMSec);
     mTimer.start();
+    }
 }
 
 void FeedProfile::handleTimeOut()
 {
+    qDebug()<<__FUNCTION__;
     // Fetch feed from source
-    if(mNetworkManager)
-    {
-        delete mNetworkManager;
-    }
     mNetworkManager = new QNetworkAccessManager(this);
     connect(mNetworkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
-
     mNetworkManager->get(QNetworkRequest(mSubscription.sourceUrl()));
 }
 
 void FeedProfile::replyFinished(QNetworkReply *reply)
 {
+    qDebug()<<__FUNCTION__;
     // No error
     if(QNetworkReply::NoError == reply->error())
     {
@@ -67,15 +76,16 @@ void FeedProfile::replyFinished(QNetworkReply *reply)
 
 void FeedProfile::handleContent(QByteArray content)
 {
+    qDebug()<<__FUNCTION__;
     //qDebug()<<content;
     // valid content
     if(content.size())
     {
             int newItemsCount=0;
             RSSParser* parser = new RSSParser;
-            QBuffer buffer(&content,parser);
-            buffer.open(QIODevice::ReadOnly);
-            parser->setSource(&buffer); // Ready for parsing
+            QBuffer* buffer = new QBuffer(&content,parser); // gets deleted with parser
+            buffer->open(QIODevice::ReadOnly);
+            parser->setSource(buffer); // Ready for parsing
 
             QStringList titles = parser->itemElements(RSSParser::title);
             int totalItems = titles.count();
@@ -109,8 +119,9 @@ void FeedProfile::handleContent(QByteArray content)
             // No updates available
             if(0 == newItemsCount)
             {
-                delete parser;
+                parser->deleteLater();
             }
      }
 }
 
+// eof

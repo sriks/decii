@@ -37,7 +37,7 @@ public:
     explicit RSSManager(QObject *parent = 0);
     ~RSSManager();
     void addSubscription(FeedSubscription newSubscription);
-    void changeSubscription(QUrl sourceUrl, int newUpdateIntervalInMins);
+    bool changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
 
 // TODO: add stop updates support
 //    void stopUpdates(QUrl sourceUrl);
@@ -50,6 +50,7 @@ public:
 
 signals:
     // signal that new item is available
+    // Its is responsibility of caller to delete parser. Use deleteLater()
     void updateAvailable(RSSParser* parser, int updateditems);
 
 private slots:
