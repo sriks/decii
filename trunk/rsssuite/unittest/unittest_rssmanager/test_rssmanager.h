@@ -22,6 +22,7 @@ public slots:
 private slots:
     void initTestCase();
     void listAllSubscriptions();
+    void testRemoveSubscriptions();
     void testAll();
 
 private:

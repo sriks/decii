@@ -77,17 +77,15 @@ bool RSSManager::internalize()
 
 void RSSManager::addSubscription(FeedSubscription newSubscription)
 {
-    // Check if this profile exists
-
     FeedProfile* profile = new FeedProfile(newSubscription,this);
     connect(profile,SIGNAL(updateAvailable(RSSParser*,int)),this,SIGNAL(updateAvailable(RSSParser*,int)));
     mFeedProfiles.insert(newSubscription.sourceUrl().toString(),profile);
 }
 
-void RSSManager::changeSubscription(QUrl sourceUrl, int newUpdateIntervalInMins)
+bool RSSManager::changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins)
 {
     if(newUpdateIntervalInMins <= 0)
-    {return;}
+    {return false;}
 
     // Get profile identified by url
     FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
@@ -95,12 +93,16 @@ void RSSManager::changeSubscription(QUrl sourceUrl, int newUpdateIntervalInMins)
     if(profile->isValid())
     {
         profile->changeTimer(newUpdateIntervalInMins);
+        return true;
     }
 
+// no valid feed found with the url
+return false;
 }
 
 bool RSSManager::removeSubscription(QUrl sourceUrl)
 {
+    mFeedProfiles[sourceUrl.toString()]->deleteLater();
     return (mFeedProfiles.remove(sourceUrl.toString()) ? (true) : (false) );
 }
 
