@@ -6,6 +6,7 @@ TARGET = unittest_rssparser
 CONFIG += console
 CONFIG -= app_bundle
 TEMPLATE = app
+HEADERS += test_rssparser.h
 SOURCES += main.cpp \
     test_rssparser.cpp
 
@@ -20,7 +21,6 @@ unix: {
     LIBS += -L/usr/lib
     LIBS += -lrssparser
 }
-HEADERS += test_rssparser.h
 
 RESOURCES += \
     resource.qrc
