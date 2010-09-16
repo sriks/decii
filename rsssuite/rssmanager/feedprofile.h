@@ -19,6 +19,8 @@ public:
     ~FeedProfile();
     bool isValid(){return !mSubscription.sourceUrl().toString().isEmpty();}
     RSSParser* parser();
+    void update();
+
 signals:
     void updateAvailable(QUrl sourceUrl, int updatedItems);
     void error(QString errorDescription);
@@ -38,15 +40,20 @@ private slots:
     void handleContent(QByteArray content);
 
     // test slots
-    void handleDestroyed(QObject* obj);
+    void handleNetworkMgrDestroyed(QObject* obj);
 private:
     QString feedFileName();
+    void setNetworkRequestActive(bool value);
+    bool isNetworkRequestActive();
 private:
     FeedSubscription mSubscription;
     QString mLatestElementTitle;
     QString mFeedFileName;
     QTimer mTimer;
     QNetworkAccessManager* mNetworkManager;
+
+    bool mNetworkRequestActive;
+    bool mNetworkManDestroyed;
 };
 
 #endif // FEEDPROFILE_H

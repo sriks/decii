@@ -47,7 +47,11 @@ public:
     bool removeSubscription(QUrl sourceUrl);
     FeedSubscription subscription(QUrl sourceUrl);
     QList<FeedSubscription> subscriptions();
+    QList<QUrl> subscriptionUrlList();
     int subscriptionCount(){return mFeedProfiles.count();}
+
+    void updateAll();
+    void update(QUrl sourceUrl);
 
 signals:
     // signal that new item is available
@@ -57,8 +61,6 @@ private slots:
     bool externalize();
     bool internalize();
 
-private:
-    FeedProfile defaultProfile();
 private:
     QHash<QString,FeedProfile*> mFeedProfiles;
 };

@@ -9,19 +9,50 @@ test_rssmanager::test_rssmanager(QObject *parent) :
 
 }
 
+test_rssmanager::~test_rssmanager()
+{
+    qDebug()<<__FUNCTION__;
+    delete mRSSManager;
+}
+
 void test_rssmanager::initTestCase()
 {
     mRSSManager = new RSSManager(this);
     qDebug()<<connect(mRSSManager,SIGNAL(updateAvailable(QUrl,int)),this,SLOT(handleUpdateAvailable(QUrl,int)));
+    mSourceList.append(QUrl("http://labs.qt.nokia.com/feed/"));
+    mSourceList.append(QUrl("http://mobile.engadget.com/rss.xml"));
 }
 
 void test_rssmanager::testAll()
 {
     // add subscription
-    mRSSManager->addSubscription(FeedSubscription(QUrl("http://labs.qt.nokia.com/feed/"),1));
-    mRSSManager->addSubscription(FeedSubscription(QUrl("http://mobile.engadget.com/rss.xml"),1));
+    for(int i=0;i<mSourceList.count();i++)
+    {
+         mRSSManager->addSubscription(FeedSubscription(mSourceList[i],1));
+    }
+    testUpdateAll();
+        testUpdateAll();
+            testUpdateAll();
+                testUpdateAll();
+                    testUpdateAll();
+                        testUpdateAll();
+
+
     listAllSubscriptions();
-    //testRemoveSubscriptions();
+}
+
+void test_rssmanager::testUpdate()
+{
+    // update a feed
+    mRSSManager->update(mSourceList[0]);
+}
+
+void test_rssmanager::testUpdateAll()
+{
+    static int count = 0;
+    count++;
+    mRSSManager->updateAll();
+    qDebug()<<__FUNCTION__<<" "<<count;
 }
 
 void test_rssmanager::listAllSubscriptions()
@@ -66,6 +97,33 @@ void test_rssmanager::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
     }
 
     parser->deleteLater();
+    testUpdateAll();
+    testUpdateAll();
+    testUpdateAll();
+        testUpdateAll();
+            testUpdateAll();
+                testUpdateAll();
+                    testUpdateAll();
+                        testUpdateAll();
+                        testUpdateAll();
+                            testUpdateAll();
+                                testUpdateAll();
+                                    testUpdateAll();
+                                        testUpdateAll();
+                                            testUpdateAll();
+                                            testUpdateAll();
+                                                testUpdateAll();
+                                                    testUpdateAll();
+                                                        testUpdateAll();
+                                                            testUpdateAll();
+                                                                testUpdateAll();
+                                                                testUpdateAll();
+                                                                    testUpdateAll();
+                                                                        testUpdateAll();
+                                                                            testUpdateAll();
+                                                                                testUpdateAll();
+                                                                                    testUpdateAll();
+
 }
 
 // eof
