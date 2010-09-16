@@ -67,7 +67,6 @@ bool RSSManager::externalize()
     {
         return false;
     }
-
 }
 
 bool RSSManager::internalize()
@@ -78,7 +77,7 @@ bool RSSManager::internalize()
 void RSSManager::addSubscription(FeedSubscription newSubscription)
 {
     FeedProfile* profile = new FeedProfile(newSubscription,this);
-    connect(profile,SIGNAL(updateAvailable(RSSParser*,int)),this,SIGNAL(updateAvailable(RSSParser*,int)));
+    connect(profile,SIGNAL(updateAvailable(QUrl,int)),this,SIGNAL(updateAvailable(QUrl,int)));
     mFeedProfiles.insert(newSubscription.sourceUrl().toString(),profile);
 }
 
@@ -123,6 +122,19 @@ QList<FeedSubscription> RSSManager::subscriptions()
     }
 
     return subscriptionList;
+}
+
+RSSParser* RSSManager::parser(QUrl sourceUrl)
+{
+    FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
+    RSSParser* parser =  mFeedProfiles.value(sourceUrl.toString(),&defaultProfile)->parser();
+    return parser;
+}
+
+FeedProfile RSSManager::defaultProfile()
+{
+//    FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
+//    return defaultProfile;
 }
 
 // end of file

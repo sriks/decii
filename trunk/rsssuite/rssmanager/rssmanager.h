@@ -38,6 +38,7 @@ public:
     ~RSSManager();
     void addSubscription(FeedSubscription newSubscription);
     bool changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
+    RSSParser* parser(QUrl sourceUrl);
 
 // TODO: add stop updates support
 //    void stopUpdates(QUrl sourceUrl);
@@ -50,15 +51,14 @@ public:
 
 signals:
     // signal that new item is available
-    // Its is responsibility of caller to delete parser. Use deleteLater()
-    void updateAvailable(RSSParser* parser, int updateditems);
+    void updateAvailable(QUrl sourceUrl, int updateditems);
 
 private slots:
     bool externalize();
     bool internalize();
 
 private:
-    int toMSec(int minutes);
+    FeedProfile defaultProfile();
 private:
     QHash<QString,FeedProfile*> mFeedProfiles;
 };

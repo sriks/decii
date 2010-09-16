@@ -1,7 +1,9 @@
 #include <QTimer>
+#include <QHash>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QBuffer>
+#include <QFile>
 #include <QDebug>
 #include "rssmanager.h"
 #include "feedprofile.h"
@@ -16,10 +18,10 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
 {
     connect(&mTimer,SIGNAL(timeout()),this,SLOT(handleTimeOut()));
     mNetworkManager = NULL;
-    mTimer.setInterval(subscription.updateInterval()*KOneMinInMSec);
-    mTimer.start();
+    changeTimer(mSubscription.updateInterval());
     // start initial fetch
-    handleTimeOut();
+    if(mSubscription.updateInterval())
+    { handleTimeOut(); }
 }
 
 FeedProfile::~FeedProfile()
@@ -29,12 +31,23 @@ FeedProfile::~FeedProfile()
     mNetworkManager = NULL;
 }
 
+RSSParser* FeedProfile::parser()
+{
+    RSSParser* parser = new RSSParser;
+    QFile* feedFile = new QFile(feedFileName(),parser);
+    if(feedFile->open(QIODevice::ReadOnly))
+    {
+        parser->setSource(feedFile);
+    }
+    return parser;
+}
+
 void FeedProfile::changeTimer(int mins)
 {
     mTimer.stop();
 
-    // restart timer if it is a valid interval
-    if(mins)
+    // start timer if it is a valid interval
+    if(mins>=0)
     {
     mTimer.setInterval(mins * KOneMinInMSec);
     mTimer.start();
@@ -67,7 +80,6 @@ void FeedProfile::replyFinished(QNetworkReply *reply)
     {
 
     }
-
     reply->deleteLater();
     // Feeds are usually gathered in periodic intervals.
     // So network manager need not reside in memory till it is required.
@@ -81,13 +93,34 @@ void FeedProfile::handleContent(QByteArray content)
     // valid content
     if(content.size())
     {
-            int newItemsCount=0;
-            RSSParser* parser = new RSSParser;
-            QBuffer* buffer = new QBuffer(&content,parser); // gets deleted with parser
-            buffer->open(QIODevice::ReadOnly);
-            parser->setSource(buffer); // Ready for parsing
+            QFile feedFile(feedFileName());
+            if(feedFile.exists())
+            {
+                feedFile.remove();
+            }
 
+            if(feedFile.open(QIODevice::ReadWrite))
+            {
+                QString tmp(content);
+                feedFile.write(tmp.toUtf8());
+                feedFile.close();
+            }
+
+            else
+            {
+                emit error("Cannot store the feed");
+                return;
+            }
+
+            int newItemsCount=0;
+            QFile readFeedFile(feedFileName());
+            qDebug()<<readFeedFile.open(QIODevice::ReadOnly);
+            RSSParser* parser = new RSSParser(this);
+            parser->setSource(&readFeedFile);
             QStringList titles = parser->itemElements(RSSParser::title);
+            parser->deleteLater();
+            readFeedFile.close();
+
             int totalItems = titles.count();
             if(totalItems)
             {
@@ -105,8 +138,7 @@ void FeedProfile::handleContent(QByteArray content)
                 {
                     // XQuery numbering starts with 1, so we can send count as such
                     mLatestElementTitle = titles[0];
-                    // Ownership of parser is transfered
-                    emit updateAvailable(parser,newItemsCount);
+                    emit updateAvailable(mSubscription.sourceUrl(),newItemsCount);
                 }
             }
 
@@ -116,12 +148,24 @@ void FeedProfile::handleContent(QByteArray content)
                 emit error(tr("Cannot parse feed"));
             }
 
-            // No updates available
-            if(0 == newItemsCount)
-            {
-                parser->deleteLater();
-            }
      }
+}
+
+QString FeedProfile::feedFileName()
+{
+    QString filename;
+    filename.setNum( qHash(mSubscription.sourceUrl().toString()) );
+    //filename.append(".xml");
+    return filename;
+}
+
+void FeedProfile::handleDestroyed(QObject *obj)
+{
+    qDebug()<<__FUNCTION__;
+    if(obj)
+    {
+        obj->objectName();
+    }
 }
 
 // eof
