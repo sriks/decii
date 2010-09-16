@@ -9,6 +9,7 @@ class test_rssmanager : public QObject
     Q_OBJECT
 public:
     explicit test_rssmanager(QObject *parent = 0);
+    ~test_rssmanager();
     void manualTestAll()
     {
     initTestCase();
@@ -23,10 +24,13 @@ private slots:
     void initTestCase();
     void listAllSubscriptions();
     void testRemoveSubscriptions();
+    void testUpdate();
+    void testUpdateAll();
     void testAll();
 
 private:
     RSSManager* mRSSManager;
+    QList<QUrl> mSourceList;
 };
 
 #endif // TEST_RSSMANAGER_H

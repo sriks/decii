@@ -33,6 +33,7 @@ RSSManager::RSSManager(QObject *parent) :
 RSSManager::~RSSManager()
 {
     // write all preferences
+    qDebug()<<__FUNCTION__;
     externalize();
 }
 
@@ -124,17 +125,43 @@ QList<FeedSubscription> RSSManager::subscriptions()
     return subscriptionList;
 }
 
+QList<QUrl> RSSManager::subscriptionUrlList()
+{
+    QList<QUrl> urlList;
+    QList<FeedProfile*>  profiles = mFeedProfiles.values();
+    for(int i=0;i<profiles.count();i++)
+    {
+    urlList.append(profiles[i]->subscription().sourceUrl());
+    }
+return urlList;
+}
+
+void RSSManager::updateAll()
+{
+    qDebug()<<__FUNCTION__;
+    QList<QString> keys = mFeedProfiles.uniqueKeys();
+    for(int i=0;i<keys.count();i++)
+    {
+        update(QUrl(keys[i]));
+    }
+}
+
+void RSSManager::update(QUrl sourceUrl)
+{
+    qDebug()<<__FUNCTION__;
+    qDebug()<<sourceUrl;
+    QString key = sourceUrl.toString();
+    if(mFeedProfiles.contains(key))
+    {
+        mFeedProfiles[key]->update();
+    }
+}
+
 RSSParser* RSSManager::parser(QUrl sourceUrl)
 {
     FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
     RSSParser* parser =  mFeedProfiles.value(sourceUrl.toString(),&defaultProfile)->parser();
     return parser;
-}
-
-FeedProfile RSSManager::defaultProfile()
-{
-//    FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
-//    return defaultProfile;
 }
 
 // end of file
