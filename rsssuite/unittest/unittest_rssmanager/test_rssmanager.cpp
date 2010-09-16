@@ -1,6 +1,8 @@
 #include <QDebug>
 #include "test_rssmanager.h"
 
+const QUrl engadgeturl("http://mobile.engadget.com/rss.xml");
+
 test_rssmanager::test_rssmanager(QObject *parent) :
     QObject(parent)
 {
@@ -10,16 +12,16 @@ test_rssmanager::test_rssmanager(QObject *parent) :
 void test_rssmanager::initTestCase()
 {
     mRSSManager = new RSSManager(this);
-    qDebug()<<connect(mRSSManager,SIGNAL(updateAvailable(RSSParser*,int)),this,SLOT(handleUpdateAvailable(RSSParser*,int)));
+    qDebug()<<connect(mRSSManager,SIGNAL(updateAvailable(QUrl,int)),this,SLOT(handleUpdateAvailable(QUrl,int)));
 }
 
 void test_rssmanager::testAll()
 {
     // add subscription
-    mRSSManager->addSubscription(FeedSubscription(QUrl("http://labs.trolltech.com/blogs/feed/"),1));
+    mRSSManager->addSubscription(FeedSubscription(QUrl("http://labs.qt.nokia.com/feed/"),1));
     mRSSManager->addSubscription(FeedSubscription(QUrl("http://mobile.engadget.com/rss.xml"),1));
     listAllSubscriptions();
-    testRemoveSubscriptions();
+    //testRemoveSubscriptions();
 }
 
 void test_rssmanager::listAllSubscriptions()
@@ -50,11 +52,19 @@ void test_rssmanager::testRemoveSubscriptions()
     listAllSubscriptions();
 }
 
-void test_rssmanager::handleUpdateAvailable(RSSParser* parser, int updateditems)
+void test_rssmanager::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
 {
     qDebug()<<__FUNCTION__;
     qDebug()<<"updated items:"<<updateditems;
-    qDebug()<<parser->channelElement(RSSParser::title);
+    qDebug()<<sourceUrl;
+
+    RSSParser* parser = mRSSManager->parser(sourceUrl);
+    if(parser->isValid())
+    {
+        qDebug()<<parser->channelElement(RSSParser::title);
+        qDebug()<<parser->itemElement(1,RSSParser::title);
+    }
+
     parser->deleteLater();
 }
 
