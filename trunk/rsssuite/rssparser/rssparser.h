@@ -14,6 +14,7 @@ class RSSParser : public QObject
 
 public:
     explicit RSSParser(QObject *parent = 0);
+    ~RSSParser();
     enum RSSElement
     {
         title,
@@ -36,7 +37,9 @@ public:
 signals:
 
 public slots:
+    Q_INVOKABLE bool isValid();
     Q_INVOKABLE void setSource(QIODevice* xmlSource);
+    Q_INVOKABLE bool setSourceFileName(QString sourceFileName);
     Q_INVOKABLE QUrl imageUrl();
     Q_INVOKABLE QString channelElement(RSSElement aElement);
     Q_INVOKABLE QString itemElement(int itemIndex,RSSElement aElement);
@@ -59,6 +62,7 @@ private slots:
 private:
     QXmlQuery m_xmlQuery;
     QIODevice* m_xmlSource;
+    QString m_xmlSourceFileName;
 };
 
 #endif // RSSPARSER_H

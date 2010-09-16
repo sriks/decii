@@ -4,6 +4,7 @@
 #include <QMetaEnum>
 #include <QMetaObject>
 #include <QDebug>
+#include <QXmlItem>
 #include "rssparser.h"
 
 // FIXME: handle encoding properly
@@ -26,17 +27,47 @@ const QString KXqAllItemElementsQuery("for $root in doc($xmlSource)//channel/ite
 
 // Query categories in an item
 const QString KXqItemCategories("let $category := doc($xmlSource)//channel/item[%1]/category for $categorylist in $category return string($categorylist)");
-
+const QString KXmlSource("xmlSource");
 
 RSSParser::RSSParser(QObject *parent) :
     QObject(parent)
 {
+    m_xmlSource = NULL;
+}
+
+RSSParser::~RSSParser()
+{
+    qDebug()<<__FUNCTION__;
+}
+
+bool RSSParser::isValid()
+{
+    if(m_xmlSource)
+    {
+    return ( (m_xmlSource->isReadable()) &&
+             (m_xmlSource->size()) );
+    }
+
+    else
+    {
+    return !m_xmlSourceFileName.isEmpty();
+    }
 }
 
 void RSSParser::setSource(QIODevice* xmlSource)
 {
       m_xmlSource = xmlSource;
-      m_xmlQuery.bindVariable("xmlSource",xmlSource);
+      m_xmlQuery.bindVariable(KXmlSource,xmlSource);
+}
+
+bool RSSParser::setSourceFileName(QString sourceFileName)
+{
+    if(sourceFileName.isEmpty())
+    {return false;}
+    m_xmlSourceFileName = sourceFileName;
+    m_xmlQuery.bindVariable(KXmlSource,QXmlItem(QVariant(m_xmlSourceFileName)));
+    m_xmlSource = NULL;
+    return true;
 }
 
 QString RSSParser::executeQuery(const QString& aQuery)
