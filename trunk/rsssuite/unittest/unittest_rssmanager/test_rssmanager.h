@@ -18,7 +18,7 @@ public:
 signals:
 
 public slots:
-    void handleUpdateAvailable(RSSParser* parser, int updateditems);
+    void handleUpdateAvailable(QUrl sourceUrl, int updateditems);
 private slots:
     void initTestCase();
     void listAllSubscriptions();

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/feed">
         <file>testfeed.htm</file>
+        <file>260259644.xml</file>
+        <file>118094223</file>
     </qresource>
 </RCC>

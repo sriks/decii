@@ -26,7 +26,9 @@ void test_rssparser::cleanupTestCase()
 
 void test_rssparser::test_setSource()
 {
-    QFile sourceFile(":/feed/testfeed.htm");
+    //QFile sourceFile(":/feed/testfeed.htm");
+    QFile sourceFile(":/feed/118094223");
+
     if(sourceFile.open(QIODevice::ReadOnly))
     {
         // Read content to buffer
@@ -36,7 +38,8 @@ void test_rssparser::test_setSource()
         qDebug()<<"opening buffer "<<mBuffer->open(QIODevice::ReadOnly);
 
         // Set source to rssparser
-        mRSSParser->setSource(mBuffer);
+    mRSSParser->setSource(mBuffer);
+
     }
     else
     {
