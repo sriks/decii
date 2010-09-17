@@ -60,8 +60,12 @@ public slots:
     // if an item doest have a category, stringlist in its index will be empty.
     Q_INVOKABLE QList<QStringList> categories();
     Q_INVOKABLE int itemCount();
-
     // TODO: add method to query if an element exists
+
+    // Returns if the latest call resulted error
+    // error is not persistent across calls
+    bool isError(){return m_IsError;}
+
 private slots:
     QString executeQuery(const QString& aQuery);
     QStringList executeQueryAsList(const QString& aQuery);
@@ -71,6 +75,7 @@ private:
     QXmlQuery m_xmlQuery;
     QIODevice* m_xmlSource;
     QString m_xmlSourceFileName;
+    bool m_IsError;
 };
 
 #endif // RSSPARSER_H
