@@ -17,7 +17,11 @@ class FeedProfile : public QObject
 public:
     explicit FeedProfile(FeedSubscription subscription,QObject *parent = 0);
     ~FeedProfile();
-    bool isValid(){return !mSubscription.sourceUrl().toString().isEmpty();}
+    bool isValid()
+    {
+        // Feed with negative interval is valid
+        return !mSubscription.sourceUrl().toString().isEmpty();
+    }
     RSSParser* parser();
     void update();
 
@@ -30,7 +34,8 @@ public slots:
 
     /** \param mins a value less than zero stops the timer
      **/
-    void changeTimer(int mins);
+    void updateTimer(int mins);
+    bool isActive(){return mTimer.isActive();}
     QString lastestItemTitle(){return mLatestElementTitle;}
 
 
@@ -51,9 +56,11 @@ private:
     QString mFeedFileName;
     QTimer mTimer;
     QNetworkAccessManager* mNetworkManager;
-
+    QNetworkReply* mNetworkReply;
+    // Dont use this directly, use setter and getter instead
     bool mNetworkRequestActive;
-    bool mNetworkManDestroyed;
+    // used only for test
+    int mNetManCreatedCount;
 };
 
 #endif // FEEDPROFILE_H

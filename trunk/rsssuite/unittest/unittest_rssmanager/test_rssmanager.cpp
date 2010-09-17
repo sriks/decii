@@ -1,4 +1,6 @@
 #include <QDebug>
+#include <QFile>
+#include <QDataStream>
 #include "test_rssmanager.h"
 
 const QUrl engadgeturl("http://mobile.engadget.com/rss.xml");
@@ -21,6 +23,8 @@ void test_rssmanager::initTestCase()
     qDebug()<<connect(mRSSManager,SIGNAL(updateAvailable(QUrl,int)),this,SLOT(handleUpdateAvailable(QUrl,int)));
     mSourceList.append(QUrl("http://labs.qt.nokia.com/feed/"));
     mSourceList.append(QUrl("http://mobile.engadget.com/rss.xml"));
+    mSourceList.append(QUrl("http://feeds.feedburner.com/Symbian/Blog"));
+    mSourceList.append(QUrl("http://rss.allaboutsymbian.com/news/rss2all.xml"));
 }
 
 void test_rssmanager::testAll()
@@ -30,15 +34,8 @@ void test_rssmanager::testAll()
     {
          mRSSManager->addSubscription(FeedSubscription(mSourceList[i],1));
     }
-    testUpdateAll();
-        testUpdateAll();
-            testUpdateAll();
-                testUpdateAll();
-                    testUpdateAll();
-                        testUpdateAll();
-
-
     listAllSubscriptions();
+    testStop();
 }
 
 void test_rssmanager::testUpdate()
@@ -53,6 +50,20 @@ void test_rssmanager::testUpdateAll()
     count++;
     mRSSManager->updateAll();
     qDebug()<<__FUNCTION__<<" "<<count;
+}
+
+void test_rssmanager::testStop()
+{
+    qDebug()<<__FUNCTION__;
+    qDebug()<<"Stopping "<<mSourceList[0];
+    mRSSManager->stop(mSourceList[0]);
+}
+
+void test_rssmanager::testRestart()
+{
+    qDebug()<<__FUNCTION__;
+    qDebug()<<"restarting "<<mSourceList[0];
+    mRSSManager->restart(mSourceList[0]);
 }
 
 void test_rssmanager::listAllSubscriptions()
@@ -92,38 +103,22 @@ void test_rssmanager::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
     RSSParser* parser = mRSSManager->parser(sourceUrl);
     if(parser->isValid())
     {
-        qDebug()<<parser->channelElement(RSSParser::title);
-        qDebug()<<parser->itemElement(1,RSSParser::title);
+        QFile outputfile("result.txt");
+        qDebug()<<"opening resutlfile:"<<outputfile.open(QIODevice::WriteOnly|QIODevice::Text);
+        //QDataStream stream(&outputfile);
+        for(int i=1;i<=updateditems;i++)
+        {
+outputfile.write("\n--------------------------------------------------------------------");
+        outputfile.write(parser->channelElement(RSSParser::title).toUtf8());
+        outputfile.write(parser->itemElement(i,RSSParser::title).toUtf8());
+        outputfile.write(parser->itemElement(i,RSSParser::pubDate).toUtf8());
+        //outputfile.write(parser->category(i));
+outputfile.write("--------------------------------------------------------------------\n");
+        }
+        outputfile.close();
     }
-
     parser->deleteLater();
-    testUpdateAll();
-    testUpdateAll();
-    testUpdateAll();
-        testUpdateAll();
-            testUpdateAll();
-                testUpdateAll();
-                    testUpdateAll();
-                        testUpdateAll();
-                        testUpdateAll();
-                            testUpdateAll();
-                                testUpdateAll();
-                                    testUpdateAll();
-                                        testUpdateAll();
-                                            testUpdateAll();
-                                            testUpdateAll();
-                                                testUpdateAll();
-                                                    testUpdateAll();
-                                                        testUpdateAll();
-                                                            testUpdateAll();
-                                                                testUpdateAll();
-                                                                testUpdateAll();
-                                                                    testUpdateAll();
-                                                                        testUpdateAll();
-                                                                            testUpdateAll();
-                                                                                testUpdateAll();
-                                                                                    testUpdateAll();
-
+    testRestart();
 }
 
 // eof

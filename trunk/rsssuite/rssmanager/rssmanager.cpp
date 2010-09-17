@@ -84,19 +84,11 @@ void RSSManager::addSubscription(FeedSubscription newSubscription)
 
 bool RSSManager::changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins)
 {
-    if(newUpdateIntervalInMins <= 0)
-    {return false;}
-
-    // Get profile identified by url
-    FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
-    FeedProfile* profile = mFeedProfiles.value(sourceUrl.toString(),&defaultProfile);
-    if(profile->isValid())
+    if(isFeedValid(sourceUrl))
     {
-        profile->changeTimer(newUpdateIntervalInMins);
+        mFeedProfiles[sourceUrl.toString()]->update();;
         return true;
     }
-
-// no valid feed found with the url
 return false;
 }
 
@@ -162,6 +154,28 @@ RSSParser* RSSManager::parser(QUrl sourceUrl)
     FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
     RSSParser* parser =  mFeedProfiles.value(sourceUrl.toString(),&defaultProfile)->parser();
     return parser;
+}
+
+void RSSManager::stop(QUrl sourceUrl)
+{
+    changeSubscriptionInterval(sourceUrl,-1);
+}
+
+void RSSManager::restart(QUrl sourceUrl)
+{
+    changeSubscriptionInterval(sourceUrl,
+                               mFeedProfiles[sourceUrl.toString()]->subscription().updateInterval());
+}
+
+bool RSSManager::isFeedValid(QUrl sourceUrl)
+{
+    if(mFeedProfiles.contains(sourceUrl.toString()))
+    {
+        return mFeedProfiles[sourceUrl.toString()]->isValid();
+    }
+
+    qWarning()<<__FUNCTION__<<" invalid feed "<<sourceUrl;
+    return false;
 }
 
 // end of file

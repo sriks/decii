@@ -19,11 +19,11 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
     mSubscription(subscription)
 
 {
-    mNetworkManDestroyed = false;
+    mNetworkManager = NULL;
+    mNetManCreatedCount = 0; // test only
     setNetworkRequestActive(false);
     connect(&mTimer,SIGNAL(timeout()),this,SLOT(handleTimeOut()));
-    mNetworkManager = NULL;
-    changeTimer(mSubscription.updateInterval());
+    updateTimer(mSubscription.updateInterval());
     // start initial fetch
     if(mSubscription.updateInterval())
     { update(); }
@@ -34,6 +34,7 @@ FeedProfile::~FeedProfile()
     mTimer.stop();
     delete mNetworkManager;
     mNetworkManager = NULL;
+    qDebug()<<"Netman creation mark "<<mNetManCreatedCount;
 }
 
 RSSParser* FeedProfile::parser()
@@ -52,10 +53,16 @@ void FeedProfile::update()
 {
     // ignore this if a request is already active
     if(!isNetworkRequestActive())
-    handleTimeOut();
+    {
+        updateTimer(mSubscription.updateInterval());
+
+        // We have to update the feed even if update interval is negative.
+        // A client may just need to update on demand and not in periodic interval.
+        handleTimeOut();
+    }
 }
 
-void FeedProfile::changeTimer(int mins)
+void FeedProfile::updateTimer(int mins)
 {
     mTimer.stop();
 
@@ -65,25 +72,28 @@ void FeedProfile::changeTimer(int mins)
     mTimer.setInterval(mins * KOneMinInMSec);
     mTimer.start();
     }
+
+    // negative timer value tells to stop updates
+    else
+    {
+        if(isNetworkRequestActive())
+        {mNetworkReply->abort();}
+    }
 }
 
 void FeedProfile::handleTimeOut()
 {
     qDebug()<<__FUNCTION__;
-
+    qDebug()<<mSubscription.sourceUrl();
     // ignore
     if(isNetworkRequestActive()) { return; }
 
     // Fetch feed from source
-    if(mNetworkManDestroyed)
-    {
-    mNetworkManager = new QNetworkAccessManager(this);
-    mNetworkManDestroyed = false;
-    }
+    mNetworkManager = new QNetworkAccessManager(this); mNetManCreatedCount++;
     connect(mNetworkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
     connect(mNetworkManager,SIGNAL(destroyed(QObject*)),this,SLOT(handleNetworkMgrDestroyed(QObject*)));
-    mNetworkManager->get(QNetworkRequest(mSubscription.sourceUrl()));
+    mNetworkReply = mNetworkManager->get(QNetworkRequest(mSubscription.sourceUrl()));
     setNetworkRequestActive(true);
 }
 
@@ -93,6 +103,7 @@ void FeedProfile::replyFinished(QNetworkReply *reply)
     QMutex m;
     m.lock();
         setNetworkRequestActive(false);
+        qDebug()<<reply->request().url();
             // No error
             if(QNetworkReply::NoError == reply->error())
             {
@@ -115,7 +126,7 @@ void FeedProfile::replyFinished(QNetworkReply *reply)
 
 void FeedProfile::handleContent(QByteArray content)
 {
-    qDebug()<<__FUNCTION__;
+  qDebug()<<__FUNCTION__;
     // valid content
     if(content.size())
     {
@@ -175,7 +186,6 @@ void FeedProfile::handleContent(QByteArray content)
             }
 
      }
-qDebug()<<"leaving "<<__FUNCTION__;
 }
 
 QString FeedProfile::feedFileName()
@@ -192,11 +202,13 @@ void FeedProfile::handleNetworkMgrDestroyed(QObject *obj)
     qDebug()<<__FUNCTION__;
     QMutex m;
     m.lock();
+    mNetManCreatedCount--;
+    qDebug()<<"deleted count "<<mNetManCreatedCount;
+
         if(obj)
         {
             obj->objectName();
         }
-        mNetworkManDestroyed = true;
     m.unlock();
 }
 
