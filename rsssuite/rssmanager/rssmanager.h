@@ -39,10 +39,10 @@ public:
     void addSubscription(FeedSubscription newSubscription);
     bool changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
     RSSParser* parser(QUrl sourceUrl);
-
+    bool isFeedValid(QUrl sourceUrl);
+    void stop(QUrl sourceUrl);
+    void restart(QUrl sourceUrl);
 // TODO: add stop updates support
-//    void stopUpdates(QUrl sourceUrl);
-//    void stopAllUpdates();
 
     bool removeSubscription(QUrl sourceUrl);
     FeedSubscription subscription(QUrl sourceUrl);

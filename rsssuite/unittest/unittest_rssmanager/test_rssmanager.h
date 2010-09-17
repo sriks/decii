@@ -26,6 +26,8 @@ private slots:
     void testRemoveSubscriptions();
     void testUpdate();
     void testUpdateAll();
+    void testStop();
+    void testRestart();
     void testAll();
 
 private:
