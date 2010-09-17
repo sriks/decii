@@ -32,6 +32,7 @@ RSSParser::RSSParser(QObject *parent) :
     QObject(parent)
 {
     m_xmlSource = NULL;
+    m_IsError = false;
 }
 
 RSSParser::~RSSParser()
@@ -71,6 +72,7 @@ bool RSSParser::setSourceFileName(QString sourceFileName)
 
 QString RSSParser::executeQuery(const QString& aQuery)
 {
+    m_IsError = false;
     m_xmlQuery.setQuery(aQuery);
     QString result = QString();
 
@@ -81,6 +83,7 @@ QString RSSParser::executeQuery(const QString& aQuery)
 
     else
     {
+        m_IsError = true;
         qWarning()<<__FUNCTION__<<" invalid query \n"<<aQuery;
     }
     return result;
@@ -88,6 +91,7 @@ QString RSSParser::executeQuery(const QString& aQuery)
 
 QStringList RSSParser::executeQueryAsList(const QString& aQuery)
 {
+    m_IsError = false;
     m_xmlQuery.setQuery(aQuery);
     QStringList result;
     result.clear();
@@ -99,6 +103,7 @@ QStringList RSSParser::executeQueryAsList(const QString& aQuery)
 
     else
     {
+        m_IsError = true;
         qWarning()<<__FUNCTION__<<" invalid query \n"<<aQuery;
     }
     return result;
