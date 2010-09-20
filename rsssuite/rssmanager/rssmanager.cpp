@@ -84,18 +84,26 @@ void RSSManager::addSubscription(FeedSubscription newSubscription)
 
 bool RSSManager::changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins)
 {
+    qDebug()<<__FUNCTION__;
     if(isFeedValid(sourceUrl))
     {
-        mFeedProfiles[sourceUrl.toString()]->update();;
+        mFeedProfiles[sourceUrl.toString()]->updateTimer(newUpdateIntervalInMins);
         return true;
     }
+    qWarning()<<"Invalid feed "<<sourceUrl;
 return false;
 }
 
 bool RSSManager::removeSubscription(QUrl sourceUrl)
 {
+    if(isFeedValid(sourceUrl))
+    {
     mFeedProfiles[sourceUrl.toString()]->deleteLater();
-    return (mFeedProfiles.remove(sourceUrl.toString()) ? (true) : (false) );
+    mFeedProfiles.remove(sourceUrl.toString());
+    return true;
+    }
+// return that no such feed exists
+return false;
 }
 
 FeedSubscription RSSManager::subscription(QUrl sourceUrl)
@@ -117,7 +125,7 @@ QList<FeedSubscription> RSSManager::subscriptions()
     return subscriptionList;
 }
 
-QList<QUrl> RSSManager::subscriptionUrlList()
+QList<QUrl> RSSManager::subscriptionUrls()
 {
     QList<QUrl> urlList;
     QList<FeedProfile*>  profiles = mFeedProfiles.values();
@@ -156,15 +164,50 @@ RSSParser* RSSManager::parser(QUrl sourceUrl)
     return parser;
 }
 
-void RSSManager::stop(QUrl sourceUrl)
+bool RSSManager::stop(QUrl sourceUrl)
 {
-    changeSubscriptionInterval(sourceUrl,-1);
+    return changeSubscriptionInterval(sourceUrl,-1);
 }
 
-void RSSManager::restart(QUrl sourceUrl)
+void RSSManager::stopAll()
 {
-    changeSubscriptionInterval(sourceUrl,
-                               mFeedProfiles[sourceUrl.toString()]->subscription().updateInterval());
+    QList<QString> keys = mFeedProfiles.uniqueKeys();
+    for(int i=0;i<keys.count();i++)
+    {
+        stop(QUrl(keys[i]));
+    }
+}
+
+bool RSSManager::start(QUrl sourceUrl)
+{
+    // TODO: Feed validation is done two times. Optimize it.
+    qDebug()<<__FUNCTION__;
+    qDebug()<<sourceUrl.toString();
+    if(isFeedValid(sourceUrl))
+    {
+    // ignore if it is already active
+    if(!mFeedProfiles[sourceUrl.toString()]->isActive())
+        {
+        bool stat = changeSubscriptionInterval(sourceUrl,
+                                   mFeedProfiles[sourceUrl.toString()]->subscription().updateInterval());
+        if(stat)
+        {
+        update(sourceUrl.toString());
+        }
+        return stat;
+        }
+    qWarning()<<"Starting an active feed "<< sourceUrl;
+    }
+    return false;
+}
+
+void RSSManager::startAll()
+{
+    QList<QString> keys = mFeedProfiles.uniqueKeys();
+    for(int i=0;i<keys.count();i++)
+    {
+        start(QUrl(keys[i]));
+    }
 }
 
 bool RSSManager::isFeedValid(QUrl sourceUrl)
