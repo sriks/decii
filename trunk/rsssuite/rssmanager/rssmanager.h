@@ -1,3 +1,4 @@
+// author: srikanthsombhatla@gmail.com
 #ifndef RSSMANAGER_H
 #define RSSMANAGER_H
 #include <QObject>
@@ -12,9 +13,9 @@
 class FeedSubscription
 {
 public:
-    explicit FeedSubscription(QUrl source,int updateIntervalInMins = 60)
+    explicit FeedSubscription(QUrl sourceUrl,int updateIntervalInMins = 60)
     {
-        mSourceUrl = source;
+        mSourceUrl = sourceUrl;
         mUpdateInterval = updateIntervalInMins;
     }
 
@@ -36,20 +37,37 @@ class RSSManager : public QObject
 public:
     explicit RSSManager(QObject *parent = 0);
     ~RSSManager();
+
+    // adds a subscription.
+    // This doest initiate update cycle.
+    // Client should call start()
     void addSubscription(FeedSubscription newSubscription);
+
+    // This changed subscription interval to new interval.
+    // This does not initiate a fetch on feed.
+    // Note: If a negative value is supplied, subscription is stopped.
     bool changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
     RSSParser* parser(QUrl sourceUrl);
     bool isFeedValid(QUrl sourceUrl);
-    void stop(QUrl sourceUrl);
-    void restart(QUrl sourceUrl);
-// TODO: add stop updates support
+
+    // Start subscription in defined intervals
+    // It has no effect if called on a subscription which is already started or
+    // a subscription which doest have a valid interval
+    bool start(QUrl sourceUrl);
+    void startAll();
+    // stop fetching feeds
+    // This has no effect if a feed is already fetched and being processed.
+    bool stop(QUrl sourceUrl);
+    void stopAll();
 
     bool removeSubscription(QUrl sourceUrl);
     FeedSubscription subscription(QUrl sourceUrl);
     QList<FeedSubscription> subscriptions();
-    QList<QUrl> subscriptionUrlList();
+    QList<QUrl> subscriptionUrls();
     int subscriptionCount(){return mFeedProfiles.count();}
 
+    // on demand update
+    // updates even if no interval is set
     void updateAll();
     void update(QUrl sourceUrl);
 

@@ -11,6 +11,8 @@
 #include "feedprofile.h"
 #include "rssparser.h"
 
+//#define START_FETCH_WHEN_CREATED;
+
 const int KOneMinInMSec = 60000;
 QMutex mutex;
 
@@ -23,10 +25,11 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
     mNetManCreatedCount = 0; // test only
     setNetworkRequestActive(false);
     connect(&mTimer,SIGNAL(timeout()),this,SLOT(handleTimeOut()));
-    updateTimer(mSubscription.updateInterval());
+#ifdef START_FETCH_WHEN_CREATED
     // start initial fetch
     if(mSubscription.updateInterval())
     { update(); }
+#endif
 }
 
 FeedProfile::~FeedProfile()
@@ -51,11 +54,10 @@ RSSParser* FeedProfile::parser()
 
 void FeedProfile::update()
 {
-    // ignore this if a request is already active
+    // Ignore if a request is already active
     if(!isNetworkRequestActive())
     {
-        updateTimer(mSubscription.updateInterval());
-
+        // This is an on demand update, so dont restart the timer.
         // We have to update the feed even if update interval is negative.
         // A client may just need to update on demand and not in periodic interval.
         handleTimeOut();
@@ -175,6 +177,8 @@ void FeedProfile::handleContent(QByteArray content)
                 {
                     // XQuery numbering starts with 1, so we can send count as such
                     mLatestElementTitle = titles[0];
+                    // emit this signal even if there is no active timer.
+                    // some clients may need update on demand.
                     emit updateAvailable(mSubscription.sourceUrl(),newItemsCount);
                 }
             }

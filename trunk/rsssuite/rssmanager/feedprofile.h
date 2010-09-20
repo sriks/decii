@@ -32,7 +32,7 @@ signals:
 public slots:
     FeedSubscription subscription(){return mSubscription;}
 
-    /** \param mins a value less than zero stops the timer
+    /** \param value less than zero stops the timer and all updates
      **/
     void updateTimer(int mins);
     bool isActive(){return mTimer.isActive();}
