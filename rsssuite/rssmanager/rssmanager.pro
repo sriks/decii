@@ -19,25 +19,21 @@ HEADERS += \
     rssmanager.h \
     feedprofile.h
 
-# rssparser dependency
-QT += xmlpatterns
-INCLUDEPATH += ../rssparser
-win32: {
-    LIBS += -Lc:/mylibs
-    LIBS += -lrssparser
-}
-unix: {
-    LIBS += -L/usr/lib
-    LIBS += -lrssparser
-}
-
-# Destination
-win32:{
-DESTDIR = c:/mylibs
-}
-
-unix:{
+win32:DESTDIR = c:/decii/lib
 # ensure the specified path has write permission
 # sudo chmod 777 <destdir_path>
-DESTDIR = /usr/lib
-}
+unix:DESTDIR = /home/decii/lib
+# copy header to a common location
+win32:header.path = c:/decii/include
+unix:header.path = /home/decii/include
+header.files = rssmanager.h
+INSTALLS += header
+build_pass:ALL_DEPS += install_header
+
+# rssparser dependency
+QT += xmlpatterns
+win32:INCLUDEPATH += c:/decii/include
+unix:INCLUDEPATH += /home/decii/include
+win32:LIBS += -Lc:/decii/lib
+unix:LIBS += -L/home/decii/lib
+LIBS += -lrssparser
