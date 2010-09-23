@@ -37,15 +37,7 @@ public:
 signals:
 
 public slots:
-    /**
-      returns true if it is a valid parser
-    **/
     Q_INVOKABLE bool isValid();
-
-    /**
-      set source for parser
-    **/
-
     Q_INVOKABLE void setSource(QIODevice* xmlSource);
     Q_INVOKABLE bool setSourceFileName(QString sourceFileName);
     Q_INVOKABLE QUrl imageUrl();
