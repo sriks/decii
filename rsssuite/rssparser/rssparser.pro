@@ -17,9 +17,10 @@ win32:DESTDIR = c:/decii/lib
 # ensure the specified path has write permission
 # sudo chmod 777 <destdir_path>
 unix:DESTDIR = /home/decii/lib
+
 # copy header to a common location
 win32:header.path = c:/decii/include
-unix:header.path = /home/decii/include
-header.files = rssparser.h
+unix:header.path=/home/decii/inc
+unix:header.files= $PWD/rssparser.h
 INSTALLS += header
 build_pass:ALL_DEPS += install_header

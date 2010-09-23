@@ -1,4 +1,3 @@
-
 #include <QIODevice>
 #include <QUrl>
 #include <QMetaEnum>
@@ -28,6 +27,45 @@ const QString KXqAllItemElementsQuery("for $root in doc($xmlSource)//channel/ite
 const QString KXqItemCategories("let $category := doc($xmlSource)//channel/item[%1]/*:category for $categorylist in $category return string($categorylist)");
 const QString KXmlSource("xmlSource");
 
+
+/**
+  RSSParser is a special xml parser for RSS feeds. It is based on XQuery as backend. It uses QIODevice to look at the xml source.
+  Hence it is very light weight as it does not own the data source. Using RSSParser requires some basic knowledge of RSS elements.
+
+  \code
+
+    QRSSParser parser;
+    QFile sourceFile("rss.xml"); // file in which rss feed is collected/stored.
+    if(source.open(QIODevice::ReadOnly))
+    {
+       // set source
+       parser.setSource(sourceFile);
+
+       if(parser.isValid())
+       {
+       // get name of feed
+       QString channelname = parser.channelElement(RSSParser::title);
+
+       // get count of items
+       int count = parser.itemCount();
+
+       // get title of first item in feed
+       QString title = parser.itemElement(1,RSSParser::title); // XQuery numbering starts from 1
+       }
+    }
+    sourceFile.close();
+
+  \endcode
+
+  Parsing is done on two different elements namely Channel and Item. Evert RSS feed has one and only one channel in which there
+  can be any or no items. All possible RSS Elements are provided in \enum RSSElement enum. Two methods namely \fn channelElement() and
+  \fn itemElement() are used to retieve channel and item elements respectively.
+
+  Some special methods are provided seperately for querying some channel and item elements like \fn itemCount()
+  **/
+
+
+
 RSSParser::RSSParser(QObject *parent) :
     QObject(parent)
 {
@@ -40,6 +78,11 @@ RSSParser::~RSSParser()
     qDebug()<<__FUNCTION__;
 }
 
+/**
+  \brief Validates parser.
+  Parser is valid if a valid and readable QIODevice is set as source.
+  \return true if valid
+  **/
 bool RSSParser::isValid()
 {
     if(m_xmlSource)
