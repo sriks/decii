@@ -67,11 +67,18 @@ QString DGraphicsWidget::titleText()
 
 void DGraphicsWidget::addContentLayout(QGraphicsLayoutItem* contentLayout)
 {
+
     // content is between top and botton layouts
     QGraphicsAnchor* anchor = mAnchorLayout->addAnchor(contentLayout,Qt::AnchorTop,
                                                        mTitleLayout,Qt::AnchorBottom);
     anchor = mAnchorLayout->addAnchor(contentLayout,Qt::AnchorBottom,
                                       mCommandLayout,Qt::AnchorTop);
+    mAnchorLayout->addAnchor(contentLayout,Qt::AnchorRight,
+                             mAnchorLayout,Qt::AnchorRight);
+    mAnchorLayout->addAnchor(contentLayout,Qt::AnchorLeft,
+                             mAnchorLayout,Qt::AnchorLeft);
+
+
 }
 
 void DGraphicsWidget::addCommands()
