@@ -21,28 +21,17 @@ SOURCES += main.cpp \
 HEADERS += \
     test_rssmanager.h
 
-# rssparser dependency start
+# rsssuite dependency start
+# Any client willing to use rsssuite can copy the following lines in .pro
+#####################################################
 QT += xmlpatterns
-INCLUDEPATH += ../../rssparser
 win32: {
-    LIBS += -Lc:/mylibs
+    INCLUDEPATH += c:/decii/include
+    LIBS += -Lc:/decii/lib }
+unix: { # unix support is experimental
+    INCLUDEPATH += /home/decii/include
+    LIBS += -L/usr/lib }
+
     LIBS += -lrssparser
-}
-unix: {
-    LIBS += -L/usr/lib
-    LIBS += -lrssparser
-}
-
-# rssmanager dependency start
-QT += xmlpatterns
-INCLUDEPATH += ../../rssmanager
-win32: {
-    LIBS += -Lc:/mylibs
     LIBS += -lrssmanager
-}
-unix: {
-    LIBS += -L/usr/lib
-    LIBS += -lrssmanager
-}
-
-
+#####################################################
