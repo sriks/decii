@@ -35,8 +35,7 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
 FeedProfile::~FeedProfile()
 {
     mTimer.stop();
-    delete mNetworkManager;
-    mNetworkManager = NULL;
+    mNetworkManager->deleteLater();;
     qDebug()<<"Netman creation mark "<<mNetManCreatedCount;
 }
 

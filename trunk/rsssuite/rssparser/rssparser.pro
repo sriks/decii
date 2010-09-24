@@ -20,7 +20,8 @@ unix:DESTDIR = /home/decii/lib
 
 # copy header to a common location
 win32:header.path = c:/decii/include
+win32:header.files = rssparser.h
 unix:header.path=/home/decii/inc
-unix:header.files= $PWD/rssparser.h
+unix:header.files= $PWD/rssparser.h #FIXME: this has problems in unix make
 INSTALLS += header
 build_pass:ALL_DEPS += install_header
