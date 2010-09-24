@@ -25,7 +25,7 @@ win32:DESTDIR = c:/decii/lib
 unix:DESTDIR = /home/decii/lib
 # copy header to a common location
 win32:header.path = c:/decii/include
-unix:header.path = /home/decii/include
+unix:header.path = /home/decii/include # unix is experimental support
 header.files = rssmanager.h
 INSTALLS += header
 build_pass:ALL_DEPS += install_header

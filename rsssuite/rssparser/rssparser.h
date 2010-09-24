@@ -15,6 +15,7 @@ class RSSParser : public QObject
 public:
     explicit RSSParser(QObject *parent = 0);
     ~RSSParser();
+    /*! Enum describing different RSS elements.*/
     enum RSSElement
     {
         title,
@@ -43,20 +44,12 @@ public slots:
     Q_INVOKABLE QUrl imageUrl();
     Q_INVOKABLE QString channelElement(RSSElement aElement);
     Q_INVOKABLE QString itemElement(int itemIndex,RSSElement aElement);
-    // queries aElement from all items, like titles of all items
     Q_INVOKABLE QStringList itemElements(RSSElement aElement);
-    // returns list of categories for a item identified by itemIndex
     Q_INVOKABLE QStringList category(int itemIndex);
-    // convinience method to query all categories
-    // returns a list of stringlist of categories for all items.
-    // if an item doest have a category, stringlist in its index will be empty.
     Q_INVOKABLE QList<QStringList> categories();
     Q_INVOKABLE int itemCount();
+    bool isError();
     // TODO: add method to query if an element exists
-
-    // Returns if the latest call resulted error
-    // error is not persistent across calls
-    bool isError(){return m_IsError;}
 
 private slots:
     QString executeQuery(const QString& aQuery);

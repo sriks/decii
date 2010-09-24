@@ -29,6 +29,7 @@ void test_rssparser::test_setSource()
     QFile sourceFile(":/feed/testfeed.htm");
     if(sourceFile.open(QIODevice::ReadOnly))
     {
+
         // Read content to buffer
         mBuffer->setData(sourceFile.readAll());
         // Open buffer in read mode
