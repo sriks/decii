@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     mTray = new QSystemTrayIcon(this);
+    mTray->setContextMenu(new QMenu(this));
     mRSSManager = new RSSManager(this);
     connect(mRSSManager,SIGNAL(updateAvailable(QUrl,int)),this,SLOT(handleUpdateAvailable(QUrl,int)));
     connect(ui->add,SIGNAL(clicked()),this,SLOT(addFeedUrl()));
@@ -57,7 +58,8 @@ void MainWindow::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
 
             QString title = parser->channelElement(RSSParser::title);
             mTray->setToolTip("Retro");
-            mTray->showMessage("hi","hello!!");
+            qDebug()<<"Im showing tray msg";
+            mTray->showMessage("kill","bill");
         }
     }
 }
