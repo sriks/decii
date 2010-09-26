@@ -8,20 +8,20 @@ TARGET = rssparser
 DEPENDPATH += .
 INCLUDEPATH += .
 QT      += core xmlpatterns
-
-# Input
 HEADERS += rssparser.h
 SOURCES += rssparser.cpp
 
-win32:DESTDIR = c:/decii/lib
-# ensure the specified path has write permission
-# sudo chmod 777 <destdir_path>
-unix:DESTDIR = /home/decii/lib
-
-# copy header to a common location
-win32:header.path = c:/decii/include
-win32:header.files = rssparser.h
-unix:header.path=/home/decii/inc
-unix:header.files= $PWD/rssparser.h #FIXME: this has problems in unix make
-INSTALLS += header
-build_pass:ALL_DEPS += install_header
+# In linux ensure the specified path has write permission
+# sudo chmod 777 /usr/lib
+# sudo chmod 777 /usr/include
+win32:{DESTDIR = c:/decii/lib
+headers.path = c:/decii/include}
+unix:{DESTDIR = /usr/lib
+headers.path = /usr/include}
+headers.files = rssparser.h
+INSTALLS += headers
+PRE_TARGETDEPS += install_headers
+# copying dependent files in unix has a different approach
+# build_pass is not working
+# refer http://paulf.free.fr/undocumented_qmake.html
+# use  build_pass:ALL_DEPS += install_headers in win32 in case of issues

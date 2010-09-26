@@ -19,21 +19,28 @@ HEADERS += \
     rssmanager.h \
     feedprofile.h
 
-win32:DESTDIR = c:/decii/lib
-# ensure the specified path has write permission
-# sudo chmod 777 <destdir_path>
-unix:DESTDIR = /home/decii/lib
-# copy header to a common location
-win32:header.path = c:/decii/include
-unix:header.path = /home/decii/include # unix is experimental support
-header.files = rssmanager.h
-INSTALLS += header
-build_pass:ALL_DEPS += install_header
+# rsssuite dependency start
+# Any client willing to use rsssuite can copy the following lines in .pro
+#####################################################
+# For unix systems, dlls and headers are copied to standard /usr/lib and /usr/include respectively
+# hence they need not be mentioned in unix targets.
 
-# rssparser dependency
 QT += xmlpatterns
-win32:INCLUDEPATH += c:/decii/include
-unix:INCLUDEPATH += /home/decii/include
-win32:LIBS += -Lc:/decii/lib
-unix:LIBS += -L/home/decii/lib
-LIBS += -lrssparser
+win32: {
+    INCLUDEPATH += c:/decii/include
+    LIBS += -Lc:/decii/lib
+        }
+    LIBS += -lrssparser
+#####################################################
+
+# In linux ensure the specified path has write permission
+# sudo chmod 777 /usr/lib
+# sudo chmod 777 /usr/include
+win32:{DLLDESTDIR = c:/decii/lib
+headers.path = c:/decii/include}
+unix:DESTDIR = /usr/lib
+unix:headers.path = /usr/include
+headers.files = rssmanager.h
+INSTALLS += headers
+PRE_TARGETDEPS += install_headers
+

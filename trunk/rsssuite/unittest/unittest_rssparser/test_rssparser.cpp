@@ -26,7 +26,7 @@ void test_rssparser::cleanupTestCase()
 
 void test_rssparser::test_setSource()
 {
-    QFile sourceFile(":/feed/testfeed.htm");
+    QFile sourceFile(":/feed/testfeed.xhtml");
     if(sourceFile.open(QIODevice::ReadOnly))
     {
 
