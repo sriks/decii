@@ -29,7 +29,11 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLineEdit" name="urleditor"/>
+           <widget class="QLineEdit" name="urleditor">
+            <property name="text">
+             <string>http://mobile.engadget.com/rss.xml</string>
+            </property>
+           </widget>
           </item>
           <item row="1" column="1">
            <widget class="QPushButton" name="add">
@@ -87,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>672</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
