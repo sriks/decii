@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     QGraphicsLinearLayout layout(Qt::Vertical);
     DGraphicsTextItem textitem("This is a nice text to show !!!!!! And let me check how it works with really big text!");
     layout.addItem(&textitem);
-    textitem.setMaximumWidth(w.size().width());
+    textitem.textItem()->setTextWidth(w.rect().width() - 5);
     w.addContentLayout(&layout);
 
     scene.addItem(&w);

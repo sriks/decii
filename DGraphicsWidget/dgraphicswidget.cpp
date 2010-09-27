@@ -4,6 +4,7 @@
 #include <QGraphicsAnchorLayout>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsTextItem>
+#include <QApplication>
 #include "dgraphicswidget.h"
 #include "dgraphicstextitem.h"
 #include "dgraphicspixmapitem.h"
@@ -17,21 +18,22 @@ DGraphicsWidget::DGraphicsWidget(QGraphicsItem* parent)
     mAnchorLayout->setSpacing(0);
     setLayout(mAnchorLayout);
     mTitleLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-
     mCommandLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-    mCommandLayout->setMaximumHeight(10);
+
     // add to anchor layout
     QGraphicsAnchor* anchor;
     anchor = mAnchorLayout->addAnchor(mTitleLayout,Qt::AnchorTop,
                                       mAnchorLayout,Qt::AnchorTop);
 
-    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorBottom,
-                                      mAnchorLayout,Qt::AnchorBottom);
+    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorTop,
+                                      mAnchorLayout,Qt::AnchorTop);
+
+    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorRight,
+                                      mAnchorLayout,Qt::AnchorRight);
 
     mTextItem = new DGraphicsTextItem(QString(),this);
-    mTextItem->textItem()->setPlainText("Hi!");
-    mTitleLayout->addItem(mTextItem);
-    addCommands();
+   mTitleLayout->addItem(mTextItem);
+    addDefaultActions();
 }
 
 DGraphicsWidget::~DGraphicsWidget()
@@ -71,21 +73,19 @@ void DGraphicsWidget::addContentLayout(QGraphicsLayoutItem* contentLayout)
     // content is between top and botton layouts
     QGraphicsAnchor* anchor = mAnchorLayout->addAnchor(contentLayout,Qt::AnchorTop,
                                                        mTitleLayout,Qt::AnchorBottom);
-    anchor = mAnchorLayout->addAnchor(contentLayout,Qt::AnchorBottom,
-                                      mCommandLayout,Qt::AnchorTop);
-    mAnchorLayout->addAnchor(contentLayout,Qt::AnchorRight,
-                             mAnchorLayout,Qt::AnchorRight);
-    mAnchorLayout->addAnchor(contentLayout,Qt::AnchorLeft,
-                             mAnchorLayout,Qt::AnchorLeft);
+    anchor->setSpacing(0.1);
+//    mAnchorLayout->addAnchor(contentLayout,Qt::AnchorRight,
+//                             mAnchorLayout,Qt::AnchorRight);
+//    mAnchorLayout->addAnchor(contentLayout,Qt::AnchorLeft,
+//                             mAnchorLayout,Qt::AnchorLeft);
 
 
 }
 
-void DGraphicsWidget::addCommands()
+void DGraphicsWidget::addDefaultActions()
 {
-    QPixmap pixmap(":/resource/images/close.png");
-    qDebug()<<"pixmap is null "<<pixmap.isNull();
-    DGraphicsPixmapItem* pixmapitem = new DGraphicsPixmapItem(pixmap,this);
-    mCommandLayout->addItem(pixmapitem);
+    DGraphicsPixmapItem* closeCommandIcon = new DGraphicsPixmapItem(QPixmap(":/resource/images/close.png"),this);
+    connect(closeCommandIcon,SIGNAL(triggered()),this,SLOT(close()));
+    mCommandLayout->addItem(closeCommandIcon);
 }
 

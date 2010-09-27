@@ -1,14 +1,6 @@
 #include <QPainter>
 #include "dgraphicstextitem.h"
 
-//DGraphicsTextItem::DGraphicsTextItem(QGraphicsTextItem* textItem,
-//                                     QGraphicsItem* parent)
-//                  :QGraphicsWidget(parent),
-//                   mTextItem(textItem)
-//{
-//mTextItem->setParent(this);
-//}
-
 DGraphicsTextItem::DGraphicsTextItem(QString text, QGraphicsItem* parent)
                   :QGraphicsWidget(parent)
 {

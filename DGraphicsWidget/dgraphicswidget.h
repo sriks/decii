@@ -24,7 +24,7 @@ private:
                const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
 private:
-    void addCommands();
+    void addDefaultActions();
 
 private:
     QColor mBackgroundColor;

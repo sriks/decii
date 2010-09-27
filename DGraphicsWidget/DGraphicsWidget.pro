@@ -11,9 +11,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        dgraphicswidget.cpp \
     dgraphicstextitem.cpp \
-    dgraphicspixmapitem.cpp
+    dgraphicspixmapitem.cpp \
+    dgraphicswidget.cpp
 
 HEADERS  += dgraphicswidget.h \
     dgraphicstextitem.h \
