@@ -3,5 +3,6 @@
         <file>images/close.png</file>
         <file>images/help.png</file>
         <file>images/qt.png</file>
+        <file>images/historychannel.jpeg</file>
     </qresource>
 </RCC>
