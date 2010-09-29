@@ -11,13 +11,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    dgraphicstextitem.cpp \
-    dgraphicspixmapitem.cpp \
-    dgraphicswidget.cpp
+    dgraphicstextwidget.cpp \
+    dgraphicspixmapwidget.cpp \
+    dgraphicswidget.cpp \
+    dgraphicstitlewidget.cpp
 
 HEADERS  += dgraphicswidget.h \
-    dgraphicstextitem.h \
-    dgraphicspixmapitem.h
+    dgraphicstextwidget.h \
+    dgraphicspixmapwidget.h \
+    dgraphicstitlewidget.h
 
 RESOURCES += \
     resource.qrc

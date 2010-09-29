@@ -5,19 +5,17 @@
 class QStyleOptionGraphicsItem;
 class QGraphicsAnchorLayout;
 class QGraphicsLinearLayout;
-class DGraphicsTextItem;
+class DGraphicsTitleWidget;
 class DGraphicsWidget : public QGraphicsWidget
 {
     Q_OBJECT
 public:
     DGraphicsWidget(QGraphicsItem*  parent=0);
     ~DGraphicsWidget();
-
     void setTitleText(QString titleText);
-    QString titleText();
-    void setBackgroundColor(QColor color){mBackgroundColor = color;}
-    QColor backgroundColor(){return mBackgroundColor;}
-    void addContentLayout(QGraphicsLayoutItem* contentLayout);
+    void setTitleFont(QFont font);
+    void setTitlePixmap(QPixmap pixmap,bool autoResize = false);
+    void addContent(QGraphicsLayoutItem* content);
 
 private:
     void paint(QPainter *painter,
@@ -25,13 +23,13 @@ private:
                QWidget *widget = 0);
 private:
     void addDefaultActions();
+    void prepareWidget();
+    void prepareTitleWidget();
 
 private:
-    QColor mBackgroundColor;
     QGraphicsAnchorLayout* mAnchorLayout;
-    QGraphicsLinearLayout* mTitleLayout;
     QGraphicsLinearLayout* mCommandLayout;
-    DGraphicsTextItem* mTextItem;
+    DGraphicsTitleWidget* mTitleWidget;
 };
 
 #endif // DGRAPHICSWIDGET_H

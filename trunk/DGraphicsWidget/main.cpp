@@ -5,21 +5,22 @@
 
 #include <QGraphicsLinearLayout>
 #include "dgraphicswidget.h"
-#include "dgraphicstextitem.h"
+#include "dgraphicstextwidget.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QGraphicsScene scene;
     DGraphicsWidget w;
-    w.resize(400,100);
-    w.setTitleText("DWidget Title");
+    w.resize(400,400);
+    w.setTitleText("This day in history");
+    w.setTitlePixmap(QPixmap(":/resource/images/historychannel.jpeg"),true);
 
     QGraphicsLinearLayout layout(Qt::Vertical);
-    DGraphicsTextItem textitem("This is a nice text to show !!!!!! And let me check how it works with really big text!");
+    DGraphicsTextWidget textitem("This is a nice text to show !!!!!! And let me check how it works with really big text!");
     layout.addItem(&textitem);
     textitem.textItem()->setTextWidth(w.rect().width() - 5);
-    w.addContentLayout(&layout);
+    w.addContent(&layout);
 
     scene.addItem(&w);
     QGraphicsView view;
