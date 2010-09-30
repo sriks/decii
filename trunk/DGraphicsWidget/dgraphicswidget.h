@@ -17,6 +17,9 @@ public:
     void setTitlePixmap(QPixmap pixmap,bool autoResize = false);
     void addContent(QGraphicsLayoutItem* content);
 
+signals:
+    void closeButtonClicked();
+
 private:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
