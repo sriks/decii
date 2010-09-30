@@ -11,6 +11,7 @@ class DGraphicsPixmapWidget : public QGraphicsWidget
     Q_OBJECT
 public:
     DGraphicsPixmapWidget(QPixmap pixmap,QGraphicsItem* parent = 0);
+    ~DGraphicsPixmapWidget();
     QGraphicsPixmapItem* pixmapItem(){return mPixmapItem;}
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

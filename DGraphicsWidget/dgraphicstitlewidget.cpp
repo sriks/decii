@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QGraphicsLinearLayout>
 #include "dgraphicstitlewidget.h"
 #include "dgraphicspixmapwidget.h"
@@ -8,12 +9,16 @@ DGraphicsTitleWidget::DGraphicsTitleWidget(QGraphicsItem *parent)
 {
         mTitleText = new DGraphicsTextWidget("",this);
         mTitlePixmap = new DGraphicsPixmapWidget(QPixmap(),this);
-        mLinearLayout = new QGraphicsLinearLayout(Qt::Horizontal,this);
+        mLinearLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+        setLayout(mLinearLayout);
+        setOwnedByLayout(false);
         addItemsToLayout();
+
 }
 
 DGraphicsTitleWidget::~DGraphicsTitleWidget()
 {
+    qDebug()<<__PRETTY_FUNCTION__;
 }
 
 void DGraphicsTitleWidget::setTitleText(QString titleText)

@@ -10,6 +10,12 @@ DGraphicsPixmapWidget::DGraphicsPixmapWidget(QPixmap pixmap,QGraphicsItem* paren
     :QGraphicsWidget(parent)
 {
     mPixmapItem = new QGraphicsPixmapItem(pixmap,this);
+    setOwnedByLayout(false);
+}
+
+DGraphicsPixmapWidget::~DGraphicsPixmapWidget()
+{
+qDebug()<<__PRETTY_FUNCTION__;
 }
 
 void DGraphicsPixmapWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

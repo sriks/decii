@@ -8,6 +8,7 @@ class DGraphicsTextWidget: public QGraphicsWidget
 {
 public:
     DGraphicsTextWidget(QString text=QString(), QGraphicsItem* parent=0);
+    ~DGraphicsTextWidget();
     QGraphicsTextItem* textItem(){return mTextItem;}
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);

@@ -15,17 +15,18 @@ DGraphicsWidget::DGraphicsWidget(QGraphicsItem* parent)
     : QGraphicsWidget(parent)
 {
     prepareWidget();
-    mTitleWidget = new DGraphicsTitleWidget(this);
-    prepareTitleWidget();
-    mAnchorLayout = new QGraphicsAnchorLayout(this);
+//    mTitleWidget = new DGraphicsTitleWidget(this);
+//    prepareTitleWidget();
+    mAnchorLayout = new QGraphicsAnchorLayout;
     mAnchorLayout->setSpacing(0);
     setLayout(mAnchorLayout);
+
     mCommandLayout = new QGraphicsLinearLayout(Qt::Horizontal);
 
     // add to anchor layout
     QGraphicsAnchor* anchor;
-    anchor = mAnchorLayout->addAnchor(mTitleWidget,Qt::AnchorTop,
-                                      mAnchorLayout,Qt::AnchorTop);
+//    anchor = mAnchorLayout->addAnchor(mTitleWidget,Qt::AnchorTop,
+//                                      mAnchorLayout,Qt::AnchorTop);
     anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorTop,
                                       mAnchorLayout,Qt::AnchorTop);
     anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorRight,
@@ -35,7 +36,7 @@ DGraphicsWidget::DGraphicsWidget(QGraphicsItem* parent)
 
 DGraphicsWidget::~DGraphicsWidget()
 {
-
+    qDebug()<<__PRETTY_FUNCTION__;
 }
 
 void DGraphicsWidget::paint(QPainter *painter,
@@ -74,19 +75,18 @@ void DGraphicsWidget::setTitlePixmap(QPixmap pixmap,bool autoResize)
 
 void DGraphicsWidget::addContent(QGraphicsLayoutItem* content)
 {
-    qreal height = ((100 - KTitleHeightFactor)*rect().height())/100;
-    content->setMaximumHeight(height);
-
-    // content is between top and botton layouts
-    QGraphicsAnchor* anchor;
-    anchor = mAnchorLayout->addAnchor(mTitleWidget,Qt::AnchorBottom,
-                             content,Qt::AnchorTop);
+//    qreal height = ((100 - KTitleHeightFactor)*rect().height())/100;
+//    content->setMaximumHeight(height);
+//    // content is between top and botton layouts
+//    QGraphicsAnchor* anchor;
+//    anchor = mAnchorLayout->addAnchor(mTitleWidget,Qt::AnchorBottom,
+//                             content,Qt::AnchorTop);
 }
 
 void DGraphicsWidget::addDefaultActions()
 {
     DGraphicsPixmapWidget* closeCommandIcon = new DGraphicsPixmapWidget(QPixmap(":/resource/images/close.png"),this);
-    connect(closeCommandIcon,SIGNAL(triggered()),this,SLOT(close()));
+    connect(closeCommandIcon,SIGNAL(triggered()),this,SIGNAL(closeButtonClicked()));
     mCommandLayout->addItem(closeCommandIcon);
 }
 

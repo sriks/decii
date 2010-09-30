@@ -14,12 +14,14 @@ SOURCES += main.cpp\
     dgraphicstextwidget.cpp \
     dgraphicspixmapwidget.cpp \
     dgraphicswidget.cpp \
-    dgraphicstitlewidget.cpp
+    dgraphicstitlewidget.cpp \
+    dgraphicsview.cpp
 
 HEADERS  += dgraphicswidget.h \
     dgraphicstextwidget.h \
     dgraphicspixmapwidget.h \
-    dgraphicstitlewidget.h
+    dgraphicstitlewidget.h \
+    dgraphicsview.h
 
 RESOURCES += \
     resource.qrc
