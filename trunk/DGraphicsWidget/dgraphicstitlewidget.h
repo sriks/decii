@@ -19,6 +19,11 @@ public:
     // add resize flag
     void setTitlePixmap(QPixmap titlePixmap,bool autoResize);
 
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget = 0);
+    void resizeEvent(QGraphicsSceneResizeEvent* event);
+
 signals:
     void clicked();
 
@@ -26,10 +31,12 @@ public slots:
 
 private:
     void addItemsToLayout();
+    QPixmap resizePixmap(QPixmap pixmap);
 private:
     DGraphicsTextWidget* mTitleText;
     DGraphicsPixmapWidget* mTitlePixmap;
     QGraphicsLinearLayout* mLinearLayout;
+    bool mTitlePixmapAutoResize;
 };
 
 #endif // DGRAPHICSTITLEWIDGET_H

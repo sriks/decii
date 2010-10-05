@@ -9,16 +9,13 @@ DGraphicsView::DGraphicsView(QWidget* parent)
     mScene = new QGraphicsScene(this);
     mScene->setSceneRect(rect());
     setScene(mScene);
+
     // prepare see through window
-
-
-
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground,true);
     setAttribute(Qt::WA_ContentsPropagated,true);
-//    setAttribute(Qt::WA_OpaquePaintEvent,true);
 
     // transparent background
     QPalette palette = this->palette();
@@ -38,4 +35,9 @@ DGraphicsView::~DGraphicsView()
 void DGraphicsView::resizeEvent(QResizeEvent *event)
 {
     mScene->setSceneRect(rect());
+}
+
+QGraphicsScene* DGraphicsView::scene()
+{
+    return mScene;
 }

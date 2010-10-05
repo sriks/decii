@@ -15,7 +15,7 @@ public:
     QGraphicsPixmapItem* pixmapItem(){return mPixmapItem;}
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
+    void resizeEvent(QGraphicsSceneResizeEvent* event);
 signals:
     void triggered();
 private:

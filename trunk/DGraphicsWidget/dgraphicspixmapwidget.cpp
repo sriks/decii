@@ -20,9 +20,10 @@ qDebug()<<__PRETTY_FUNCTION__;
 
 void DGraphicsPixmapWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    setPreferredSize(mPixmapItem->boundingRect().size());
-//    painter->setPen(QPen(QColor(Qt::red)));
-//    painter->drawRect(rect());
+#ifdef DEBUG_PAINT
+    painter->setPen(QPen(QColor(Qt::yellow)));
+    painter->drawRect(rect());
+#endif
 }
 
 void DGraphicsPixmapWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -31,3 +32,10 @@ void DGraphicsPixmapWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
     event->accept();
     emit triggered();
 }
+
+void DGraphicsPixmapWidget::resizeEvent(QGraphicsSceneResizeEvent* event)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    resize(mPixmapItem->boundingRect().size());
+}
+// eof
