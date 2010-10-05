@@ -16,7 +16,8 @@ public:
     void setTitleFont(QFont font);
     void setTitlePixmap(QPixmap pixmap,bool autoResize = false);
     void addContent(QGraphicsWidget* contentWidget);
-
+    bool glassEffect(){return mGlassEffect;}
+    void setGlassEffect(bool value){mGlassEffect = value;}
 signals:
     void closeButtonClicked();
 private slots:
@@ -48,6 +49,7 @@ private:
     void prepareContentWidget(QGraphicsWidget* content);
 
 private:
+    bool mGlassEffect;
     QGraphicsAnchorLayout* mAnchorLayout;
     QGraphicsLinearLayout* mTitleLayout;
     QGraphicsLinearLayout* mCommandLayout;
