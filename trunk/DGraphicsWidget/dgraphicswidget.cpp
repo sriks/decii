@@ -14,7 +14,8 @@ const int KTitleHeightPercentage = 25;
 const int KContentHeightPercenrage = 100 - KTitleHeightPercentage;
 
 DGraphicsWidget::DGraphicsWidget(QGraphicsItem* parent)
-    : QGraphicsWidget(parent)
+    : QGraphicsWidget(parent),
+      mGlassEffect(false)
 {
     mContentWidget = NULL;
     mTitleWidget = NULL;
@@ -61,13 +62,43 @@ void DGraphicsWidget::paint(QPainter *painter,
     paintPath.addRoundedRect(rect(),roundness,roundness);
     painter->setRenderHints(QPainter::Antialiasing|QPainter::TextAntialiasing);
     QColor baseColor = palette().color(QPalette::Base);
-    QLinearGradient linearGradient(QPointF(rect().width()/2,0),
-                                   QPointF(rect().width()/2,rect().height()));
-    linearGradient.setSpread(QGradient::ReflectSpread);
-    linearGradient.setColorAt(0,baseColor.lighter(165));
-    linearGradient.setColorAt(0.6,baseColor.lighter(110));
-    linearGradient.setColorAt(1,baseColor);
-    painter->fillPath(paintPath,QBrush(linearGradient));
+
+    if(glassEffect())
+    {
+    // Save painter state as we are about to change it
+    painter->save();
+
+    // Create base gradient
+    QLinearGradient gradient(0, 0, 0, rect().height());
+    gradient.setSpread(QGradient::ReflectSpread);
+    gradient.setColorAt(0.0, QColor(Qt::gray));
+    gradient.setColorAt(0.6, QColor(Qt::black));
+    QBrush brush(gradient);
+    painter->setBrush(brush);
+    painter->fillPath(paintPath,brush);
+
+    // glass highligh
+    painter->setBrush(QBrush(Qt::gray));
+    painter->setPen(QPen(QBrush(Qt::white), 0.1));
+    painter->setOpacity(0.30);
+
+//    int startAngle = 30 * 16;
+//    int spanAngle = 120 * 16;
+    painter->drawRect(1,1,rect().width()-2,rect().height()/2);
+    // restore painter to last saved state
+    painter->restore();
+    }
+
+    else
+    {
+        QLinearGradient linearGradient(QPointF(rect().width()/2,0),
+                                       QPointF(rect().width()/2,rect().height()));
+        linearGradient.setSpread(QGradient::ReflectSpread);
+        linearGradient.setColorAt(0,baseColor.lighter(165));
+        linearGradient.setColorAt(0.6,baseColor.lighter(110));
+        linearGradient.setColorAt(1,baseColor);
+        painter->fillPath(paintPath,QBrush(linearGradient));
+    }
 }
 
 void DGraphicsWidget::setTitleText(QString titleText)
