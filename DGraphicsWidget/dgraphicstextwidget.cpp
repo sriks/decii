@@ -1,5 +1,6 @@
 #include <QPainter>
 #include <QDebug>
+#include <QWidget>
 #include "dgraphicstextwidget.h"
 
 DGraphicsTextWidget::DGraphicsTextWidget(QString text, QGraphicsItem* parent)
@@ -16,6 +17,14 @@ qDebug()<<__PRETTY_FUNCTION__;
 
 void DGraphicsTextWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-//    painter->setPen(QPen(QColor(Qt::white)));
-//    painter->drawRect(rect());
+#ifdef DEBUG_PAINT
+    painter->setPen(QPen(QColor(Qt::red)));
+    painter->drawRect(this->rect());
+#endif
+}
+
+void DGraphicsTextWidget::resizeEvent(QGraphicsSceneResizeEvent* event)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    mTextItem->setTextWidth(rect().width());
 }

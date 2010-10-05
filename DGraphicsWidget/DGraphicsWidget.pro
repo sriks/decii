@@ -21,7 +21,8 @@ HEADERS  += dgraphicswidget.h \
     dgraphicstextwidget.h \
     dgraphicspixmapwidget.h \
     dgraphicstitlewidget.h \
-    dgraphicsview.h
+    dgraphicsview.h \
+    common.h
 
 RESOURCES += \
     resource.qrc

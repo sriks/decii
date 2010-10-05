@@ -9,7 +9,7 @@ public:
     DGraphicsView(QWidget* parent=0);
     ~DGraphicsView();
     virtual void resizeEvent(QResizeEvent *event);
-
+    QGraphicsScene* scene();
 private:
     QGraphicsScene* mScene;
 };

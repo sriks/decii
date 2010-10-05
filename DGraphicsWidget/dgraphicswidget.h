@@ -15,24 +15,45 @@ public:
     void setTitleText(QString titleText);
     void setTitleFont(QFont font);
     void setTitlePixmap(QPixmap pixmap,bool autoResize = false);
-    void addContent(QGraphicsLayoutItem* content);
+    void addContent(QGraphicsWidget* contentWidget);
 
 signals:
     void closeButtonClicked();
+private slots:
+    void testResize()
+    {
+        static int i = 0;
+        i++;
+        if(i%2==0)
+        {
+            resize(500,400);
+        }
+        else
+        {
+        resize(200,200);
+        }
+    }
 
 private:
+    void addItemsToLayout();
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
+    void resizeEvent(QGraphicsSceneResizeEvent* event);
+
 private:
     void addDefaultActions();
     void prepareWidget();
     void prepareTitleWidget();
+    void prepareContentWidget(QGraphicsWidget* content);
 
 private:
     QGraphicsAnchorLayout* mAnchorLayout;
+    QGraphicsLinearLayout* mTitleLayout;
     QGraphicsLinearLayout* mCommandLayout;
+
     DGraphicsTitleWidget* mTitleWidget;
+    QGraphicsWidget* mContentWidget; // non owning
 };
 
 #endif // DGRAPHICSWIDGET_H

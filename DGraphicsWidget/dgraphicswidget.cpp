@@ -10,28 +10,40 @@
 #include "dgraphicspixmapwidget.h"
 #include "dgraphicstitlewidget.h"
 
-const int KTitleHeightFactor = 25;
+const int KTitleHeightPercentage = 25;
+const int KContentHeightPercenrage = 100 - KTitleHeightPercentage;
+
 DGraphicsWidget::DGraphicsWidget(QGraphicsItem* parent)
     : QGraphicsWidget(parent)
 {
-    prepareWidget();
-//    mTitleWidget = new DGraphicsTitleWidget(this);
-//    prepareTitleWidget();
+    mContentWidget = NULL;
+    mTitleWidget = NULL;
+    mTitleWidget = new DGraphicsTitleWidget(this);
+    mTitleLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+    mCommandLayout = new QGraphicsLinearLayout(Qt::Horizontal);
     mAnchorLayout = new QGraphicsAnchorLayout;
+    addDefaultActions();
+    prepareWidget();
+    prepareTitleWidget();
+    addItemsToLayout();
+}
+
+void DGraphicsWidget::addItemsToLayout()
+{
+    mTitleLayout->setSpacing(0);
     mAnchorLayout->setSpacing(0);
+    mTitleLayout->addItem(mTitleWidget);
+    mTitleLayout->addItem(mCommandLayout);
+
+    QGraphicsAnchor* anchor;
+    anchor = mAnchorLayout->addAnchor(mTitleLayout,Qt::AnchorTop,
+                                      mAnchorLayout,Qt::AnchorTop);
+////    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorTop,
+////                                      mAnchorLayout,Qt::AnchorTop);
+//    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorRight,
+//                                      mAnchorLayout,Qt::AnchorRight);
     setLayout(mAnchorLayout);
 
-    mCommandLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-
-    // add to anchor layout
-    QGraphicsAnchor* anchor;
-//    anchor = mAnchorLayout->addAnchor(mTitleWidget,Qt::AnchorTop,
-//                                      mAnchorLayout,Qt::AnchorTop);
-    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorTop,
-                                      mAnchorLayout,Qt::AnchorTop);
-    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorRight,
-                                      mAnchorLayout,Qt::AnchorRight);
-    addDefaultActions();
 }
 
 DGraphicsWidget::~DGraphicsWidget()
@@ -43,7 +55,7 @@ void DGraphicsWidget::paint(QPainter *painter,
            const QStyleOptionGraphicsItem *option,
            QWidget *widget)
 {
-    static const int roundness(5);
+    static const int roundness(10);
     // Create a painterpath, this is the region in which we paint
     QPainterPath paintPath;
     paintPath.addRoundedRect(rect(),roundness,roundness);
@@ -73,25 +85,30 @@ void DGraphicsWidget::setTitlePixmap(QPixmap pixmap,bool autoResize)
     mTitleWidget->setTitlePixmap(pixmap,autoResize);
 }
 
-void DGraphicsWidget::addContent(QGraphicsLayoutItem* content)
+void DGraphicsWidget::addContent(QGraphicsWidget* contentWidget)
 {
-//    qreal height = ((100 - KTitleHeightFactor)*rect().height())/100;
-//    content->setMaximumHeight(height);
-//    // content is between top and botton layouts
-//    QGraphicsAnchor* anchor;
-//    anchor = mAnchorLayout->addAnchor(mTitleWidget,Qt::AnchorBottom,
-//                             content,Qt::AnchorTop);
+    prepareContentWidget(contentWidget);
+    QGraphicsAnchor* anchor;
+    anchor = mAnchorLayout->addAnchor(mTitleLayout,Qt::AnchorBottom,
+                                      contentWidget,Qt::AnchorTop);
+    mContentWidget = contentWidget;
 }
+
 
 void DGraphicsWidget::addDefaultActions()
 {
-    DGraphicsPixmapWidget* closeCommandIcon = new DGraphicsPixmapWidget(QPixmap(":/resource/images/close.png"),this);
-    connect(closeCommandIcon,SIGNAL(triggered()),this,SIGNAL(closeButtonClicked()));
+    DGraphicsPixmapWidget* closeCommandIcon =
+            new DGraphicsPixmapWidget(QPixmap(":/resource/images/close.png"));
     mCommandLayout->addItem(closeCommandIcon);
+    connect(closeCommandIcon,SIGNAL(triggered()),this,SIGNAL(closeButtonClicked()));
+
+    connect(closeCommandIcon,SIGNAL(triggered()),this,SLOT(testResize()));
+
 }
 
 void DGraphicsWidget::prepareWidget()
 {
+    resize(400,400);
     setAttribute(Qt::WA_OpaquePaintEvent,true);
     QPalette p = palette();
     p.setColor(QPalette::Base,Qt::blue);
@@ -100,10 +117,32 @@ void DGraphicsWidget::prepareWidget()
 
 void DGraphicsWidget::prepareTitleWidget()
 {
-    qreal height = (KTitleHeightFactor*rect().height())/100;
-    mTitleWidget->resize(rect().width(),height);
-    QFont titleFont("Arial");
-    titleFont.setBold(true);
-    titleFont.setPixelSize(mTitleWidget->rect().height());
-    setTitleFont(titleFont);
+    qreal height = (KTitleHeightPercentage*rect().height())/100;
+    mTitleWidget->setPreferredSize(QSizeF(size().width(),height));
+    QFont font("arial");
+    font.setPixelSize(15);
+    mTitleWidget->textWidget()->textItem()->setFont(font);
 }
+
+void DGraphicsWidget::prepareContentWidget(QGraphicsWidget* content)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    // resize content
+    if(content)
+    {
+    QSizeF newsize(size());
+    qreal height = (KTitleHeightPercentage*newsize.height())/100;
+    content->setPreferredSize(newsize.width(),height);
+    qDebug()<<"content resized";
+    }
+}
+
+void DGraphicsWidget::resizeEvent(QGraphicsSceneResizeEvent* event)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+//    mAnchorLayout->invalidate();
+    prepareTitleWidget();
+    prepareContentWidget(mContentWidget);
+}
+
+// eof
