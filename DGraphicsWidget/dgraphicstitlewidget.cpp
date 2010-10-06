@@ -2,13 +2,14 @@
 #include <QGraphicsLinearLayout>
 #include <QPainter>
 #include <QGraphicsSceneResizeEvent>
+#include <QApplication>
 #include "dgraphicstitlewidget.h"
 #include "dgraphicspixmapwidget.h"
 #include "dgraphicstextwidget.h"
 
 const int KTitlePixmapWidthPercentage = 40;
 const int KTitleTextWidthPercentage = 100-KTitlePixmapWidthPercentage;
-
+//#define DO_PIXMAP_RESIZE;
 DGraphicsTitleWidget::DGraphicsTitleWidget(QGraphicsItem *parent)
                      :QGraphicsWidget(parent)
 {
@@ -29,6 +30,7 @@ DGraphicsTitleWidget::~DGraphicsTitleWidget()
 void DGraphicsTitleWidget::setTitleText(QString titleText)
 {
     mTitleText->textItem()->setPlainText(titleText);
+
 }
 
 void DGraphicsTitleWidget::setTitlePixmap(QPixmap titlePixmap,bool autoResize)
@@ -37,9 +39,13 @@ void DGraphicsTitleWidget::setTitlePixmap(QPixmap titlePixmap,bool autoResize)
     mTitlePixmapAutoResize = autoResize;
     if(mTitlePixmapAutoResize)
     {
+#ifdef DO_PIXMAP_RESIZE
     titlePixmap = resizePixmap(titlePixmap);
+#endif
     }
     mTitlePixmap->pixmapItem()->setPixmap(titlePixmap);
+    mLinearLayout->addItem(mTitlePixmap);
+    mLinearLayout->setStretchFactor(mTitlePixmap,0);
 }
 
 QPixmap DGraphicsTitleWidget::resizePixmap(QPixmap pixmap)
@@ -58,9 +64,8 @@ QPixmap DGraphicsTitleWidget::resizePixmap(QPixmap pixmap)
 void DGraphicsTitleWidget::addItemsToLayout()
 {
     mLinearLayout->setSpacing(0);
-    mLinearLayout->addItem(mTitlePixmap);
-    mLinearLayout->setStretchFactor(mTitlePixmap,0);
     mLinearLayout->addItem(mTitleText);
+    mLinearLayout->setAlignment(mTitleText,Qt::AlignCenter);
 }
 
 void DGraphicsTitleWidget::paint(QPainter *painter,
@@ -78,7 +83,18 @@ void DGraphicsTitleWidget::resizeEvent(QGraphicsSceneResizeEvent* event)
     qDebug()<<__PRETTY_FUNCTION__;
     qDebug()<<"newsize:"<<event->newSize();
     setTitlePixmap(mTitlePixmap->pixmapItem()->pixmap(),mTitlePixmapAutoResize);
+    prepareTitle(event->newSize());
     mLinearLayout->invalidate();
+}
+
+void DGraphicsTitleWidget::prepareTitle(QSizeF size)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    qDebug()<<"using size:"<<size;
+    QFont titlefont = QApplication::font();
+    titlefont.setPixelSize( (30*size.height())/100 );
+    titlefont.setBold(true);
+    mTitleText->textItem()->setFont(titlefont);
 }
 
 // eof

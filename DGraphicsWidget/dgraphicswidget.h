@@ -6,6 +6,7 @@ class QStyleOptionGraphicsItem;
 class QGraphicsAnchorLayout;
 class QGraphicsLinearLayout;
 class DGraphicsTitleWidget;
+class DGraphicsPixmapWidget;
 class DGraphicsWidget : public QGraphicsWidget
 {
     Q_OBJECT
@@ -18,6 +19,10 @@ public:
     void addContent(QGraphicsWidget* contentWidget);
     bool glassEffect(){return mGlassEffect;}
     void setGlassEffect(bool value){mGlassEffect = value;}
+    QSizeF contentWidgetSize();
+    void closeApplicationOnExit(bool value);
+    void setCloseButtonVisible(bool value);
+
 signals:
     void closeButtonClicked();
 private slots:
@@ -53,9 +58,9 @@ private:
     QGraphicsAnchorLayout* mAnchorLayout;
     QGraphicsLinearLayout* mTitleLayout;
     QGraphicsLinearLayout* mCommandLayout;
-
     DGraphicsTitleWidget* mTitleWidget;
     QGraphicsWidget* mContentWidget; // non owning
+    DGraphicsPixmapWidget* mCloseCommandIcon;
 };
 
 #endif // DGRAPHICSWIDGET_H
