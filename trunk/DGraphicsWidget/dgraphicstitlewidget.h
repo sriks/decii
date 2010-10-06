@@ -32,6 +32,7 @@ public slots:
 private:
     void addItemsToLayout();
     QPixmap resizePixmap(QPixmap pixmap);
+    void prepareTitle(QSizeF size);
 private:
     DGraphicsTextWidget* mTitleText;
     DGraphicsPixmapWidget* mTitlePixmap;

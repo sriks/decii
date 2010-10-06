@@ -4,11 +4,25 @@
 #
 #-------------------------------------------------
 
+#TEMPLATE = app
+TEMPLATE = lib
 QT       += core gui
-
 TARGET = DGraphicsWidget
-TEMPLATE = app
 
+contains( TEMPLATE, lib ) {
+    CONFIG  += dll
+    win32:{
+    DESTDIR = c:/decii/lib
+    headers.path = c:/decii/include/dgraphicswidget
+    }
+    headers.files += dgraphicswidget.h
+    headers.files += dgraphicsview.h
+    headers.files += dgraphicspixmapwidget.h
+    headers.files += dgraphicstextwidget.h
+    headers.files += dgraphicswidget.pri
+    INSTALLS += headers
+    PRE_TARGETDEPS += install_headers
+}
 
 SOURCES += main.cpp\
     dgraphicstextwidget.cpp \

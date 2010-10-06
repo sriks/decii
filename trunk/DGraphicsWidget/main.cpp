@@ -28,8 +28,9 @@ int main(int argc, char *argv[])
     DGraphicsView view;
     w->setParent(&view);
     view.scene()->addItem(w);
-//    qDebug()<<"connected closeButtonClicked:"<<
-//            QObject::connect(w,SIGNAL(closeButtonClicked()),&view,SLOT(close()));
+    qDebug()<<"connected closeButtonClicked:"<<
+            QObject::connect(w,SIGNAL(closeButtonClicked()),&view,SLOT(close()));
+
 //#else
 //    QGraphicsScene scene;
 //    scene.addItem(&w);
@@ -41,6 +42,10 @@ int main(int argc, char *argv[])
 //            QObject::connect(&w,SIGNAL(closeButtonClicked()),&a,SLOT(closeAllWindows()));
 
 #endif
+#ifndef Q_OS_SYMBIAN
     view.show();
+#else
+    view.showMaximized();
+#endif
     return a.exec();
 }

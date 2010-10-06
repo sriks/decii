@@ -10,6 +10,7 @@ public:
     ~DGraphicsView();
     virtual void resizeEvent(QResizeEvent *event);
     QGraphicsScene* scene();
+    void moveToCenter();
 private:
     QGraphicsScene* mScene;
 };

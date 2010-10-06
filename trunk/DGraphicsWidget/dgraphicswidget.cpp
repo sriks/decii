@@ -10,7 +10,7 @@
 #include "dgraphicspixmapwidget.h"
 #include "dgraphicstitlewidget.h"
 
-const int KTitleHeightPercentage = 25;
+const int KTitleHeightPercentage = 10;
 const int KContentHeightPercenrage = 100 - KTitleHeightPercentage;
 
 DGraphicsWidget::DGraphicsWidget(QGraphicsItem* parent)
@@ -39,12 +39,7 @@ void DGraphicsWidget::addItemsToLayout()
     QGraphicsAnchor* anchor;
     anchor = mAnchorLayout->addAnchor(mTitleLayout,Qt::AnchorTop,
                                       mAnchorLayout,Qt::AnchorTop);
-////    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorTop,
-////                                      mAnchorLayout,Qt::AnchorTop);
-//    anchor = mAnchorLayout->addAnchor(mCommandLayout,Qt::AnchorRight,
-//                                      mAnchorLayout,Qt::AnchorRight);
     setLayout(mAnchorLayout);
-
 }
 
 DGraphicsWidget::~DGraphicsWidget()
@@ -98,6 +93,7 @@ void DGraphicsWidget::paint(QPainter *painter,
         linearGradient.setColorAt(0.6,baseColor.lighter(110));
         linearGradient.setColorAt(1,baseColor);
         painter->fillPath(paintPath,QBrush(linearGradient));
+        painter->drawPath(paintPath);
     }
 }
 
@@ -108,7 +104,7 @@ void DGraphicsWidget::setTitleText(QString titleText)
 
 void DGraphicsWidget::setTitleFont(QFont font)
 {
-    mTitleWidget->textWidget()->textItem()->setFont(font);
+//    mTitleWidget->textWidget()->textItem()->setFont(font);
 }
 
 void DGraphicsWidget::setTitlePixmap(QPixmap pixmap,bool autoResize)
@@ -125,25 +121,48 @@ void DGraphicsWidget::addContent(QGraphicsWidget* contentWidget)
     mContentWidget = contentWidget;
 }
 
+QSizeF DGraphicsWidget::contentWidgetSize()
+{
+    QSizeF newsize(size());
+    qreal newheight = (KContentHeightPercenrage*size().height())/100;
+    newheight -= (newheight*15)/100;
+    newsize.setHeight(newheight);
+    qDebug()<<"content size:"<<newsize;
+    return newsize;
+}
+
+void DGraphicsWidget::closeApplicationOnExit(bool value)
+{
+    if(value)
+    {
+    connect(this,SIGNAL(closeButtonClicked()),qApp,SLOT(closeAllWindows()));
+    }
+    // TODO: add diconnect also
+}
+
+void DGraphicsWidget::setCloseButtonVisible(bool value)
+{
+      mCloseCommandIcon->setVisible(value);
+}
 
 void DGraphicsWidget::addDefaultActions()
 {
-    DGraphicsPixmapWidget* closeCommandIcon =
+    mCloseCommandIcon =
             new DGraphicsPixmapWidget(QPixmap(":/resource/images/close.png"));
-    mCommandLayout->addItem(closeCommandIcon);
-    connect(closeCommandIcon,SIGNAL(triggered()),this,SIGNAL(closeButtonClicked()));
-
-    connect(closeCommandIcon,SIGNAL(triggered()),this,SLOT(testResize()));
-
+    mCommandLayout->addItem(mCloseCommandIcon);
+    connect(mCloseCommandIcon,SIGNAL(triggered()),this,SIGNAL(closeButtonClicked()));
 }
 
 void DGraphicsWidget::prepareWidget()
 {
+#ifndef Q_OS_SYMBIAN
     resize(400,400);
+#endif
     setAttribute(Qt::WA_OpaquePaintEvent,true);
     QPalette p = palette();
-    p.setColor(QPalette::Base,Qt::blue);
+    p.setColor(QPalette::Base,Qt::gray);
     setPalette(p);
+    setTitlePixmap(QPixmap(":/resource/images/qt.png"),true);
 }
 
 void DGraphicsWidget::prepareTitleWidget()
@@ -161,10 +180,7 @@ void DGraphicsWidget::prepareContentWidget(QGraphicsWidget* content)
     // resize content
     if(content)
     {
-    QSizeF newsize(size());
-    qreal height = (KTitleHeightPercentage*newsize.height())/100;
-    content->setPreferredSize(newsize.width(),height);
-    qDebug()<<"content resized";
+    content->setPreferredSize(contentWidgetSize());
     }
 }
 

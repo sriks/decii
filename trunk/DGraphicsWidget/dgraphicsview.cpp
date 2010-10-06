@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QResizeEvent>
+#include <QDesktopWidget>
 #include "dgraphicsview.h"
 
 DGraphicsView::DGraphicsView(QWidget* parent)
@@ -35,6 +36,15 @@ DGraphicsView::~DGraphicsView()
 void DGraphicsView::resizeEvent(QResizeEvent *event)
 {
     mScene->setSceneRect(rect());
+}
+
+void DGraphicsView::moveToCenter()
+{
+    QRect rect(this->rect());
+    QPoint center = QDesktopWidget().screenGeometry().center();
+    rect.moveCenter(center);
+    this->setGeometry(rect);
+    updateGeometry();
 }
 
 QGraphicsScene* DGraphicsView::scene()
