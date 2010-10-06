@@ -49,12 +49,14 @@ public slots:
     Q_INVOKABLE QList<QStringList> categories();
     Q_INVOKABLE int itemCount();
     bool isError();
+    static QString decodeHtml(const QString& encodedHtml);
     // TODO: add method to query if an element exists
 
 private slots:
     QString executeQuery(const QString& aQuery);
     QStringList executeQueryAsList(const QString& aQuery);
     QString enumToString(RSSParser::RSSElement aElement);
+
 
 private:
     QXmlQuery m_xmlQuery;

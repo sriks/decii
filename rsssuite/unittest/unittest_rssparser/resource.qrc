@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/feed">
-        <file>testfeed.xhtml</file>
+        <file>testfeed.htm</file>
     </qresource>
 </RCC>

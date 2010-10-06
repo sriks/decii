@@ -27,7 +27,7 @@ HEADERS += \
 
 QT += xmlpatterns
 win32: {
-    INCLUDEPATH += c:/decii/include
+    INCLUDEPATH += c:/decii/include/rsssuite
     LIBS += -Lc:/decii/lib
         }
     LIBS += -lrssparser
@@ -37,10 +37,11 @@ win32: {
 # sudo chmod 777 /usr/lib
 # sudo chmod 777 /usr/include
 win32:{DLLDESTDIR = c:/decii/lib
-headers.path = c:/decii/include}
-unix:DESTDIR = /usr/lib
-unix:headers.path = /usr/include
-headers.files = rssmanager.h
+headers.path = c:/decii/include/rsssuite}
+unix:{DESTDIR = /usr/lib
+headers.path = /usr/include/rsssuite}
+headers.files += rssmanager.h
+headers.files += rssmanager.pri
 INSTALLS += headers
 PRE_TARGETDEPS += install_headers
 

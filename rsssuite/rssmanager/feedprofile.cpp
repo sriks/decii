@@ -18,12 +18,12 @@ QMutex mutex;
 
 FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
     QObject(parent),
-    mSubscription(subscription)
-
+    mSubscription(subscription),
+    mNetworkManager(NULL),
+    mNetworkReply(NULL)
 {
-    mNetworkManager = NULL;
-    mNetManCreatedCount = 0; // test only
     setNetworkRequestActive(false);
+    mNetManCreatedCount = 0; // test only
     connect(&mTimer,SIGNAL(timeout()),this,SLOT(handleTimeOut()));
 #ifdef START_FETCH_WHEN_CREATED
     // start initial fetch
@@ -34,9 +34,14 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
 
 FeedProfile::~FeedProfile()
 {
+    qDebug()<<__PRETTY_FUNCTION__;
     mTimer.stop();
-    mNetworkManager->deleteLater();;
+    if(isNetworkRequestActive())
+    {
+    mNetworkManager->deleteLater();
+    mNetworkReply->deleteLater();
     qDebug()<<"Netman creation mark "<<mNetManCreatedCount;
+    }
 }
 
 RSSParser* FeedProfile::parser()

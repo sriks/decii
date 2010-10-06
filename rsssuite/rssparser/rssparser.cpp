@@ -316,4 +316,16 @@ QString RSSParser::enumToString(RSSParser::RSSElement aElement)
     return menum.valueToKey(aElement);
 }
 
+// Internal API
+// Decodes HTML encoded string.
+QString RSSParser::decodeHtml(const QString& encodedHtml)
+{
+    QString temp = encodedHtml;
+    temp.replace("&amp;", "&");
+    temp.replace("&apos;", "'");
+    temp.replace("&quot;", "\"");
+    temp.replace("&lt;", "<");
+    temp.replace("&gt;", ">");
+return temp;
+}
 // end of file
