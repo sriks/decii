@@ -15,9 +15,9 @@ SOURCES += rssparser.cpp
 # sudo chmod 777 /usr/lib
 # sudo chmod 777 /usr/include
 win32:{DESTDIR = c:/decii/lib
-headers.path = c:/decii/include}
+headers.path = c:/decii/include/rsssuite}
 unix:{DESTDIR = /usr/lib
-headers.path = /usr/include}
+headers.path = /usr/include/rsssuite}
 headers.files = rssparser.h
 INSTALLS += headers
 PRE_TARGETDEPS += install_headers
