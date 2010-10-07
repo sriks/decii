@@ -3,6 +3,7 @@
 #include <QGraphicsWebView>
 #include <QTextCodec>
 #include <QTextDecoder>
+#include <QTextDocument>
 #include <QGraphicsDropShadowEffect>
 #include "tdih.h"
 #include "dgraphicswidget.h"
@@ -29,6 +30,8 @@ TDIH::TDIH(QWidget *parent)
     qDebug()<<"connecting historyengine:"<<connect(mHistoryEngine,SIGNAL(updateReady(HistoryInfo)),
             this,SLOT(handleUpdate(HistoryInfo)));
     mHistoryEngine->update();
+    mDGraphicsWidget->setTitleText(KMainTitle+"\nLoading...");
+    mDGraphicsView->show();
 }
 
 TDIH::~TDIH()
@@ -49,21 +52,22 @@ void TDIH::showWidget()
 qDebug()<<__PRETTY_FUNCTION__;
     if(!mUpdateAvailable)
     {
-//        mDTextWidget->textItem()->setPlainText(tr("Sorry, no Updates!!!"));
+        mDTextWidget->textItem()->setPlainText(tr("Sorry, no Updates!!!"));
     }
     else
     {
-//        mWebContent->resize(mDGraphicsWidget->contentWidgetSize());
-//        mWebContent->setHtml(mHistoryInfo.description);
-//        QFont contentFont = mWebContent->font();
-//        contentFont.setPixelSize( /*(50*contentFont.pixelSize())/100*/ 7 );
-//        mWebContent->setFont(contentFont);
-        mDTextWidget->resize(mDGraphicsWidget->contentWidgetSize());
+        QTextDocument textdoc;
+        textdoc.setHtml(mHistoryInfo.description);
+        textdoc.adjustSize();
+        QSize idealSize = textdoc.size().toSize();
+        qDebug()<<"idealsize:"<<idealSize;
+        mDGraphicsView->resize(idealSize.width(),idealSize.height()+200);
+        mDGraphicsWidget->resize(idealSize.width(),idealSize.height()+100);
+        mDTextWidget->textItem()->setTextWidth(idealSize.width());
         mDTextWidget->textItem()->setHtml(mHistoryInfo.description);
         QFont contentFont = mDTextWidget->font();
         contentFont.setPixelSize( /*(50*contentFont.pixelSize())/100*/ 7 );
         mDTextWidget->setFont(contentFont);
-
     }
 
 #ifdef SCREENSAVER
