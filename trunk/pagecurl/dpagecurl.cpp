@@ -15,8 +15,8 @@ const QString KImageCurlTmp("curltmp");
 const QString KImageDotFormat(".png"); // png supports transparent backgrounds
 const int KImageQualityHigh(100);
 
-DPageCurl::DPageCurl(QGraphicsItem *parent)
-    : QGraphicsWidget(parent),
+DPageCurl::DPageCurl(QObject *parent)
+    : QObject(parent),
       mIsHeightMin(true)
 {
 
@@ -48,7 +48,7 @@ void DPageCurl::setWidget(QWidget* widget)
         }
 
         // Calculate curl factor
-        const int KPercentageOfImageToCurl(10);
+        const int KPercentageOfImageToCurl(1);
         mCurlFactor = (KPercentageOfImageToCurl*mPageLength)/100;
         mPageCurlStartingPoint = mSourceWidget->rect().topRight();
         mPageCutStartingPoint = mSourceWidget->rect().topLeft();
@@ -60,18 +60,33 @@ void DPageCurl::setWidget(QWidget* widget)
     }
 }
 
+QSize DPageCurl::hostWidgetSize()
+{
+    return mSourceImg.size();
+}
+
+QRect DPageCurl::hostWidgetRect()
+{
+    return mSourceImg.rect();
+}
+
+QWidget* DPageCurl::hostWidget()
+{
+    return mSourceWidget;
+}
+
 // if next page cut is not valid returns a null pixmap
 QPixmap DPageCurl::nextPageCut()
 {
-    mSourceWidget->setVisible(false);
     int curlLength = mPageCutCount*mCurlFactor;
     if(curlLength < mPageLength)
     {
       QRegion pageCutRegion = grabPageCut(mSourceImg,curlLength,curlLength);
-
-      // extract this region from widget
-      QImage img(mSourceWidget->size(),QImage::Format_ARGB32_Premultiplied);
+      // Extract this region from widget to image
+      QImage img(mSourceImg.size(),QImage::Format_ARGB32_Premultiplied);
       QPainter painter(&img);
+      // Paint transparent background to image before rendering
+      painter.fillRect(img.rect(),QBrush(QColor(Qt::transparent)));
       mSourceWidget->render(&painter,QPoint(),pageCutRegion);
 #ifdef QT_DEBUG
       img.save(KImagePageCut+QString().setNum(mPageCutCount),
@@ -90,12 +105,14 @@ return QPixmap();
 QPixmap DPageCurl::nextCurlCut()
 {
     int curlCount = mPageCutCount - 1;
-    QImage img(curlCount*mCurlFactor,curlCount*mCurlFactor,QImage::Format_ARGB32_Premultiplied);
-    QPainter painter(&img);
-
-    QVector<QPoint> curlPoints;
+    QImage img(curlCount*mCurlFactor,curlCount*mCurlFactor,
+               QImage::Format_ARGB32_Premultiplied);
     QRect curlRect = img.rect();
-    painter.fillRect(curlRect,Qt::transparent);
+    QPainter painter(&img);
+    painter.setRenderHints(QPainter::Antialiasing);
+//    painter.fillRect(curlRect,Qt::transparent);
+    painter.fillRect(curlRect,Qt::lightGray); // test
+    QVector<QPoint> curlPoints;
     curlPoints.append(curlRect.bottomLeft());
     curlPoints.append(curlRect.bottomRight());
 
@@ -106,8 +123,13 @@ QPixmap DPageCurl::nextCurlCut()
     }
     curlPath.closeSubpath();
 
-    QBrush curlBrush(QColor(Qt::blue));
+    QLinearGradient gradient(0,0,curlRect.width(),curlRect.height());
+    gradient.setSpread(QGradient::ReflectSpread);
+    gradient.setColorAt(0.0, Qt::white);
+    gradient.setColorAt(0.8, Qt::lightGray);
+    QBrush curlBrush(gradient);
     painter.fillPath(curlPath,curlBrush);
+//    img.save("tempcurl_"+QString().setNum(curlCount)+".png","png",100); // debug
     return QPixmap::fromImage(img);
 }
 

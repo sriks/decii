@@ -12,10 +12,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         dpagecurl.cpp \
-    samplewidget.cpp
+    samplewidget.cpp \
+    dpageturneffect.cpp
 
 HEADERS  += dpagecurl.h \
-    samplewidget.h
+    samplewidget.h \
+    dpageturneffect.h
 
 RESOURCES += \
     resource.qrc
