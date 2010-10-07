@@ -1,30 +1,33 @@
 #include <QtGui/QApplication>
+#include <QDebug>
 #include "dpagecurl.h"
 #include "samplewidget.h"
-
+#include "dpageturneffect.h"
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     SampleWidget widget;
     widget.show();
 
-    DPageCurl pagecurl;
-    pagecurl.setWidget(&widget);
+    DPageTurnEffect effect;
+    effect.setWidget(&widget);
+    effect.startEffect();
 
-    int count = 1;
-    while(1)
-    {
-     QPixmap pixmap(widget.size());
-     pixmap.fill(QColor(Qt::transparent));
-     pixmap = pagecurl.nextPageCut();
-     if(!pixmap.isNull()){break;}
-     count++;
-     pixmap.save("page"+QString().setNum(count),"png",100);
 
-     QPixmap curlPixmap = pagecurl.nextCurlCut();
-     if(!curlPixmap.isNull()){break;}
-     curlPixmap.save("curl"+QString().setNum(count),"png",100);
-    }
-
+//    DPageCurl pagecurl;
+//    pagecurl.setWidget(&widget);
+//    int count = 1;
+//    while(1)
+//    {
+//        QPixmap pagecutpixmap = pagecurl.nextPageCut();
+//        if(pagecutpixmap.isNull() /*|| count > 1*/)
+//        {
+//            qDebug()<<"Invalid pixmap "<<count;
+//            break;
+//        }
+//        pagecutpixmap.save("pagecut_"+QString().setNum(count)+".png","png",100);
+//        pagecurl.nextCurlCut().save("pagecurl_"+QString().setNum(count)+".png","png",100);
+//        count++;
+//    }
     return a.exec();
 }

@@ -4,15 +4,18 @@
 #include <QGraphicsWidget>
 
 
-class DPageCurl : public QGraphicsWidget
+class DPageCurl : public QObject
 {
     Q_OBJECT
 
 public:
-    DPageCurl(QGraphicsItem *parent = 0);
+    DPageCurl(QObject *parent = 0);
     ~DPageCurl();
 
     void setWidget(QWidget* widget);
+    QSize hostWidgetSize();
+    QRect hostWidgetRect();
+    QWidget* hostWidget();
     void doCurl(QWidget* widget,int width,int height);
     QImage captureOriginal(QWidget* widget);
     QPixmap nextPageCut();
