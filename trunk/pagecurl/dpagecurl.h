@@ -20,8 +20,11 @@ public:
     QImage captureOriginal(QWidget* widget);
     QPixmap nextPageCut();
     QPixmap nextCurlCut();
+    QPixmap nextCurlCut__(QPointF curlPos);
+    QPainterPath nextCurlPath(QRectF curlRect);
     QRegion grabPageCut(QImage image,int width,int height);
-
+    int nextCurlWidth();
+    void prepareNext(){mPageCutCount++;} // for test
 private:
     bool mIsHeightMin;
     qreal mCurlFactor;
