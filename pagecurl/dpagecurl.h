@@ -33,6 +33,7 @@ private:
     QPointF mPageCurlStartingPoint;
     int mPageCutCount;
     QWidget* mSourceWidget;
+    QImage mCurrentPagecutImage;
 };
 
 #endif // DPAGECURL_H

@@ -94,6 +94,7 @@ QPixmap DPageCurl::nextPageCut()
       qDebug()<<"Pagecut count:"<<mPageCutCount<<"\nCurl length:"<<curlLength;
 #endif
        ++mPageCutCount;
+       mCurrentPagecutImage = img;
       // return valid image
       return QPixmap::fromImage(img);
     }
@@ -105,13 +106,17 @@ return QPixmap();
 QPixmap DPageCurl::nextCurlCut()
 {
     int curlCount = mPageCutCount - 1;
-    QImage img(curlCount*mCurlFactor,curlCount*mCurlFactor,
-               QImage::Format_ARGB32_Premultiplied);
+    int curlWidth = curlCount*mCurlFactor;
+
+    // Copy required curl from page cut
+    QImage img(mCurrentPagecutImage.copy(mCurrentPagecutImage.width()-curlWidth,
+                                         0,
+                                         curlWidth,curlWidth));
     QRect curlRect = img.rect();
     QPainter painter(&img);
     painter.setRenderHints(QPainter::Antialiasing);
-//    painter.fillRect(curlRect,Qt::transparent);
-    painter.fillRect(curlRect,Qt::lightGray); // test
+    painter.fillRect(curlRect,Qt::transparent);
+//    painter.fillRect(curlRect,Qt::lightGray); // test
     QVector<QPoint> curlPoints;
     curlPoints.append(curlRect.bottomLeft());
     curlPoints.append(curlRect.bottomRight());
