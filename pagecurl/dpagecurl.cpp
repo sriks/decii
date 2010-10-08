@@ -55,8 +55,6 @@ void DPageCurl::setWidget(QWidget* widget)
         mPageCutCount = 1;
         qDebug()<<"curlfactor:"<<mCurlFactor<<"\npagelength:"<<mPageLength<<"\nisheightmin:"<<mIsHeightMin<<
                   "\npagecutstartingpoint:"<<mPageCutStartingPoint;
-
-
     }
 }
 
@@ -87,6 +85,7 @@ QPixmap DPageCurl::nextPageCut()
       QPainter painter(&img);
       // Paint transparent background to image before rendering
       painter.fillRect(img.rect(),QBrush(QColor(Qt::transparent)));
+//      painter.fillRect(img.rect(),QBrush(QColor(Qt::red)));
       mSourceWidget->render(&painter,QPoint(),pageCutRegion);
 #ifdef QT_DEBUG
       img.save(KImagePageCut+QString().setNum(mPageCutCount),
@@ -105,6 +104,7 @@ return QPixmap();
 
 QPixmap DPageCurl::nextCurlCut()
 {
+qDebug()<<__PRETTY_FUNCTION__;
     int curlCount = mPageCutCount - 1;
     int curlWidth = curlCount*mCurlFactor;
 
@@ -116,7 +116,6 @@ QPixmap DPageCurl::nextCurlCut()
     QPainter painter(&img);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.fillRect(curlRect,Qt::transparent);
-//    painter.fillRect(curlRect,Qt::lightGray); // test
     QVector<QPoint> curlPoints;
     curlPoints.append(curlRect.bottomLeft());
     curlPoints.append(curlRect.bottomRight());
@@ -134,8 +133,66 @@ QPixmap DPageCurl::nextCurlCut()
     gradient.setColorAt(0.8, Qt::lightGray);
     QBrush curlBrush(gradient);
     painter.fillPath(curlPath,curlBrush);
-//    img.save("tempcurl_"+QString().setNum(curlCount)+".png","png",100); // debug
+    img.save("tempcurl_"+QString().setNum(nextCurlWidth())+".png","png",100); // debug
     return QPixmap::fromImage(img);
+}
+
+
+QPixmap DPageCurl::nextCurlCut__(QPointF curlPos)
+{
+qDebug()<<__PRETTY_FUNCTION__;
+
+    // This is pagecurl starting from top right
+    int curlWidth = hostWidgetSize().width() - curlPos.x();
+
+    // Copy required curl from page cut
+    QImage img(mCurrentPagecutImage.copy(mCurrentPagecutImage.width()-curlWidth,
+                                         0,
+                                         curlWidth,curlWidth));
+    QRect curlRect = img.rect();
+    QPainter painter(&img);
+    painter.setRenderHints(QPainter::Antialiasing);
+    painter.fillRect(curlRect,Qt::transparent);
+    QVector<QPoint> curlPoints;
+    curlPoints.append(curlRect.bottomLeft());
+    curlPoints.append(curlRect.bottomRight());
+
+    QPainterPath curlPath(curlRect.topLeft());
+    for(int i=0;i<curlPoints.count();i++)
+    {
+        curlPath.lineTo(curlPoints.value(i));
+    }
+    curlPath.closeSubpath();
+
+    QLinearGradient gradient(0,0,curlRect.width(),curlRect.height());
+    gradient.setSpread(QGradient::ReflectSpread);
+    gradient.setColorAt(0.0, Qt::white);
+    gradient.setColorAt(0.8, Qt::lightGray);
+    QBrush curlBrush(gradient);
+    painter.fillPath(curlPath,curlBrush);
+
+    // test
+    static int count = 1;
+    qDebug()<<"count:"<<count;
+//    img.save("tempcurl_"+QString().setNum(count++)+".png","png",100); // debug
+    // test
+
+    return QPixmap::fromImage(img);
+}
+
+QPainterPath DPageCurl::nextCurlPath(QRectF curlRect)
+{
+    QPainterPath curlPath(curlRect.topLeft());
+    curlPath.lineTo(curlRect.bottomLeft());
+    curlPath.lineTo(curlRect.bottomRight());
+    curlPath.closeSubpath();
+    return curlPath;
+}
+
+int DPageCurl::nextCurlWidth()
+{
+    int curlCount = mPageCutCount - 1;
+    return curlCount*mCurlFactor;
 }
 
 QImage DPageCurl::captureOriginal(QWidget* widget)
