@@ -73,6 +73,11 @@ QWidget* DPageCurl::hostWidget()
     return mSourceWidget;
 }
 
+QPixmap DPageCurl::hostWidgetAsPixmap()
+{
+    return QPixmap::fromImage(mSourceImg);
+}
+
 // if next page cut is not valid returns a null pixmap
 QPixmap DPageCurl::nextPageCut()
 {
@@ -101,6 +106,27 @@ QPixmap DPageCurl::nextPageCut()
 // return null pixmap
 return QPixmap();
 }
+
+QPixmap DPageCurl::nextPageCut__(QPointF curPos)
+{
+      QRegion pageCutRegion = grabPageCut(mSourceImg,curPos.x(),curPos.y());
+      // Extract this region from widget to image
+      QImage img(mSourceImg.size(),QImage::Format_ARGB32_Premultiplied);
+      QPainter painter(&img);
+      // Paint transparent background to image before rendering
+      painter.fillRect(img.rect(),QBrush(QColor(Qt::transparent)));
+//      painter.fillRect(img.rect(),QBrush(QColor(Qt::red)));
+      mSourceWidget->render(&painter,QPoint(),pageCutRegion);
+#ifdef QT_DEBUG
+      img.save(KImagePageCut+QString().setNum(mPageCutCount),
+               "png",KImageQualityHigh); // for debug
+      mPageCutCount++;
+#endif
+       mCurrentPagecutImage = img;
+      // return valid image
+      return QPixmap::fromImage(img);
+}
+
 
 QPixmap DPageCurl::nextCurlCut()
 {
@@ -180,12 +206,30 @@ qDebug()<<__PRETTY_FUNCTION__;
     return QPixmap::fromImage(img);
 }
 
+#define ADDCURVE
 QPainterPath DPageCurl::nextCurlPath(QRectF curlRect)
 {
     QPainterPath curlPath(curlRect.topLeft());
-    curlPath.lineTo(curlRect.bottomLeft());
     curlPath.lineTo(curlRect.bottomRight());
-    curlPath.closeSubpath();
+#ifdef ADDCURVE
+    const int KPercentOfX = 50;
+    const int KPercentOfY = 20;
+
+    QPointF currentPoint = curlRect.bottomRight();
+    QPointF c1;
+    c1.setX( currentPoint.x() - ((KPercentOfX*currentPoint.x())/100) );  // % of X
+    c1.setY( currentPoint.y() - ((KPercentOfY*currentPoint.y())/100) );
+    curlPath.cubicTo(c1,curlRect.bottomLeft(),curlRect.bottomLeft());
+    currentPoint = curlRect.center();
+    c1.setX( currentPoint.x() - ((KPercentOfX*currentPoint.x())/100) );  // % of X
+    c1.setY( currentPoint.y() - ((KPercentOfY*currentPoint.y())/100) );
+    curlPath.cubicTo(c1,curlRect.topLeft(),curlRect.topLeft());
+curlPath.closeSubpath();
+#else
+  curlPath.lineTo(curlRect.bottomLeft());
+  curlPath.closeSubpath();
+#endif
+
     return curlPath;
 }
 
@@ -234,6 +278,16 @@ QRegion DPageCurl::grabPageCut(QImage image,int width,int height)
 
     painter.setClipPath(pageCutPath,Qt::ReplaceClip);
     return painter.clipRegion();
+}
+
+QRegion DPageCurl::grabPageCut__(QImage image,int width,int height)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    QPainter painter(&image);
+
+    // Create page points through which we cut the page
+    QVector<QPointF> pageCutPoints;
+
 }
 
 void DPageCurl::doCurl(QWidget* widget,int width,int height)

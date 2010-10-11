@@ -23,6 +23,7 @@ private:
     QGraphicsPixmapItem* mPagePixmap;
     QGraphicsPixmapItem* mCurlPixmap;
     DGraphicsLayer* mCurlLayer;
+    DGraphicsLayer* mPageCutLayer;
     int mTimerId;
 };
 
