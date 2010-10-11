@@ -3,12 +3,13 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsWidget>
 #include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 #include <QDebug>
 #include "dpageturneffect.h"
 #include "dgraphicslayer.h"
 #include "dpagecurl.h"
 
-const int KAnimationFrameTime = 100;
+const int KAnimationFrameTime = 0;
 #define TESTANIM
 DPageTurnEffect::DPageTurnEffect(QObject* parent)
 {
@@ -18,13 +19,18 @@ DPageTurnEffect::DPageTurnEffect(QObject* parent)
     setScene(scene);
     makeTransparent();
 #ifdef TESTANIM
-    mCurlLayer = new DGraphicsLayer(mPageCurl);
+    mCurlLayer = new DGraphicsLayer(mPageCurl,true);
+    mCurlLayer->usePageCurl(true);
+    mCurlLayer->setObjectName("curllayer");
     mCurlLayer->setZValue(10);
-    scene->addItem(mCurlLayer);
-//    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(mCurlLayer);
-//    mCurlLayer->setGraphicsEffect(shadowEffect);
-    mPagePixmap = new QGraphicsPixmapItem;
-    scene->addItem(mPagePixmap);
+    this->scene()->addItem(mCurlLayer);
+    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(mCurlLayer);
+    mCurlLayer->setGraphicsEffect(shadowEffect);
+
+    mPageCutLayer = new DGraphicsLayer(mPageCurl,false);
+    mPageCutLayer->setObjectName("pagecutlayer");
+    this->scene()->addItem(mPageCutLayer);
+
     setCacheMode(QGraphicsView::CacheBackground);
 #else
 
@@ -70,7 +76,6 @@ qDebug()<<__PRETTY_FUNCTION__;
     QPixmap page = mPageCurl->nextPageCut();
     if(!page.isNull())
     {
-        mPagePixmap->setVisible(false);
         mPagePixmap->setPixmap(page);
     }
 
@@ -114,29 +119,39 @@ QSize hostSize = mPageCurl->hostWidgetSize();
 scene()->setSceneRect(mPageCurl->hostWidgetRect());
 resize(hostSize);
 
-    mPagePixmap->setPixmap(mPageCurl->nextPageCut()); // test
+    mPageCutLayer->resize(mPageCurl->hostWidgetSize());
 
-    mCurlLayer->show();
-    int animtime(2000);
-    // Create rotation animation
-    QPropertyAnimation* curlAnim = new QPropertyAnimation(mCurlLayer,"curl");
-    curlAnim->setDuration(animtime);
+    int animtime(1100);
+    QEasingCurve easingCurve(QEasingCurve::OutCirc);
+
+    // Create curl animation
+    QPropertyAnimation* curlAnimation = new QPropertyAnimation(mCurlLayer,"curl");
+    curlAnimation->setDuration(animtime);
     QPoint startPoint;
-    qDebug()<<"hostsize:"<<mPageCurl->hostWidgetSize()
-            <<"\nnextcurlwidth:"<<mPageCurl->nextCurlWidth();
     startPoint.setX(mPageCurl->hostWidgetSize().width()-mPageCurl->nextCurlWidth());
     startPoint.setY(0);
-    curlAnim->setStartValue(startPoint);
-    qDebug()<<"startpoint:"<<startPoint;
-    qDebug()<<"Min of w,h:"<<qMin(mPageCurl->hostWidgetSize().width(),
-                                  mPageCurl->hostWidgetSize().height());
+    curlAnimation->setStartValue(startPoint);
+//    qDebug()<<"startpoint:"<<startPoint;
+//    qDebug()<<"Min of w,h:"<<qMin(mPageCurl->hostWidgetSize().width(),
+//                                  mPageCurl->hostWidgetSize().height());
     QPoint endPoint;
     endPoint.setX(mPageCurl->hostWidgetSize().width() - qMin(mPageCurl->hostWidgetSize().width(),
                                                              mPageCurl->hostWidgetSize().height()));
     qDebug()<<"endpoint:"<<endPoint;
-    curlAnim->setEndValue(endPoint);
-    curlAnim->setEasingCurve(QEasingCurve::Linear);
-    curlAnim->start(QAbstractAnimation::DeleteWhenStopped);
+    curlAnimation->setEndValue(endPoint);
+    curlAnimation->setEasingCurve(easingCurve);
+
+    // Create pagecut animation
+    QPropertyAnimation* pageCutAnimation = new QPropertyAnimation(mPageCutLayer,"pageCut");
+    pageCutAnimation->setDuration(animtime);
+    pageCutAnimation->setStartValue(startPoint);
+    pageCutAnimation->setEndValue(endPoint);
+    pageCutAnimation->setEasingCurve(easingCurve);
+    QParallelAnimationGroup* parallelAnimGroup = new QParallelAnimationGroup(this);
+    parallelAnimGroup->addAnimation(curlAnimation);
+    parallelAnimGroup->start(QAbstractAnimation::DeleteWhenStopped);
+    mPageCutLayer->show();
+    mCurlLayer->show();
 }
 
 // eof
