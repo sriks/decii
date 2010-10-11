@@ -41,12 +41,12 @@ public:
     // adds a subscription.
     // This doest initiate update cycle.
     // Client should call start()
-    void addSubscription(FeedSubscription newSubscription);
+    void addFeed(FeedSubscription newSubscription);
 
     // This changed subscription interval to new interval.
     // This does not initiate a fetch on feed.
     // Note: If a negative value is supplied, subscription is stopped.
-    bool changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
+    bool setUpdateInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
     RSSParser* parser(QUrl sourceUrl);
     bool isFeedValid(QUrl sourceUrl);
 
@@ -60,11 +60,11 @@ public:
     bool stop(QUrl sourceUrl);
     void stopAll();
 
-    bool removeSubscription(QUrl sourceUrl);
-    FeedSubscription subscription(QUrl sourceUrl);
-    QList<FeedSubscription> subscriptions();
-    QList<QUrl> subscriptionUrls();
-    int subscriptionCount(){return mFeedProfiles.count();}
+    bool removeFeed(QUrl sourceUrl);
+    FeedSubscription feed(QUrl sourceUrl);
+    QList<FeedSubscription> feeds();
+    QList<QUrl> feedUrls();
+    int feedsCount(){return mFeedProfiles.count();}
 
     // on demand update
     // updates even if no interval is set
