@@ -6,7 +6,7 @@
 #include "dpagecurl.h"
 
 #define DRAW_HERE
-//#define NO_GRAD
+#define NO_GRAD
 DGraphicsLayer::DGraphicsLayer(DPageCurl* curl,bool isCurl)
                :mPageCurl(curl),
                 mUsePageCurl(isCurl)
@@ -23,36 +23,41 @@ qDebug()<<"new pos:"<<pos();
 //        <<"expsd rect:"<<option->exposedRect;
 
 painter->setClipRect(option->exposedRect);
-painter->setRenderHint(QPainter::Antialiasing);
+painter->setRenderHints(QPainter::Antialiasing|QPainter::SmoothPixmapTransform);
 if(isUsingPageCurl())
     {
-//    qDebug()<<"Painting pagecurl from "<<pos();
-//    #ifdef DRAW_HERE
-//        int curlWidth = mPageCurl->hostWidgetSize().width() - pos().x();
-//        resize(curlWidth,curlWidth);
-//        QPainterPath curlPath = mPageCurl->nextCurlPath(rect());
-//    #ifdef NO_GRAD
-//        QBrush curlBrush(Qt::gray);
-//    #else
-//        QLinearGradient gradient(0,0,size().width(),size().height());
-//        gradient.setSpread(QGradient::ReflectSpread);
-//        gradient.setColorAt(0.0, Qt::white);
-//        gradient.setColorAt(0.8, Qt::lightGray);
-//        QBrush curlBrush(gradient);
-//    #endif
-//        painter->fillPath(curlPath,curlBrush);
-//    #else
-//        QPixmap pixmap;
-//        mPageCurl->nextPageCut(); // for test
-//        pixmap = mPageCurl->nextCurlCut__(pos());
-//        if(pixmap.isNull())
-//        {
-//            qDebug()<<"pixmap is null";
-//            return;
-//        }
-//        resize(pixmap.size());
-//        painter->drawPixmap(pixmap.rect(),pixmap);
-//    #endif
+    qDebug()<<"Painting pagecurl from "<<pos();
+    #ifdef DRAW_HERE
+        int curlWidth = mPageCurl->hostWidgetSize().width() - pos().x();
+        resize(curlWidth,curlWidth);
+        QPainterPath curlPath = mPageCurl->nextCurlPath(rect());
+        #ifdef NO_GRAD
+        QBrush curlBrush(QColor(Qt::lightGray));
+        #else
+        QLinearGradient gradient(0,0,size().width(),size().height());
+        gradient.setSpread(QGradient::ReflectSpread);
+        gradient.setColorAt(0.0, Qt::white);
+        gradient.setColorAt(0.8, Qt::lightGray);
+        QBrush curlBrush(gradient);
+        #endif
+        painter->setOpacity(0.7);
+        painter->fillPath(curlPath,curlBrush);
+        QPen pen;
+        pen.setColor(QColor(Qt::black));
+        pen.setWidth(2);
+        painter->drawPath(curlPath);
+    #else
+        QPixmap pixmap;
+        mPageCurl->nextPageCut(); // for test
+        pixmap = mPageCurl->nextCurlCut__(pos());
+        if(pixmap.isNull())
+        {
+            qDebug()<<"pixmap is null";
+            return;
+        }
+        resize(pixmap.size());
+        painter->drawPixmap(pixmap.rect(),pixmap);
+    #endif
     }
 
     else
@@ -68,6 +73,10 @@ if(isUsingPageCurl())
 //        qDebug()<<"painPath:"<<paintPath;
 //        painter->setClipPath(paintPath);
 //        painter->drawPixmap(rect().toRect(),mPageCurl->hostWidgetAsPixmap());
+
+        QPixmap pageCutPixmap = mPageCurl->nextPageCut__(pageCut());
+        resize(pageCutPixmap.size());
+        painter->drawPixmap(0,0,pageCutPixmap);
     }
 }
 
