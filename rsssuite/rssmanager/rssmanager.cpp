@@ -75,14 +75,28 @@ bool RSSManager::internalize()
     return true;
 }
 
-void RSSManager::addSubscription(FeedSubscription newSubscription)
+/*!
+\brief Adds a feed. If the feed already exist, it replaces existing feed.
+Note: This will not initiate update cycle. Client should call start() to initiate updates.
+\sa start() \sa startAll()
+*/
+void RSSManager::addFeed(FeedSubscription newSubscription)
 {
     FeedProfile* profile = new FeedProfile(newSubscription,this);
     connect(profile,SIGNAL(updateAvailable(QUrl,int)),this,SIGNAL(updateAvailable(QUrl,int)));
     mFeedProfiles.insert(newSubscription.sourceUrl().toString(),profile);
 }
 
-bool RSSManager::changeSubscriptionInterval(QUrl sourceUrl, int newUpdateIntervalInMins)
+/*!
+\brief Sets new update interval to the specified feed.
+       This will not initiate a fetch. Client should call update() to initiate a fetch on demand.
+\arg sourceUrl URL on which subscription interval should be changed.
+\arg newUpdateIntervalInMins new update interval in minutes.
+     If a negative value is supplied, subscription is stopped.
+\return returns false if supplied sourceUrl is invalid or not added yet.
+\sa update()
+*/
+bool RSSManager::setUpdateInterval(QUrl sourceUrl, int newUpdateIntervalInMins)
 {
     qDebug()<<__FUNCTION__;
     if(isFeedValid(sourceUrl))
@@ -94,7 +108,14 @@ bool RSSManager::changeSubscriptionInterval(QUrl sourceUrl, int newUpdateInterva
 return false;
 }
 
-bool RSSManager::removeSubscription(QUrl sourceUrl)
+/*!
+\brief Removes feed permanently. Stops update cycle of this feed
+       If feed is fetched and being processed, updateAvailable signal is emitted.
+\arg sourceUrl Feed to be removed
+\return true if sucessfully removed
+        false if sourceUrl is not yet added to RSSManager.
+*/
+bool RSSManager::removeFeed(QUrl sourceUrl)
 {
     if(isFeedValid(sourceUrl))
     {
@@ -106,14 +127,14 @@ bool RSSManager::removeSubscription(QUrl sourceUrl)
 return false;
 }
 
-FeedSubscription RSSManager::subscription(QUrl sourceUrl)
+FeedSubscription RSSManager::feed(QUrl sourceUrl)
 {
     FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
     FeedProfile* profile = mFeedProfiles.value(sourceUrl.toString(),&defaultProfile);
     return profile->subscription();
 }
 
-QList<FeedSubscription> RSSManager::subscriptions()
+QList<FeedSubscription> RSSManager::feeds()
 {
     QList<FeedSubscription> subscriptionList;
     QList<FeedProfile*>  profiles = mFeedProfiles.values();
@@ -125,7 +146,7 @@ QList<FeedSubscription> RSSManager::subscriptions()
     return subscriptionList;
 }
 
-QList<QUrl> RSSManager::subscriptionUrls()
+QList<QUrl> RSSManager::feedUrls()
 {
     QList<QUrl> urlList;
     QList<FeedProfile*>  profiles = mFeedProfiles.values();
@@ -157,18 +178,38 @@ void RSSManager::update(QUrl sourceUrl)
     }
 }
 
+/*!
+\brief Provides a parser initialized and ready to parse results from sourceurl.
+\attention Ownership is transfered to the client. Client should call deleteLater() when finished with parsing.
+\arg sourceUrl URL for which the results should be parsed.
+\return returns initialized ready to use RSSParser. Returns 0 for inivaid sourceUrl.
+*/
 RSSParser* RSSManager::parser(QUrl sourceUrl)
 {
     FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
     RSSParser* parser =  mFeedProfiles.value(sourceUrl.toString(),&defaultProfile)->parser();
     return parser;
 }
-
+/*!
+\brief Stop update.
+       Calling start() will start updates again.
+\arg sourceUrl URL on which update cycle should be stopped.
+\return true if a valid sourceUrl.
+\attention This has no effect if a feed is already fetched and being processed.
+           Hence a return value of true should not be considered as "fetching stopped".
+\sa stopAll() start() startAll() update() updateAll()
+*/
 bool RSSManager::stop(QUrl sourceUrl)
 {
-    return changeSubscriptionInterval(sourceUrl,-1);
+    return setUpdateInterval(sourceUrl,-1);
 }
 
+/*!
+\brief Convinience method to stop update cycle on all feeds
+\arg sourceUrl URL on which update cycle should be stopped.
+\attention This has no effect if a feed is already fetched and being processed.
+\sa stop()
+*/
 void RSSManager::stopAll()
 {
     QList<QString> keys = mFeedProfiles.uniqueKeys();
@@ -178,6 +219,15 @@ void RSSManager::stopAll()
     }
 }
 
+/*!
+\brief Starts update. Clients should call this method to start update cycle.
+       Once called update cycle is started and feeds are fetched as per update interval.
+       This has no effect if called on a feed which is already started.
+\arg sourceUrl URL on which update cycle should start.
+\return true, if successfully started or called on a feed which is started.
+        false, if an invalid sourceUrl is supplied.
+\sa startAll()
+*/
 bool RSSManager::start(QUrl sourceUrl)
 {
     // TODO: Feed validation is done two times. Optimize it.
@@ -188,7 +238,7 @@ bool RSSManager::start(QUrl sourceUrl)
     // ignore if it is already active
     if(!mFeedProfiles[sourceUrl.toString()]->isActive())
         {
-        bool stat = changeSubscriptionInterval(sourceUrl,
+        bool stat = setUpdateInterval(sourceUrl,
                                    mFeedProfiles[sourceUrl.toString()]->subscription().updateInterval());
         if(stat)
         {
@@ -197,10 +247,16 @@ bool RSSManager::start(QUrl sourceUrl)
         return stat;
         }
     qWarning()<<"Starting an active feed "<< sourceUrl;
+    return true;
     }
+
     return false;
 }
 
+/*!
+\brief Convience method to start all feeds
+\sa start()
+*/
 void RSSManager::startAll()
 {
     QList<QString> keys = mFeedProfiles.uniqueKeys();
@@ -210,6 +266,12 @@ void RSSManager::startAll()
     }
 }
 
+/*!
+\brief returns true if a feed is valid.
+       A feed is invalid if the supplied sourceUrl is not added to RSSManager
+
+\sa addSubscription();
+*/
 bool RSSManager::isFeedValid(QUrl sourceUrl)
 {
     if(mFeedProfiles.contains(sourceUrl.toString()))

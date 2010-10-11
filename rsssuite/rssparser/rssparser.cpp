@@ -188,6 +188,16 @@ QString RSSParser::channelElement(RSSElement element)
     return executeQuery(KXqChannelElementQuery.arg(enumString));
 }
 
+/*! \brief queries a channel element provided as a string
+    \param userElement Element of intrest
+    \return If no such element exist returns empty QString.
+    \sa isError()
+*/
+QString RSSParser::channelElement(QString userElement)
+{
+    return executeQuery(KXqChannelElementQuery.arg(userElement));
+}
+
 /*! \brief queries an item element
     \param itemIndex Index of the item in the feed
     \attention In XQuery item count starts from 1.
@@ -199,6 +209,18 @@ QString RSSParser::itemElement(int itemIndex,RSSElement element)
 {
     QString enumString = enumToString(element);
     return executeQuery(KXqItemQuery.arg(itemIndex).arg(enumString));
+}
+
+/*! \brief queries an item element provided as string
+    \param itemIndex Index of the item in the feed
+    \attention In XQuery item count starts from 1.
+    \param userElement Element of intrest
+    \return If no such element exist returns empty QString.
+    \sa itemElements(), isError()
+*/
+QString RSSParser::itemElement(int itemIndex,QString userElement)
+{
+    return executeQuery(KXqItemQuery.arg(itemIndex).arg(userElement));
 }
 
 /*! \brief Convinience method to query all items for the element
@@ -217,6 +239,11 @@ QStringList RSSParser::itemElements(RSSElement element)
 {
     QString enumString = enumToString(element);
     return executeQueryAsList(KXqAllItemElementsQuery.arg(enumString));
+}
+
+QStringList RSSParser::itemElements(QString userElement)
+{
+    return executeQueryAsList(KXqAllItemElementsQuery.arg(userElement));
 }
 
 /*! \brief Returns categories of a particular item in feed

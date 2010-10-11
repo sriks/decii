@@ -35,16 +35,17 @@ public:
         guid
     };
 
-signals:
-
 public slots:
     Q_INVOKABLE bool isValid();
     Q_INVOKABLE void setSource(QIODevice* xmlSource);
     Q_INVOKABLE bool setSourceFileName(QString sourceFileName);
     Q_INVOKABLE QUrl imageUrl();
     Q_INVOKABLE QString channelElement(RSSElement aElement);
+    Q_INVOKABLE QString channelElement(QString userElement);
     Q_INVOKABLE QString itemElement(int itemIndex,RSSElement aElement);
+    Q_INVOKABLE QString itemElement(int itemIndex,QString userElement);
     Q_INVOKABLE QStringList itemElements(RSSElement aElement);
+    Q_INVOKABLE QStringList itemElements(QString userElement);
     Q_INVOKABLE QStringList category(int itemIndex);
     Q_INVOKABLE QList<QStringList> categories();
     Q_INVOKABLE int itemCount();
