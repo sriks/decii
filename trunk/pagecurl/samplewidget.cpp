@@ -9,7 +9,7 @@ SampleWidget::SampleWidget(QWidget* parent)
     mScene = new QGraphicsScene(this);
     setScene(mScene);
     QPixmap pixmap;
-    qDebug()<<"pixmap loaded "<<pixmap.load(":/resource/images/image1.JPG");
+    qDebug()<<"pixmap loaded "<<pixmap.load(":/resource/images/image1.jpg");
     pixmap = pixmap.scaled(size());
     QGraphicsItem* item = mScene->addPixmap(pixmap);
 }

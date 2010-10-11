@@ -24,8 +24,8 @@ DPageTurnEffect::DPageTurnEffect(QObject* parent)
     mCurlLayer->setObjectName("curllayer");
     mCurlLayer->setZValue(10);
     this->scene()->addItem(mCurlLayer);
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(mCurlLayer);
-    mCurlLayer->setGraphicsEffect(shadowEffect);
+//    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(mCurlLayer);
+//    mCurlLayer->setGraphicsEffect(shadowEffect);
 
     mPageCutLayer = new DGraphicsLayer(mPageCurl,false);
     mPageCutLayer->setObjectName("pagecutlayer");
@@ -121,8 +121,8 @@ resize(hostSize);
 
     mPageCutLayer->resize(mPageCurl->hostWidgetSize());
 
-    int animtime(1100);
-    QEasingCurve easingCurve(QEasingCurve::OutCirc);
+    int animtime(1200);
+    QEasingCurve easingCurve(QEasingCurve::InOutCubic);
 
     // Create curl animation
     QPropertyAnimation* curlAnimation = new QPropertyAnimation(mCurlLayer,"curl");
@@ -149,6 +149,7 @@ resize(hostSize);
     pageCutAnimation->setEasingCurve(easingCurve);
     QParallelAnimationGroup* parallelAnimGroup = new QParallelAnimationGroup(this);
     parallelAnimGroup->addAnimation(curlAnimation);
+    parallelAnimGroup->addAnimation(pageCutAnimation);
     parallelAnimGroup->start(QAbstractAnimation::DeleteWhenStopped);
     mPageCutLayer->show();
     mCurlLayer->show();

@@ -107,9 +107,12 @@ QPixmap DPageCurl::nextPageCut()
 return QPixmap();
 }
 
-QPixmap DPageCurl::nextPageCut__(QPointF curPos)
+QPixmap DPageCurl::nextPageCut__(QPointF pageCutPos)
 {
-      QRegion pageCutRegion = grabPageCut(mSourceImg,curPos.x(),curPos.y());
+    // This is pagecurl starting from top right
+    int curlWidth = hostWidgetSize().width() - pageCutPos.x();
+
+      QRegion pageCutRegion = grabPageCut(mSourceImg,curlWidth,curlWidth);
       // Extract this region from widget to image
       QImage img(mSourceImg.size(),QImage::Format_ARGB32_Premultiplied);
       QPainter painter(&img);
@@ -125,6 +128,37 @@ QPixmap DPageCurl::nextPageCut__(QPointF curPos)
        mCurrentPagecutImage = img;
       // return valid image
       return QPixmap::fromImage(img);
+}
+
+QRegion DPageCurl::grabPageCut(QImage image,int width,int height)
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    //TODO: I Think argument image can be directly used.
+    QImage tmpImage(image);
+    QPainter painter(&tmpImage);
+
+    // Create page points through which we cut the page
+    QVector<QPointF> pageCutPoints;
+
+    // This is fpr pagecut starting from topright
+    pageCutPoints.append(QPointF(mPageCurlStartingPoint.x()-width,mPageCurlStartingPoint.y())); // point A
+    pageCutPoints.append(QPointF(mPageCurlStartingPoint.x(),mPageCurlStartingPoint.y()+height)); // point B
+    pageCutPoints.append(image.rect().bottomRight());
+    pageCutPoints.append(image.rect().bottomLeft());
+
+    // add to path
+    QPainterPath pageCutPath(mPageCutStartingPoint);
+    for(int i=0;i<pageCutPoints.count();i++)
+    {
+        pageCutPath.lineTo(pageCutPoints.value(i));
+    }
+    // close the path with starting point
+    pageCutPath.closeSubpath();
+    qDebug()<<"cutpoints:"<<pageCutPoints;
+    qDebug()<<"curpath:"<<pageCutPath;
+
+    painter.setClipPath(pageCutPath,Qt::ReplaceClip);
+    return painter.clipRegion();
 }
 
 
@@ -212,16 +246,15 @@ QPainterPath DPageCurl::nextCurlPath(QRectF curlRect)
     QPainterPath curlPath(curlRect.topLeft());
     curlPath.lineTo(curlRect.bottomRight());
 #ifdef ADDCURVE
-    const int KPercentOfX = 50;
-    const int KPercentOfY = 20;
-
+    const int KPercentOfX = 30;
+    const int KPercentOfY = 10;
     QPointF currentPoint = curlRect.bottomRight();
     QPointF c1;
     c1.setX( currentPoint.x() - ((KPercentOfX*currentPoint.x())/100) );  // % of X
     c1.setY( currentPoint.y() - ((KPercentOfY*currentPoint.y())/100) );
     curlPath.cubicTo(c1,curlRect.bottomLeft(),curlRect.bottomLeft());
     currentPoint = curlRect.center();
-    c1.setX( currentPoint.x() - ((KPercentOfX*currentPoint.x())/100) );  // % of X
+    c1.setX( currentPoint.x() - ((KPercentOfX+60*currentPoint.x())/100) );  // % of X
     c1.setY( currentPoint.y() - ((KPercentOfY*currentPoint.y())/100) );
     curlPath.cubicTo(c1,curlRect.topLeft(),curlRect.topLeft());
 curlPath.closeSubpath();
@@ -249,36 +282,6 @@ QImage DPageCurl::captureOriginal(QWidget* widget)
 }
 
 
-QRegion DPageCurl::grabPageCut(QImage image,int width,int height)
-{
-    qDebug()<<__PRETTY_FUNCTION__;
-    //TODO: I Think argument image can be directly used.
-    QImage tmpImage(image);
-    QPainter painter(&tmpImage);
-
-    // Create page points through which we cut the page
-    QVector<QPointF> pageCutPoints;
-
-    // This is fpr pagecut starting from topright
-    pageCutPoints.append(QPointF(mPageCurlStartingPoint.x()-width,mPageCurlStartingPoint.y())); // point A
-    pageCutPoints.append(QPointF(mPageCurlStartingPoint.x(),mPageCurlStartingPoint.y()+height)); // point B
-    pageCutPoints.append(image.rect().bottomRight());
-    pageCutPoints.append(image.rect().bottomLeft());
-
-    // add to path
-    QPainterPath pageCutPath(mPageCutStartingPoint);
-    for(int i=0;i<pageCutPoints.count();i++)
-    {
-        pageCutPath.lineTo(pageCutPoints.value(i));
-    }
-    // close the path with starting point
-    pageCutPath.closeSubpath();
-    qDebug()<<"cutpoints:"<<pageCutPoints;
-    qDebug()<<"curpath:"<<pageCutPath;
-
-    painter.setClipPath(pageCutPath,Qt::ReplaceClip);
-    return painter.clipRegion();
-}
 
 QRegion DPageCurl::grabPageCut__(QImage image,int width,int height)
 {

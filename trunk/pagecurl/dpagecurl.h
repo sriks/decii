@@ -20,7 +20,7 @@ public:
     void doCurl(QWidget* widget,int width,int height);
     QImage captureOriginal(QWidget* widget);
     QPixmap nextPageCut();
-    QPixmap nextPageCut__(QPointF curPos);
+    QPixmap nextPageCut__(QPointF pageCutPos);
     QPixmap nextCurlCut();
     QPixmap nextCurlCut__(QPointF curlPos);
     QPainterPath nextCurlPath(QRectF curlRect);
