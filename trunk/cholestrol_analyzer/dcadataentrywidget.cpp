@@ -5,6 +5,7 @@
 #include <QFont>
 #include <QApplication>
 #include "QtScrollWheel"
+#include "QtSvgButton"
 #include "dgraphicstextwidget.h"
 #include "dcadataentrywidget.h"
 
@@ -36,6 +37,13 @@ DCADataEntryWidget::DCADataEntryWidget(QGraphicsItem* parent)
     mProxySlider->setWidget(mQtScrollWheel);
     mProxySlider->setFlag(QGraphicsItem::ItemIsSelectable,true);
     mProxySlider->setFlag(QGraphicsItem::ItemIsMovable,true);
+    mProxyButtonOk = new QGraphicsProxyWidget;
+    QtSvgButton* okButton = new QtSvgButton;
+    okButton->setSkin("Beryl");
+    okButton->setText("OK");
+    mProxyButtonOk->setWidget(okButton);
+    mProxyButtonOk->resize(50,50);
+
 
     // Create layouts
     QGraphicsAnchorLayout* masterLayout = new QGraphicsAnchorLayout(this);
@@ -51,10 +59,13 @@ DCADataEntryWidget::DCADataEntryWidget(QGraphicsItem* parent)
     readingLayout->setStretchFactor(mReading,2);
     dataEntryLayoutLeft->addItem(readingLayout);
     dataEntryLayoutLeft->addItem(mSeverityIndicator);
+    buttonLayout->addItem(mProxyButtonOk);
     dataEntryLayoutLeft->addItem(buttonLayout);
     dataEntryLayout->addItem(dataEntryLayoutLeft);
     dataEntryLayout->addItem(mProxySlider);
     dataEntryLayout->setStretchFactor(mProxySlider,1);
+
+
 
     QGraphicsAnchor* anchor = masterLayout->addAnchor(titleLayout,Qt::AnchorTop,masterLayout,Qt::AnchorTop);
     masterLayout->addCornerAnchors(dataEntryLayout,Qt::TopLeftCorner,titleLayout,Qt::BottomLeftCorner);

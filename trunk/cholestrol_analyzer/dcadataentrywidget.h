@@ -25,6 +25,7 @@ private:
     DGraphicsTextWidget* mUnits;
     DGraphicsTextWidget* mSeverityIndicator;
     QGraphicsProxyWidget* mProxySlider;
+    QGraphicsProxyWidget* mProxyButtonOk;
     QtScrollWheel* mQtScrollWheel;
 };
 
