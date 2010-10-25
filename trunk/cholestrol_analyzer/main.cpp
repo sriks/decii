@@ -4,18 +4,13 @@
 #include "widget.h"
 #include "dcadataentrywidget.h"
 
-//#define USE_GV
+#define USE_GV
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 #ifdef USE_GV
     DCADataEntryWidget* dataEntryWidget = new DCADataEntryWidget;
-    QGraphicsView view;
-    QGraphicsScene scene;
-    scene.addItem(dataEntryWidget);
-    view.setScene(&scene);
-    view.resize(360,640-200); //n8 size
-    view.show();
+    dataEntryWidget->showMaximized();
 #else
     Widget w;
     w.show();

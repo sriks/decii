@@ -19,9 +19,9 @@ HEADERS  += widget.h \
     dcadataentrywidget.h \
     dgraphicstextwidget.h
 
-include(../qtembedded/src/common/common.pri)
-include(../qtembedded/src/scrollwheel/scrollwheel.pri)
-include(../qtembedded/src/svgbutton/svgbutton.pri)
+include(../embedded-widgets-1.1.0/src/common/common.pri)
+include(../embedded-widgets-1.1.0/src/scrollwheel/scrollwheel.pri)
+include(../embedded-widgets-1.1.0/src/svgbutton/svgbutton.pri)
 RESOURCES += \
-            /home/srikanth/development/trunk/qtembedded/skins/berylsquare_svgbutton.qrc \
-            ../qtembedded/skins/beryl_scrollwheel.qrc \
+            ../embedded-widgets-1.1.0/skins/berylsquare_svgbutton.qrc \
+            ../embedded-widgets-1.1.0/skins/beryl_scrollwheel.qrc \

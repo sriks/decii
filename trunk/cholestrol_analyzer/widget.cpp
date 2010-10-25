@@ -2,7 +2,6 @@
 #include "qtscrollwheel.h"
 #include "QtSvgButton"
 #include "widget.h"
-#include "ui_widget.h"
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent)
@@ -14,7 +13,7 @@ Widget::Widget(QWidget *parent) :
     scrollWheel->setMinimum(0);
     scrollWheel->setMaximum(999);
     scrollWheel->setSingleStep(1);
-//    scrollWheel->resize(400,400);
+    scrollWheel->resize(140,240);
 
     QtSvgButton* okButton = new QtSvgButton;
     okButton->setText("OK");
