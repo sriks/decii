@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" href="$classScrollDialPopup.html" title="The ScrollDialPopup is a private class of QtScrollDial." alt="" coords="112,293,224,323"/>
+<area shape="rect" href="$classQtBasicDialGauge.html" title="The QtBasicDialGauge class provides a basic dial gauge with SVG graphics." alt="" coords="43,101,171,131"/>
+<area shape="rect" href="$classQtScrollWheel.html" title="The QtScrollWheel class provides a scroll wheel to set values." alt="" coords="245,197,349,227"/>
+<area shape="rect" href="$classQtSvgPixmapCache.html" title="QtSvgPixmapCache" alt="" coords="228,101,367,131"/>
+<area shape="rect" href="$classQtSvgPixmapCachePrivate.html" title="QtSvgPixmapCachePrivate" alt="" coords="208,5,387,35"/>
+<area shape="rect" href="$classPopupCloseButton.html" title="Private class used in ScrollDialPopup." alt="" coords="373,197,501,227"/>
+</map>
