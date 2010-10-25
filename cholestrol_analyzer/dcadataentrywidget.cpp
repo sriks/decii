@@ -2,75 +2,67 @@
 #include <QGraphicsAnchor>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsProxyWidget>
+#include <QBoxLayout>
 #include <QFont>
+#include <QLabel>
 #include <QApplication>
+#include <QDesktopWidget>
+#include <QDebug>
 #include "QtScrollWheel"
 #include "QtSvgButton"
 #include "dgraphicstextwidget.h"
 #include "dcadataentrywidget.h"
 
-DCADataEntryWidget::DCADataEntryWidget(QGraphicsItem* parent)
-                   :QGraphicsWidget(parent)
+const int KDefaultLDLValue  = 120;
+DCADataEntryWidget::DCADataEntryWidget(QWidget* parent)
+                   :QWidget(parent)
 {
-    mTitle = new DGraphicsTextWidget("LDL : Bad cholestrol");
+    QSize mScreenSize(QDesktopWidget().screenGeometry().width(),
+                      QDesktopWidget().screenGeometry().height());
+    mTitle = new QLabel("LDL : Bad cholestrol",this);
     QFont font = QApplication::font();
-    font.setPixelSize(12);
-    font.setBold(true);
-    mTitle->textItem()->setFont(font);
-    mReading = new DGraphicsTextWidget("0");
-    font.setPixelSize(20);
-    mReading->textItem()->setFont(font);
-    mUnits = new DGraphicsTextWidget("mg/dl");
-    font.setPixelSize(10);
-    font.setBold(false);
-    mUnits->textItem()->setFont(font);
-    mSeverityIndicator = new DGraphicsTextWidget("Low Risk");
-    font.setPixelSize(15);
-    mSeverityIndicator->textItem()->setFont(font);
-    mQtScrollWheel = new QtScrollWheel;
+    int fontSize = (5*mScreenSize.height())/100;
+    qDebug()<<"fontSize:"<<fontSize;
+    font.setPixelSize(fontSize);
+    mTitle->setFont(font);
+    mTitle->resize(mScreenSize.width(),mTitle->fontMetrics().height());
+    mReading = new QLabel("0",this);
+    mUnits = new QLabel("mg/dl",this);
+    mSeverityIndicator = new QLabel("Low Risk",this);
+    mQtScrollWheel = new QtScrollWheel(this);
     mQtScrollWheel->setSkin("Beryl");
     mQtScrollWheel->setMinimum(0);
     mQtScrollWheel->setMaximum(999);
     mQtScrollWheel->setSingleStep(1);
-    connect(mQtScrollWheel,SIGNAL(valueChanged(int)),this,SLOT(valueChanged(int)));
-    mProxySlider = new QGraphicsProxyWidget;
-    mProxySlider->setWidget(mQtScrollWheel);
-    mProxySlider->setFlag(QGraphicsItem::ItemIsSelectable,true);
-    mProxySlider->setFlag(QGraphicsItem::ItemIsMovable,true);
-    mProxyButtonOk = new QGraphicsProxyWidget;
-    QtSvgButton* okButton = new QtSvgButton;
-    okButton->setSkin("Beryl");
-    okButton->setText("OK");
-    mProxyButtonOk->setWidget(okButton);
-    mProxyButtonOk->resize(50,50);
 
+    connect(mQtScrollWheel,SIGNAL(valueChanged(int)),this,SLOT(valueChanged(int)));
+    mQtScrollWheel->setValue(KDefaultLDLValue);
+    int wheelWidth = (15*mScreenSize.width())/100;
+    int wheelHeight = (15*mScreenSize.height())/100;
 
     // Create layouts
-    QGraphicsAnchorLayout* masterLayout = new QGraphicsAnchorLayout(this);
-    QGraphicsLinearLayout* titleLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-    QGraphicsLinearLayout* dataEntryLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-    QGraphicsLinearLayout* dataEntryLayoutLeft = new QGraphicsLinearLayout(Qt::Vertical);
-    QGraphicsLinearLayout* readingLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-    QGraphicsLinearLayout* buttonLayout = new QGraphicsLinearLayout(Qt::Horizontal);
-
-    titleLayout->addItem(mTitle);
-    readingLayout->addItem(mReading);
-    readingLayout->addItem(mUnits);
+    QBoxLayout* masterLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
+    QBoxLayout* titleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    QBoxLayout* dataEntryLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    QBoxLayout* dataEntryLayoutLeft = new QBoxLayout(QBoxLayout::TopToBottom);
+    QBoxLayout* readingLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    titleLayout->addWidget(mTitle);
+    readingLayout->addWidget(mReading);
+    readingLayout->addWidget(mUnits);
     readingLayout->setStretchFactor(mReading,2);
     dataEntryLayoutLeft->addItem(readingLayout);
-    dataEntryLayoutLeft->addItem(mSeverityIndicator);
-    buttonLayout->addItem(mProxyButtonOk);
+    dataEntryLayoutLeft->addWidget(mSeverityIndicator);
+//    buttonLayout->addItem(mProxyButtonOk);
     dataEntryLayoutLeft->addItem(buttonLayout);
     dataEntryLayout->addItem(dataEntryLayoutLeft);
-    dataEntryLayout->addItem(mProxySlider);
-    dataEntryLayout->setStretchFactor(mProxySlider,1);
+    dataEntryLayout->addWidget(mQtScrollWheel);
+    dataEntryLayout->setStretchFactor(mQtScrollWheel,1);
 
 
+    masterLayout->addItem(dataEntryLayoutLeft);
+    masterLayout->addWidget(mQtScrollWheel);
 
-    QGraphicsAnchor* anchor = masterLayout->addAnchor(titleLayout,Qt::AnchorTop,masterLayout,Qt::AnchorTop);
-    masterLayout->addCornerAnchors(dataEntryLayout,Qt::TopLeftCorner,titleLayout,Qt::BottomLeftCorner);
-    masterLayout->addCornerAnchors(dataEntryLayout,Qt::TopRightCorner,titleLayout,Qt::BottomRightCorner);
-    masterLayout->addCornerAnchors(dataEntryLayout,Qt::BottomRightCorner,masterLayout,Qt::BottomRightCorner);
     setLayout(masterLayout);
 }
 
@@ -81,17 +73,17 @@ DCADataEntryWidget::~DCADataEntryWidget()
 
 void DCADataEntryWidget::setTitle(QString title)
 {
-    mTitle->textItem()->setPlainText(title);
+    mTitle->setText(title);
 }
 
 QString DCADataEntryWidget::title()
 {
-    mTitle->textItem()->toPlainText();
+    mTitle->text();
 }
 
 void DCADataEntryWidget::valueChanged(int value)
 {
-    mReading->textItem()->setPlainText(QString().setNum(value));
+    mReading->setText(QString().setNum(value));
 }
 
 // eof
