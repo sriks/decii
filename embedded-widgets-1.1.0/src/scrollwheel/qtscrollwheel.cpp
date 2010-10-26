@@ -206,6 +206,10 @@ void QtScrollWheel::paintEvent(QPaintEvent* event)
 */
 QSize QtScrollWheel::sizeHint() const
 {
+// ssombhatla: customizing for cholestrol widget
+#ifdef CHOLESTROL_WIDGET
+    return size();
+#else
     return QSize(80,200);
 
    if (!m_defaultSize.isNull()) {
@@ -214,4 +218,5 @@ QSize QtScrollWheel::sizeHint() const
     } else {
         return QAbstractSlider::sizeHint();
     }
+#endif
 }
