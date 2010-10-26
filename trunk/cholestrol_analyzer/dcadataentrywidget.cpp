@@ -8,8 +8,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDebug>
-#include "QtScrollWheel"
-#include "QtSvgButton"
+#include "qtscrollwheel.h"
 #include "dgraphicstextwidget.h"
 #include "dcadataentrywidget.h"
 
@@ -27,6 +26,9 @@ DCADataEntryWidget::DCADataEntryWidget(QWidget* parent)
     mTitle->setFont(font);
     mTitle->resize(mScreenSize.width(),mTitle->fontMetrics().height());
     mReading = new QLabel("0",this);
+    fontSize = (15*mScreenSize.height())/100;
+    font.setPixelSize(fontSize);
+    mReading->setFont(font);
     mUnits = new QLabel("mg/dl",this);
     mSeverityIndicator = new QLabel("Low Risk",this);
     mQtScrollWheel = new QtScrollWheel(this);
@@ -34,12 +36,10 @@ DCADataEntryWidget::DCADataEntryWidget(QWidget* parent)
     mQtScrollWheel->setMinimum(0);
     mQtScrollWheel->setMaximum(999);
     mQtScrollWheel->setSingleStep(1);
-
+    mQtScrollWheel->resize(QSize(120,300));
     connect(mQtScrollWheel,SIGNAL(valueChanged(int)),this,SLOT(valueChanged(int)));
     mQtScrollWheel->setValue(KDefaultLDLValue);
-    int wheelWidth = (15*mScreenSize.width())/100;
-    int wheelHeight = (15*mScreenSize.height())/100;
-
+    mReading->setFixedSize(mReading->fontMetrics().size(Qt::TextSingleLine,"999"));
     // Create layouts
     QBoxLayout* masterLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
     QBoxLayout* titleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
@@ -50,15 +50,17 @@ DCADataEntryWidget::DCADataEntryWidget(QWidget* parent)
     titleLayout->addWidget(mTitle);
     readingLayout->addWidget(mReading);
     readingLayout->addWidget(mUnits);
-    readingLayout->setStretchFactor(mReading,2);
+    readingLayout->setSpacing(10);
+//    readingLayout->setSizeConstraint(QLayout::SetMinimumSize);
     dataEntryLayoutLeft->addItem(readingLayout);
     dataEntryLayoutLeft->addWidget(mSeverityIndicator);
+    dataEntryLayoutLeft->setSpacing(0);
+
 //    buttonLayout->addItem(mProxyButtonOk);
     dataEntryLayoutLeft->addItem(buttonLayout);
     dataEntryLayout->addItem(dataEntryLayoutLeft);
     dataEntryLayout->addWidget(mQtScrollWheel);
     dataEntryLayout->setStretchFactor(mQtScrollWheel,1);
-
 
     masterLayout->addItem(dataEntryLayoutLeft);
     masterLayout->addWidget(mQtScrollWheel);
