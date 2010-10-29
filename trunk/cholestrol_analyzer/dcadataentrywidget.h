@@ -1,17 +1,18 @@
 #ifndef DCADATAENTRYWIDGET_H
 #define DCADATAENTRYWIDGET_H
 
-#include <QWidget>
+#include <QGraphicsWidget>
 
+class QGraphicsProxyWidget;
+class QGraphicsSceneResizeEvent;
 class QtScrollWheel;
-class QLabel;
-class QSize;
-class DCADataEntryWidget : public QWidget
+class DGraphicsTextWidget;
+class DCADataEntryWidget : public QGraphicsWidget
 {
     Q_OBJECT
 
 public:
-    DCADataEntryWidget(QWidget* parent = 0);
+    DCADataEntryWidget(QGraphicsItem* parent = 0);
     ~DCADataEntryWidget();
     void setTitle(QString title);
     QString title();
@@ -19,13 +20,16 @@ public:
 protected slots:
     void valueChanged(int value);
 
+protected:
+     bool eventFilter(QObject *obj, QEvent *event);
+     void resizeEvent(QGraphicsSceneResizeEvent *event);
 private:
-    QLabel* mTitle;
-    QLabel* mReading;
-    QLabel* mUnits;
-    QLabel* mSeverityIndicator;
+    DGraphicsTextWidget* mTitle;
+    DGraphicsTextWidget* mReading;
+    DGraphicsTextWidget* mUnits;
+    DGraphicsTextWidget* mSeverityIndicator;
+    QGraphicsProxyWidget* mProxySlider;
     QtScrollWheel* mQtScrollWheel;
-    QSize mScreenSize;
 };
 
 #endif // DCADATAENTRYWIDGET_H

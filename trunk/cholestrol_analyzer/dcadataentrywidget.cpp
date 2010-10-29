@@ -2,70 +2,78 @@
 #include <QGraphicsAnchor>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsProxyWidget>
-#include <QBoxLayout>
 #include <QFont>
-#include <QLabel>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QGraphicsSceneResizeEvent>
 #include <QDebug>
-#include "qtscrollwheel.h"
+#include "QtScrollWheel"
 #include "dgraphicstextwidget.h"
 #include "dcadataentrywidget.h"
 
-const int KDefaultLDLValue  = 120;
-DCADataEntryWidget::DCADataEntryWidget(QWidget* parent)
-                   :QWidget(parent)
+const QString KScrollWheel("scrollwheel");
+const QString KProxySlider("proxyslider");
+
+DCADataEntryWidget::DCADataEntryWidget(QGraphicsItem* parent)
+                   :QGraphicsWidget(parent)
 {
-    QSize mScreenSize(QDesktopWidget().screenGeometry().width(),
-                      QDesktopWidget().screenGeometry().height());
-    mTitle = new QLabel("LDL : Bad cholestrol",this);
+    resize(360,640);
+    mTitle = new DGraphicsTextWidget("LDL : Bad cholestrol");
     QFont font = QApplication::font();
-    int fontSize = (5*mScreenSize.height())/100;
-    qDebug()<<"fontSize:"<<fontSize;
-    font.setPixelSize(fontSize);
-    mTitle->setFont(font);
-    mTitle->resize(mScreenSize.width(),mTitle->fontMetrics().height());
-    mReading = new QLabel("0",this);
-    fontSize = (15*mScreenSize.height())/100;
-    font.setPixelSize(fontSize);
-    mReading->setFont(font);
-    mUnits = new QLabel("mg/dl",this);
-    mSeverityIndicator = new QLabel("Low Risk",this);
-    mQtScrollWheel = new QtScrollWheel(this);
+    font.setPixelSize(12);
+    font.setBold(true);
+    mTitle->textItem()->setFont(font);
+    mReading = new DGraphicsTextWidget("0");
+    font.setPixelSize(20);
+    mReading->textItem()->setFont(font);
+    mUnits = new DGraphicsTextWidget("mg/dl");
+    font.setPixelSize(10);
+    font.setBold(false);
+    mUnits->textItem()->setFont(font);
+    mSeverityIndicator = new DGraphicsTextWidget("Low Risk");
+    font.setPixelSize(15);
+    mSeverityIndicator->textItem()->setFont(font);
+    mQtScrollWheel = new QtScrollWheel;
+    mQtScrollWheel->setObjectName(KScrollWheel);
     mQtScrollWheel->setSkin("Beryl");
+    mQtScrollWheel->resize(QSize(150,350));
     mQtScrollWheel->setMinimum(0);
     mQtScrollWheel->setMaximum(999);
     mQtScrollWheel->setSingleStep(1);
-    mQtScrollWheel->resize(QSize(120,300));
     connect(mQtScrollWheel,SIGNAL(valueChanged(int)),this,SLOT(valueChanged(int)));
-    mQtScrollWheel->setValue(KDefaultLDLValue);
-    mReading->setFixedSize(mReading->fontMetrics().size(Qt::TextSingleLine,"999"));
+    mQtScrollWheel->setValue(250); // initial value
+    mProxySlider = new QGraphicsProxyWidget;
+    mProxySlider->setObjectName(KProxySlider);
+    mProxySlider->setWidget(mQtScrollWheel);
+    mProxySlider->setFlag(QGraphicsItem::ItemIsSelectable,true);
+    mProxySlider->setFlag(QGraphicsItem::ItemIsMovable,true);
+    mProxySlider->installEventFilter(this);
+    mQtScrollWheel->installEventFilter(this);
+    mProxySlider->rotate(90);
     // Create layouts
-    QBoxLayout* masterLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
-    QBoxLayout* titleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-    QBoxLayout* dataEntryLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-    QBoxLayout* dataEntryLayoutLeft = new QBoxLayout(QBoxLayout::TopToBottom);
-    QBoxLayout* readingLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-    QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-    titleLayout->addWidget(mTitle);
-    readingLayout->addWidget(mReading);
-    readingLayout->addWidget(mUnits);
-    readingLayout->setSpacing(10);
-//    readingLayout->setSizeConstraint(QLayout::SetMinimumSize);
-    dataEntryLayoutLeft->addItem(readingLayout);
-    dataEntryLayoutLeft->addWidget(mSeverityIndicator);
-    dataEntryLayoutLeft->setSpacing(0);
+    QGraphicsAnchorLayout* masterLayout = new QGraphicsAnchorLayout(this);
+    QGraphicsLinearLayout* titleLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+    QGraphicsLinearLayout* dataEntryLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+    QGraphicsLinearLayout* dataEntryLayoutLeft = new QGraphicsLinearLayout(Qt::Vertical);
+    QGraphicsLinearLayout* readingLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+    QGraphicsLinearLayout* buttonLayout = new QGraphicsLinearLayout(Qt::Horizontal);
 
-//    buttonLayout->addItem(mProxyButtonOk);
+    titleLayout->addItem(mTitle);
+    readingLayout->addItem(mReading);
+    readingLayout->addItem(mUnits);
+    readingLayout->setStretchFactor(mReading,2);
+    dataEntryLayoutLeft->addItem(readingLayout);
+    dataEntryLayoutLeft->addItem(mSeverityIndicator);
     dataEntryLayoutLeft->addItem(buttonLayout);
     dataEntryLayout->addItem(dataEntryLayoutLeft);
-    dataEntryLayout->addWidget(mQtScrollWheel);
-    dataEntryLayout->setStretchFactor(mQtScrollWheel,1);
+    dataEntryLayout->addItem(mProxySlider);
+    dataEntryLayout->setStretchFactor(mProxySlider,1);
 
-    masterLayout->addItem(dataEntryLayoutLeft);
-    masterLayout->addWidget(mQtScrollWheel);
-
+    QGraphicsAnchor* anchor = masterLayout->addAnchor(titleLayout,Qt::AnchorTop,masterLayout,Qt::AnchorTop);
+    masterLayout->addCornerAnchors(dataEntryLayout,Qt::TopLeftCorner,titleLayout,Qt::BottomLeftCorner);
+    masterLayout->addCornerAnchors(dataEntryLayout,Qt::TopRightCorner,titleLayout,Qt::BottomRightCorner);
+    masterLayout->addCornerAnchors(dataEntryLayout,Qt::BottomRightCorner,masterLayout,Qt::BottomRightCorner);
     setLayout(masterLayout);
+
 }
 
 DCADataEntryWidget::~DCADataEntryWidget()
@@ -75,17 +83,49 @@ DCADataEntryWidget::~DCADataEntryWidget()
 
 void DCADataEntryWidget::setTitle(QString title)
 {
-    mTitle->setText(title);
+    mTitle->textItem()->setPlainText(title);
 }
 
 QString DCADataEntryWidget::title()
 {
-    mTitle->text();
+    mTitle->textItem()->toPlainText();
 }
 
 void DCADataEntryWidget::valueChanged(int value)
 {
-    mReading->setText(QString().setNum(value));
+    mReading->textItem()->setPlainText(QString().setNum(value));
 }
 
+bool DCADataEntryWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    // Once mouse is grabbed, all events are from widget
+    // Hence we need to handle widget event to release the mouse
+
+    qDebug()<<event->type();
+    if(QEvent::GraphicsSceneMousePress == event->type() &&
+       KProxySlider == obj->objectName())
+    {
+        qDebug()<<"Grabbing mouse";
+        mProxySlider->widget()->grabMouse();
+    }
+
+    else if(QEvent::MouseButtonRelease == event->type() &&
+            KScrollWheel == obj->objectName())
+    {
+        qDebug()<<"Releasing mouse";
+        mProxySlider->widget()->releaseMouse();
+    }
+
+    // TODO: If pressed and moved outside slider area, it can still move
+    //       Fix is to handle hover events on widget and behave
+    return false;
+}
+
+void DCADataEntryWidget::resizeEvent(QGraphicsSceneResizeEvent *event)
+{
+    qDebug()<<event->oldSize();
+    qDebug()<<event->newSize();
+    resize(event->newSize());
+
+}
 // eof
