@@ -140,11 +140,18 @@ QString QtScrollWheel::skin() const
 */
 void QtScrollWheel::mouseMoveEvent(QMouseEvent* event)
 {
-    int diff = event->pos().y() - m_lastMousePosition.y();
+//    int diff = event->pos().y() - m_lastMousePosition.y();
+//    if (qAbs(diff) > QApplication::startDragDistance()) {
+//        changeValue((diff > 0) ? -1 : 1);
+//        m_lastMousePosition = event->pos();
+//    }
+
+    int diff = event->pos().x() - m_lastMousePosition.x();
     if (qAbs(diff) > QApplication::startDragDistance()) {
         changeValue((diff > 0) ? -1 : 1);
         m_lastMousePosition = event->pos();
     }
+
 }
 
 /*!
@@ -198,6 +205,7 @@ void QtScrollWheel::paintEvent(QPaintEvent* event)
 
     QPainter painter(this);
     m_wheel[m_currentIndex].render(&painter, QRectF(0,0, width(), height()));
+
 }
 /*!
     \internal
@@ -208,7 +216,8 @@ QSize QtScrollWheel::sizeHint() const
 {
 // ssombhatla: customizing for cholestrol widget
 #ifdef CHOLESTROL_WIDGET
-    return size();
+//    return size();
+    return QSize(120,300);
 #else
     return QSize(80,200);
 
