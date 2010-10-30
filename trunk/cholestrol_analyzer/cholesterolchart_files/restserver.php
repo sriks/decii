@@ -1,0 +1,1 @@
+fb_sharepro_render([{"url":"http:\/\/www.disabled-world.com\/artman\/publish\/cholesterol-chart.shtml","share_count":1,"like_count":1,"comment_count":0,"total_count":2,"click_count":0,"normalized_url":"http:\/\/www.disabled-world.com\/artman\/publish\/cholesterol-chart.shtml"}]);

@@ -17,6 +17,7 @@ public:
     void setTitle(QString title);
     QString title();
 
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected slots:
     void valueChanged(int value);
 

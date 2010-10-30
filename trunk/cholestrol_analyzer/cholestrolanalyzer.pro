@@ -5,6 +5,8 @@
 #-------------------------------------------------
 
 DEFINES  += CHOLESTROL_WIDGET
+DEFINES  += DEBUG_PAINT
+
 QT       += core gui
 
 TARGET = cholestrolanalyzer
