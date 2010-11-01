@@ -24,6 +24,11 @@ public:
 
     void setSkin(const QString& skin);
     QString skin() const;
+
+    //ssombhatla
+    void setHorizontal(bool value);
+    bool isHorizontal(){return m_isHorizontal;}
+
 protected:
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseMoveEvent(QMouseEvent* event);
@@ -44,6 +49,8 @@ private:
     QPoint m_lastMousePosition;
     /** actual skin name **/
     QString m_skin;
+    bool m_isHorizontal;
+    QSize m_HorizontalSize;
 };
 
 #endif // QT_SCROLL_WHEEL_H
