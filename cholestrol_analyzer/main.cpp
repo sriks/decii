@@ -7,15 +7,17 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
     DCADataEntryWidget* dataEntryWidget = new DCADataEntryWidget;
-    dataEntryWidget->resize(360,640-200);
-    QGraphicsView view;
-    view.resize(360,640-200); //n8 size
-    QGraphicsScene scene;
-    scene.setSceneRect(0,0,360,640-200);
-    scene.addItem(dataEntryWidget);
-    view.setScene(&scene);
+    dataEntryWidget->setWindowTitle("Cholestrol Analyzer");
+    dataEntryWidget->setTitle("LDL : Bad cholestrol");
+    dataEntryWidget->setInitialValue(250);
+//    dataEntryWidget->resize(360,640-200);
+//    QGraphicsView view;
+//    view.resize(360,640-200); //n8 size
+//    QGraphicsScene scene;
+//    scene.setSceneRect(0,0,360,640-200);
+//    scene.addItem(dataEntryWidget);
+//    view.setScene(&scene);
 
 
     // softkeys
@@ -32,8 +34,8 @@ int main(int argc, char *argv[])
     QList<QAction *> softKeys;
     softKeys.append(newOption);
     softKeys.append(newExit);
-    view.addActions(softKeys);
-    view.showMaximized();
+    dataEntryWidget->addActions(softKeys);
+    dataEntryWidget->showMaximized();
 
     return a.exec();
 }

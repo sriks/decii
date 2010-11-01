@@ -1,36 +1,42 @@
 #ifndef DCADATAENTRYWIDGET_H
 #define DCADATAENTRYWIDGET_H
 
-#include <QGraphicsWidget>
+#include <QWidget>
 
-class QGraphicsProxyWidget;
-class QGraphicsSceneResizeEvent;
 class QtScrollWheel;
-class DGraphicsTextWidget;
-class DCADataEntryWidget : public QGraphicsWidget
+class QLabel;
+class QSize;
+class QBoxLayout;
+class DCADataEntryWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    DCADataEntryWidget(QGraphicsItem* parent = 0);
+    DCADataEntryWidget(QWidget* parent = 0);
     ~DCADataEntryWidget();
     void setTitle(QString title);
     QString title();
+    void setInitialValue(int initialValue);
+    int readingValue();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+protected:
+    void resizeEvent(QResizeEvent *event);
 protected slots:
     void valueChanged(int value);
 
-protected:
-     bool eventFilter(QObject *obj, QEvent *event);
-     void resizeEvent(QGraphicsSceneResizeEvent *event);
 private:
-    DGraphicsTextWidget* mTitle;
-    DGraphicsTextWidget* mReading;
-    DGraphicsTextWidget* mUnits;
-    DGraphicsTextWidget* mSeverityIndicator;
-    QGraphicsProxyWidget* mProxySlider;
+    QLabel* mTitle;
+    QLabel* mReading;
+    QLabel* mUnits;
+    QLabel* mSeverityIndicator;
+    QBoxLayout* mMasterLayout;
+    QBoxLayout* mMasterReadingLayout;
+    QBoxLayout* mTitleLayout;
+    QBoxLayout* mReadingLayout;
+    QBoxLayout* mDataEntryLayout;
+
     QtScrollWheel* mQtScrollWheel;
+    QSize mScreenSize;
 };
 
 #endif // DCADATAENTRYWIDGET_H
