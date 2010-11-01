@@ -65,7 +65,8 @@
     Parent.
 */
 QtScrollWheel::QtScrollWheel(QWidget* parent)
-    : QAbstractSlider(parent)
+    : QAbstractSlider(parent),
+      m_isHorizontal(false)
 {
     init();
 }
@@ -134,22 +135,42 @@ QString QtScrollWheel::skin() const
 }
 
 /*!
+    Sets the scroll wheel to be displayed as horizontal.
+    Client should ensure to rotate the widget or the proxywidget in which this is
+    contained to 270.
+    If rotation is not done before setting to horizontal results are unkonwn.
+    By default widget is vertical.
+*/
+void QtScrollWheel::setHorizontal(bool value)
+{
+    m_isHorizontal = value;
+    m_HorizontalSize = QSize(100,250);
+    resize(m_HorizontalSize);
+}
+
+/*!
     \overload
     \internal
     Overloaded mouse move event. Calculate new position of graphic.
 */
 void QtScrollWheel::mouseMoveEvent(QMouseEvent* event)
 {
-//    int diff = event->pos().y() - m_lastMousePosition.y();
-//    if (qAbs(diff) > QApplication::startDragDistance()) {
-//        changeValue((diff > 0) ? -1 : 1);
-//        m_lastMousePosition = event->pos();
-//    }
+    if(!isHorizontal())
+    {
+    int diff = event->pos().y() - m_lastMousePosition.y();
+    if (qAbs(diff) > QApplication::startDragDistance()) {
+        changeValue((diff > 0) ? -1 : 1);
+        m_lastMousePosition = event->pos();
+    }
+    }
 
+    else
+    {
     int diff = event->pos().x() - m_lastMousePosition.x();
     if (qAbs(diff) > QApplication::startDragDistance()) {
         changeValue((diff > 0) ? -1 : 1);
         m_lastMousePosition = event->pos();
+    }
     }
 
 }
@@ -183,6 +204,13 @@ void QtScrollWheel::wheelEvent(QWheelEvent* event)
 */
 void QtScrollWheel::changeValue(int delta)
 {
+    // ssombhatla
+    // If shown as horizontal, then values are incremented as -ve of the values
+    // i.e if 3 is value then -3 is added, if -4 is value then 4 is added.
+    if(isHorizontal())
+    {
+        delta = delta*(-1);
+    }
     if (delta < 0 && minimum() < value()) {
         m_currentIndex = (m_currentIndex + 2) % 3; // -1 (decrease)
         setValue(value() + delta);
@@ -204,8 +232,19 @@ void QtScrollWheel::paintEvent(QPaintEvent* event)
     Q_UNUSED(event);
 
     QPainter painter(this);
+    if(!isHorizontal())
+    {
     m_wheel[m_currentIndex].render(&painter, QRectF(0,0, width(), height()));
+    }
 
+    else
+    {
+    QTransform transform;
+    transform.translate(m_HorizontalSize.height(),0);
+    transform.rotate(90);
+    painter.setTransform(transform);
+    m_wheel[m_currentIndex].render(&painter, QRectF(0,0, m_HorizontalSize.width(),m_HorizontalSize.height() ));
+    }
 }
 /*!
     \internal
@@ -216,8 +255,7 @@ QSize QtScrollWheel::sizeHint() const
 {
 // ssombhatla: customizing for cholestrol widget
 #ifdef CHOLESTROL_WIDGET
-//    return size();
-    return QSize(120,300);
+    return QSize(250,100);
 #else
     return QSize(80,200);
 
