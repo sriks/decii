@@ -1,9 +1,7 @@
-
-QT += xmlpatterns
 INCLUDEPATH +=  $$PWD
-win32: {
-     LIBS += -Lc:/decii/lib
-}
-LIBS += -lrssmanager
-LIBS += -lrssparser
-
+DEPENDPATH += $$PWD
+HEADERS += $$PWD/rssmanager.h \
+           $$PWD/feedprofile.h
+SOURCES += $$PWD/rssmanager.cpp \
+           $$PWD/feedprofile.cpp
+include(../rssparser/rssparser.pri)

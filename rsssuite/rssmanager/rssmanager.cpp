@@ -127,6 +127,14 @@ bool RSSManager::removeFeed(QUrl sourceUrl)
 return false;
 }
 
+/*!
+\brief Returns the feed identified by \p sourceUrl
+       If no url mentioned in \p sourceUrl exists, it returns an invalid FeedSubscription.
+       Hence client should check as FeedSubscription::isValid() before using it.
+\arg sourceUrl Feed Url identifying the feed.
+\return valid FeedSubscription if \p sourceUrl is valid
+\sa FeedSubscription::isValid()
+*/
 FeedSubscription RSSManager::feed(QUrl sourceUrl)
 {
     FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
@@ -134,6 +142,10 @@ FeedSubscription RSSManager::feed(QUrl sourceUrl)
     return profile->subscription();
 }
 
+/*!
+\brief Returns all feeds added so far as a QList<FeedSubscription>
+\sa feed()
+*/
 QList<FeedSubscription> RSSManager::feeds()
 {
     QList<FeedSubscription> subscriptionList;
@@ -146,6 +158,11 @@ QList<FeedSubscription> RSSManager::feeds()
     return subscriptionList;
 }
 
+/*!
+\brief Returns all URLs of all feeds added so far.
+\sa feed()
+\sa feeds()
+*/
 QList<QUrl> RSSManager::feedUrls()
 {
     QList<QUrl> urlList;
@@ -157,6 +174,11 @@ QList<QUrl> RSSManager::feedUrls()
 return urlList;
 }
 
+/*!
+\brief Updates all feeds which are added so far.
+       Order of update is undefined. If such an order is required prefer to use update()
+\sa update()
+*/
 void RSSManager::updateAll()
 {
     qDebug()<<__FUNCTION__;

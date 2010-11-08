@@ -24,6 +24,11 @@ public:
     int updateInterval(){return mUpdateInterval;}
     void setUpdateInterval(int updateIntervalInMins){mUpdateInterval = updateIntervalInMins;}
 
+    bool isValid()
+    {
+        // Feed with negative interval is valid
+        return !mSourceUrl.toString().isEmpty();
+    }
 private:
     QUrl mSourceUrl;
     int mUpdateInterval;
@@ -37,45 +42,32 @@ class RSSManager : public QObject
 public:
     explicit RSSManager(QObject *parent = 0);
     ~RSSManager();
-
-    // adds a subscription.
-    // This doest initiate update cycle.
-    // Client should call start()
     void addFeed(FeedSubscription newSubscription);
-
-    // This changed subscription interval to new interval.
-    // This does not initiate a fetch on feed.
-    // Note: If a negative value is supplied, subscription is stopped.
     bool setUpdateInterval(QUrl sourceUrl, int newUpdateIntervalInMins);
     RSSParser* parser(QUrl sourceUrl);
     bool isFeedValid(QUrl sourceUrl);
-
-    // Start subscription in defined intervals
-    // It has no effect if called on a subscription which is already started or
-    // a subscription which doest have a valid interval
     bool start(QUrl sourceUrl);
     void startAll();
-    // stop fetching feeds
-    // This has no effect if a feed is already fetched and being processed.
     bool stop(QUrl sourceUrl);
     void stopAll();
-
     bool removeFeed(QUrl sourceUrl);
     FeedSubscription feed(QUrl sourceUrl);
     QList<FeedSubscription> feeds();
     QList<QUrl> feedUrls();
     int feedsCount(){return mFeedProfiles.count();}
-
-    // on demand update
-    // updates even if no interval is set
     void updateAll();
     void update(QUrl sourceUrl);
 
 signals:
-    // signal that new item is available
+    /*!
+      \brief Signal is emitted when new feed content is available
+      \arg sourceUrl Subscription URL on which new feed content is available.
+      \arg updateditems Number of feed items that are updated.
+      */
     void updateAvailable(QUrl sourceUrl, int updateditems);
 
 private slots:
+    // Internal methods, experimental support
     bool externalize();
     bool internalize();
 

@@ -24,6 +24,7 @@ public:
     }
     RSSParser* parser();
     void update();
+    QString feedFileName();
 
 signals:
     void updateAvailable(QUrl sourceUrl, int updatedItems);
@@ -47,7 +48,6 @@ private slots:
     // test slots
     void handleNetworkMgrDestroyed(QObject* obj);
 private:
-    QString feedFileName();
     void setNetworkRequestActive(bool value);
     bool isNetworkRequestActive();
 private:
