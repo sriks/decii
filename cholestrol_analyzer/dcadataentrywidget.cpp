@@ -64,7 +64,7 @@ DCADataEntryWidget::DCADataEntryWidget(QWidget* parent)
     mMasterReadingLayout->addWidget(mSeverityIndicator,0,Qt::AlignCenter);
     mMasterReadingLayout->setSpacing(0);
     mDataEntryLayout->addWidget(mQtScrollWheel,0,Qt::AlignCenter);
-    mDataEntryLayout->addWidget(new QLabel("Slide to change value"),0,Qt::AlignCenter);
+    mDataEntryLayout->addWidget(new QLabel("Slide the above wheel to change value"),0,Qt::AlignCenter);
     mMasterLayout->addItem(mMasterReadingLayout);
     mMasterLayout->addItem(mDataEntryLayout);
     setLayout(mMasterLayout);
