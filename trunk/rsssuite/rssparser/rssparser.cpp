@@ -131,7 +131,7 @@ RSSParser::~RSSParser()
 /**
   \brief Validates parser.
   Returns true if parser is valid.
-  An parser is valid if a readable non empty source is set using \ref setSource
+  Parser is valid if a readable non empty source is set using \ref setSource
   \return true if valid
   **/
 bool RSSParser::isValid()

@@ -58,7 +58,6 @@ private slots:
     QStringList executeQueryAsList(const QString& aQuery);
     QString enumToString(RSSParser::RSSElement aElement);
 
-
 private:
     QXmlQuery m_xmlQuery;
     QIODevice* m_xmlSource;

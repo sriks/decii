@@ -62,7 +62,7 @@ void FeedProfile::update()
     // Ignore if a request is already active
     if(!isNetworkRequestActive())
     {
-        // This is an on demand update, so dont restart the timer.
+        // This is an on-demand update, so dont restart the timer.
         // We have to update the feed even if update interval is negative.
         // A client may just need to update on demand and not in periodic interval.
         handleTimeOut();
