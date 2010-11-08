@@ -70,7 +70,7 @@ void MainWindow::addFeedUrl()
     url.setUrl(ui->urleditor->text());
     if(url.isValid())
     {
-        mRSSManager->addSubscription(FeedSubscription(url,1));
+        mRSSManager->addFeed(FeedSubscription(url,1));
         mRSSManager->start(url);
         ui->urlListWidget->addItem(url.toString());
     }
