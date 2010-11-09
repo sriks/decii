@@ -9,6 +9,7 @@ namespace Ui {
 }
 
 class QSystemTrayIcon;
+class QListWidgetItem;
 class RSSManager;
 class MainWindow : public QMainWindow
 {
@@ -21,7 +22,8 @@ public:
 private slots:
     void handleUpdateAvailable(QUrl sourceUrl, int updateditems);
     void addFeedUrl();
-    void noticationActivated();
+    void handleItemActivated(QListWidgetItem* item);
+
 private:
     Ui::MainWindow *ui;
     RSSManager* mRSSManager;

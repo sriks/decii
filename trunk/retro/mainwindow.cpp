@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QSystemTrayIcon>
 #include <QDesktopServices>
+#include <QListWidget>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "rssmanager.h"
@@ -38,28 +39,20 @@ void MainWindow::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
     mCurrentNotificationUrl.clear();
     if(updateditems)
     {
-        QString notificationText;
         RSSParser* parser = mRSSManager->parser(sourceUrl);
         if(parser->isValid())
         {
-            // group notification
-            if(updateditems > 1)
+
+            ui->listWidget->clear();
+            QStringList titleList = parser->itemElements(RSSParser::title);
+            for(int i=0;i<titleList.count();i++)
             {
-                notificationText += updateditems+" available";
-                mCurrentNotificationUrl = parser->channelElement(RSSParser::link);
+                titleList[i] = parser->decodeHtml(titleList[i]);
             }
 
-            // single notification
-            else
-            {
-                notificationText += parser->itemElement(1,RSSParser::title);
-                mCurrentNotificationUrl = parser->itemElement(1,RSSParser::link);
-            }
+            ui->listWidget->addItems(titleList);
 
-            QString title = parser->channelElement(RSSParser::title);
-            mTray->setToolTip("Retro");
-            qDebug()<<"Im showing tray msg";
-            mTray->showMessage("kill","bill");
+//            connect(ui->listWidget,SIGNAL(itemActivated(QListWidgetItem*)))
         }
     }
 }
@@ -76,9 +69,8 @@ void MainWindow::addFeedUrl()
     }
 }
 
-void MainWindow::noticationActivated()
+void MainWindow::handleItemActivated(QListWidgetItem* item)
 {
     // open with default app
-    QDesktopServices::openUrl(mCurrentNotificationUrl);
-    mCurrentNotificationUrl.clear();
+//    QDesktopServices::openUrl();
 }
