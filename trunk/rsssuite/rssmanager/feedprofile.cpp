@@ -48,7 +48,6 @@ RSSParser* FeedProfile::parser()
 {
     qDebug()<<__FUNCTION__;
     RSSParser* parser = new RSSParser;
-    parser = 0;// by default intialize to NULL
     QFile* feedFile = new QFile(feedFileName(),parser);
     if(feedFile->open(QIODevice::ReadOnly))
     {
