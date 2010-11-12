@@ -22,3 +22,4 @@ FORMS    += mainwindow.ui
 # Any client willing to use rsssuite can copy the following lines in .pro
 QT += xmlpatterns
 include(../rsssuite/rssmanager/rssmanager.pri)
+include(../dgraphicswidget/dgraphicswidget.pri)
