@@ -1,7 +1,16 @@
 
 INCLUDEPATH +=  $$PWD
-win32: {
-     LIBS += -Lc:/decii/lib
-}
-LIBS += -ldgraphicswidget
+DEPENDPATH += $$PWD
 
+SOURCES += dgraphicstextwidget.cpp \
+    dgraphicspixmapwidget.cpp \
+    dgraphicswidget.cpp \
+    dgraphicstitlewidget.cpp \
+    dgraphicsview.cpp
+
+HEADERS  += dgraphicswidget.h \
+    dgraphicstextwidget.h \
+    dgraphicspixmapwidget.h \
+    dgraphicstitlewidget.h \
+    dgraphicsview.h \
+    common.h
