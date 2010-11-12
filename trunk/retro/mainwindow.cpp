@@ -6,6 +6,8 @@
 #include "ui_mainwindow.h"
 #include "rssmanager.h"
 #include "rssparser.h"
+#include "dgraphicswidget.h"
+#include "dgraphicsview.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -52,7 +54,13 @@ void MainWindow::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
 
             ui->listWidget->addItems(titleList);
 
-//            connect(ui->listWidget,SIGNAL(itemActivated(QListWidgetItem*)))
+            DGraphicsWidget* notification = new DGraphicsWidget;
+            notification->resize(150,50);
+            QString titleText = QString().setNum(updateditems)+" "+"Updates available";
+            notification->setTitleText(titleText);
+            DGraphicsView* view = new DGraphicsView;
+            view->scene()->addItem(notification);
+            view->show();
         }
     }
 }
