@@ -3,6 +3,10 @@
 #include <QObject>
 #include <QUrl>
 
+#ifdef Q_OS_SYMBIAN
+#define BUG_8687
+#endif
+
 class LocationDetails : public QObject
 {
     Q_OBJECT;
@@ -22,6 +26,9 @@ public:
     QUrl link;
 };
 
+#ifdef BUG_8687
+class S60QHttp;
+#endif
 class QNetworkAccessManager;
 class QNetworkReply;
 class QIODevice;
@@ -56,17 +63,26 @@ public:
 
 signals:
     void newLocationAvailable();
+    void errorOccured(QString error);
 
 protected:
     QString readElement(QIODevice* xmlSource,int index,EntryElement element);
     QString executeQuery(QIODevice* xmlSource, const QString& aQuery);
 
 protected slots:
+    #ifdef BUG_8687
+    void on_http_requestFinished (int id,bool error);
+    #else
     void replyFinished(QNetworkReply *reply);
+    #endif
     void handleContent(QByteArray content);
 
 private:
+#ifdef BUG_8687
+    S60QHttp* mHttp;
+#else
     QNetworkAccessManager* mNetworkManager;
+#endif
     int mCurrentIndex;
     LocationDetails* mCurrentLocationDetails;
     int mCount;

@@ -8,6 +8,10 @@
 #include <QIODevice>
 #include <QMetaEnum>
 #include <QFile>
+#ifdef BUG_8687
+#include "S60QHttp.h"
+#endif
+
 #include "locationengine.h"
 
 const QByteArray KCurrentIndex("currentindex");
@@ -25,10 +29,14 @@ LocationEngine::LocationEngine(QObject* parent)
                 mCurrentLocationDetails(NULL),
                 mCount(0)
 {
+#ifdef BUG_8687
+    mHttp = new S60QHttp(this);
+
+#else
     mNetworkManager = new QNetworkAccessManager(this);
     connect(mNetworkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
-
+#endif
     QSettings settings(QApplication::organizationName(),QApplication::applicationName());
     if(settings.contains(KCurrentIndex))
     {
@@ -72,10 +80,27 @@ LocationDetails* LocationEngine::nextLocation()
     return mCurrentLocationDetails;
 }
 
+#ifdef BUG_8687
+void LocationEngine::on_http_requestFinished (int id,bool error)
+{
+    if(error)
+    {
+        emit errorOccured(mHttp->errorString());
+        return;
+    }
+    handleContent(mHttp->readAll());
+}
+#else
 void LocationEngine::replyFinished(QNetworkReply *reply)
 {
+    if(QNetworkReply::NoError != reply->error())
+    {
+        emit errorOccured(reply->errorString());
+        return;
+    }
     handleContent(reply->readAll());
 }
+#endif
 
 void LocationEngine::handleContent(QByteArray content)
 {
