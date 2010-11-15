@@ -21,8 +21,8 @@ FORMS    += mainwindow.ui
 
 include(../custombutton/custombutton.pri)
 
-CONFIG += mobility
-MOBILITY = 
+#CONFIG += mobility
+#MOBILITY =
 
 symbian {
     TARGET.UID3 = 0xec6ff120

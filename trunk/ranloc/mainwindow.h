@@ -18,6 +18,7 @@ public:
 protected slots:
     void requestNewLocations();
     void handleAnotherLocation();
+    void handleMoreAboutLocation();
 
 private:
     Ui::MainWindow *ui;

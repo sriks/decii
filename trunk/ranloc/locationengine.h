@@ -49,8 +49,10 @@ public:
     ~LocationEngine();
     void newLocation(QUrl url);
     LocationDetails* nextLocation();
+    LocationDetails* currentLocation(){return mCurrentLocationDetails;}
     int count(){return mCount;}
     int currentIndex(){return mCurrentIndex;}
+
 
 signals:
     void newLocationAvailable();
