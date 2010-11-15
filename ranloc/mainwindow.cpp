@@ -1,5 +1,6 @@
 #include <QUrl>
 #include <QDebug>
+#include <QDesktopServices>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "locationengine.h"
@@ -13,11 +14,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->locationLabel->resize(360,20);
     connect(ui->buttonNext,SIGNAL(clicked()),this,SLOT(handleAnotherLocation()));
+    connect(ui->buttonMore,SIGNAL(clicked()),this,SLOT(handleMoreAboutLocation()));
 //    QString style("background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #2198c0, stop: 1 #0d5ca6);");
 //    ui->locationLabel->setStyleSheet(style);
     ui->locationLabel->resize(10,10);
     mLocationEngine = new LocationEngine(this);
     connect(mLocationEngine,SIGNAL(newLocationAvailable()),this,SLOT(handleAnotherLocation()));
+
 //    requestNewLocations();
     handleAnotherLocation();
 }
@@ -40,9 +43,16 @@ void MainWindow::handleAnotherLocation()
     qDebug()<<details->title;
     ui->locationLabel->setText(details->title);
     QString html(KHtmlFormat);
-    html.arg(details->summary);
+    html = html.arg(details->summary);
     ui->webView->setHtml(html);
     }
+}
+
+void MainWindow::handleMoreAboutLocation()
+{
+    QUrl url(mLocationEngine->currentLocation()->link.toString().trimmed());
+    qDebug()<<url;
+    QDesktopServices::openUrl(url);
 }
 
 MainWindow::~MainWindow()
