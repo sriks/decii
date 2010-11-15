@@ -19,6 +19,7 @@ protected slots:
     void requestNewLocations();
     void handleAnotherLocation();
     void handleMoreAboutLocation();
+    void handleErrorOccured(QString error);
 
 private:
     Ui::MainWindow *ui;

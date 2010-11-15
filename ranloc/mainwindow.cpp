@@ -20,9 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->locationLabel->resize(10,10);
     mLocationEngine = new LocationEngine(this);
     connect(mLocationEngine,SIGNAL(newLocationAvailable()),this,SLOT(handleAnotherLocation()));
+    connect(mLocationEngine,SIGNAL(errorOccured(QString)),this,SLOT(handleErrorOccured(QString)));
+    requestNewLocations();
 
-//    requestNewLocations();
-    handleAnotherLocation();
 }
 
 void MainWindow::requestNewLocations()
@@ -46,6 +46,11 @@ void MainWindow::handleAnotherLocation()
     html = html.arg(details->summary);
     ui->webView->setHtml(html);
     }
+}
+
+void MainWindow::handleErrorOccured(QString error)
+{
+    ui->webView->setHtml(error);
 }
 
 void MainWindow::handleMoreAboutLocation()
