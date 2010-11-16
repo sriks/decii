@@ -29,6 +29,7 @@ public:
 class QNetworkAccessManager;
 class QNetworkReply;
 class QIODevice;
+class QXmlQuery;
 class LocationEngine : public QObject
 {
     Q_OBJECT
@@ -70,6 +71,7 @@ protected slots:
     void handleContent(QByteArray content);
 
 private:
+    QXmlQuery* mXmlQuery;
     QNetworkAccessManager* mNetworkManager;
     int mCurrentIndex;
     LocationDetails* mCurrentLocationDetails;
