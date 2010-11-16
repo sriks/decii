@@ -70,6 +70,7 @@ LocationEngine::LocationEngine(QObject* parent)
 #ifdef BUG_8687
     setDefaultIap();
 #endif
+    mXmlQuery = new QXmlQuery;
     mNetworkManager = new QNetworkAccessManager(this);
     connect(mNetworkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
@@ -88,6 +89,7 @@ LocationEngine::LocationEngine(QObject* parent)
 
 LocationEngine::~LocationEngine()
 {
+    delete mXmlQuery;
     QSettings settings(QApplication::organizationName(),QApplication::applicationName());
     settings.setValue(KCurrentIndex,mCurrentIndex);
 }
@@ -160,14 +162,12 @@ QString LocationEngine::readElement(QIODevice* xmlSource,int index,EntryElement 
 QString LocationEngine::executeQuery(QIODevice* xmlSource, const QString& aQuery)
 {
     qDebug()<<aQuery;
-
-    QXmlQuery xmlQuery;
-    xmlQuery.bindVariable(KXmlSource,xmlSource);
-    xmlQuery.setQuery(aQuery);
+    mXmlQuery->bindVariable(KXmlSource,xmlSource);
+    mXmlQuery->setQuery(aQuery);
     QString result = QString();
-    if(xmlQuery.isValid())
+    if(mXmlQuery->isValid())
     {
-       xmlQuery.evaluateTo(&result);
+       mXmlQuery->evaluateTo(&result);
     }
     return result;
 }
