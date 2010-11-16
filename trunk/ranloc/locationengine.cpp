@@ -8,11 +8,49 @@
 #include <QIODevice>
 #include <QMetaEnum>
 #include <QFile>
+#include "locationengine.h"
+
 #ifdef BUG_8687
-#include "S60QHttp.h"
+#include <es_sock.h>
+#include <sys/socket.h>
+#include <net/if.h>
+
+static void setDefaultIapL()
+    {
+    RSocketServ serv;
+    CleanupClosePushL(serv);
+    User::LeaveIfError(serv.Connect());
+
+    RConnection conn;
+    CleanupClosePushL(conn);
+    User::LeaveIfError(conn.Open(serv));
+    User::LeaveIfError(conn.Start());
+
+    _LIT(KIapNameSetting, "IAP\\Name");
+    TBuf8<50> iap8Name;
+
+    User::LeaveIfError(conn.GetDesSetting(TPtrC(KIapNameSetting), iap8Name));
+    iap8Name.ZeroTerminate();
+
+    conn.Stop();
+    CleanupStack::PopAndDestroy(&conn);
+    CleanupStack::PopAndDestroy(&serv);
+
+    struct ifreq ifReq;
+    memset(&ifReq, 0, sizeof(struct ifreq));
+    strcpy( ifReq.ifr_name, (char*)iap8Name.Ptr());
+    User::LeaveIfError(setdefaultif( &ifReq ));
+}
+
+static int setDefaultIap()
+{
+    TRAPD(err, setDefaultIapL());
+    qDebug()<<"Error in setDefaultIap: "<<err;
+    return err;
+}
 #endif
 
-#include "locationengine.h"
+
 
 const QByteArray KCurrentIndex("currentindex");
 const QString KFileName("locations.xml");
@@ -30,13 +68,13 @@ LocationEngine::LocationEngine(QObject* parent)
                 mCount(0)
 {
 #ifdef BUG_8687
-    mHttp = new S60QHttp(this);
-
-#else
+    setDefaultIap();
+#endif
     mNetworkManager = new QNetworkAccessManager(this);
     connect(mNetworkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
-#endif
+
+
     QSettings settings(QApplication::organizationName(),QApplication::applicationName());
     if(settings.contains(KCurrentIndex))
     {
@@ -80,17 +118,7 @@ LocationDetails* LocationEngine::nextLocation()
     return mCurrentLocationDetails;
 }
 
-#ifdef BUG_8687
-void LocationEngine::on_http_requestFinished (int id,bool error)
-{
-    if(error)
-    {
-        emit errorOccured(mHttp->errorString());
-        return;
-    }
-    handleContent(mHttp->readAll());
-}
-#else
+
 void LocationEngine::replyFinished(QNetworkReply *reply)
 {
     if(QNetworkReply::NoError != reply->error())
@@ -100,7 +128,6 @@ void LocationEngine::replyFinished(QNetworkReply *reply)
     }
     handleContent(reply->readAll());
 }
-#endif
 
 void LocationEngine::handleContent(QByteArray content)
 {
