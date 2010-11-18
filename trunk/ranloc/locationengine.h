@@ -49,11 +49,17 @@ public:
         thumbnailImg
     };
 
+    enum Queries
+    {
+        countryinfoforcountrycode,
+        locationinfoforindex
+    };
 
     LocationEngine(QObject* parent = 0);
     ~LocationEngine();
     void newLocation(QUrl url);
     LocationDetails* nextLocation();
+    LocationDetails* prevLocation();
     LocationDetails* currentLocation(){return mCurrentLocationDetails;}
     int count(){return mCount;}
     int currentIndex(){return mCurrentIndex;}
@@ -62,14 +68,16 @@ signals:
     void newLocationAvailable();
     void errorOccured(QString error);
 
-protected:
-    QString readElement(QIODevice* xmlSource,int index,EntryElement element);
-    QString executeQuery(QIODevice* xmlSource, const QString& aQuery);
-
 protected slots:
     void replyFinished(QNetworkReply *reply);
     void handleContent(QByteArray content);
 
+private:
+    QString readElement(QIODevice* xmlSource,int index,EntryElement element);
+    QString executeQuery(QIODevice* xmlSource, const QString& aQuery);
+    LocationDetails* locationDetails(int index);
+
+    QString query();
 private:
     QXmlQuery* mXmlQuery;
     QNetworkAccessManager* mNetworkManager;

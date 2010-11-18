@@ -50,8 +50,6 @@ static int setDefaultIap()
 }
 #endif
 
-
-
 const QByteArray KCurrentIndex("currentindex");
 const QString KFileName("locations.xml");
 const QString KXmlSource("xmlsource");
@@ -60,7 +58,7 @@ const QString KGetEntryByIndex("return $entry[%1]");
 const QString KEntriesCount("return count($entry)");
 const QString KGetEntryElement("return data($entry[%1]/%2)");
 
-//const QString KGetEntryByIndex("let $entry := doc(\"locations.xml\")//geonames/entry return $entry[1]");
+const QString KXqCountryInfoForCountryCode("countryinfoforcountrycode.xq");
 
 LocationEngine::LocationEngine(QObject* parent)
                :QObject(parent),
@@ -102,7 +100,18 @@ void LocationEngine::newLocation(QUrl url)
 
 LocationDetails* LocationEngine::nextLocation()
 {
-    mCurrentIndex++;
+    ++mCurrentIndex;
+    return LocationDetails(mCurrentIndex);
+ }
+
+LocationDetails* LocationEngine::prevLocation()
+{
+    --mCurrentIndex;
+    return LocationDetails(mCurrentIndex);
+}
+
+LocationDetails* LocationEngine::locationDetails(int index)
+{
     delete mCurrentLocationDetails;
     mCurrentLocationDetails = new LocationDetails(this);
     QFile file(KFileName);
@@ -113,13 +122,12 @@ LocationDetails* LocationEngine::nextLocation()
     mCurrentLocationDetails->countryCode = readElement(&file,mCurrentIndex,LocationEngine::countryCode);
     mCurrentLocationDetails->latitude = readElement(&file,mCurrentIndex,LocationEngine::lat);
     mCurrentLocationDetails->longitude = readElement(&file,mCurrentIndex,LocationEngine::lng);
-    mCurrentLocationDetails->link = readElement(&file,mCurrentIndex,LocationEngine::wikipediaUrl);
-    mCurrentLocationDetails->imageLink = readElement(&file,mCurrentIndex,LocationEngine::thumbnailImg);
+    mCurrentLocationDetails->link = readElement(&file,mCurrentIndex,LocationEngine::wikipediaUrl).trimmed();
+    mCurrentLocationDetails->imageLink = readElement(&file,mCurrentIndex,LocationEngine::thumbnailImg).trimmed();
     }
     file.close();
     return mCurrentLocationDetails;
 }
-
 
 void LocationEngine::replyFinished(QNetworkReply *reply)
 {
@@ -153,7 +161,6 @@ QString LocationEngine::readElement(QIODevice* xmlSource,int index,EntryElement 
     int enumIndex = metaObject()->indexOfEnumerator("EntryElement");
     QMetaEnum menum = metaObject()->enumerator(enumIndex);
     QString elementName = menum.valueToKey(element);
-    qDebug()<<elementName;
     query = query.arg(elementName);
     xmlSource->reset();
     return executeQuery(xmlSource,query);
@@ -161,7 +168,7 @@ QString LocationEngine::readElement(QIODevice* xmlSource,int index,EntryElement 
 
 QString LocationEngine::executeQuery(QIODevice* xmlSource, const QString& aQuery)
 {
-    qDebug()<<aQuery;
+//    qDebug()<<aQuery;
     mXmlQuery->bindVariable(KXmlSource,xmlSource);
     mXmlQuery->setQuery(aQuery);
     QString result = QString();

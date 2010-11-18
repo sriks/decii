@@ -1,0 +1,682 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>GIS Developing Follow Me with PHP--Visualize Geodata and create map in raster image | EasyWMS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script defer="defer" id="snap_preview_anywhere" type="text/javascript" src="http://spa.snap.com/snap_preview_anywhere.js?ap=1&amp;&amp;si=0&amp;key=ed0340b0527327cca824bb64650aaf57&amp;sb=0&amp;oi=0&amp;&amp;th=silver&amp;domain=http://www.easywms.com/easywms"></script>
+<link rel="shortcut icon" href="/easywms/misc/favicon.ico" type="image/x-icon" />
+    <style type="text/css" media="all">@import "/easywms/modules/book/book.css";</style>
+<style type="text/css" media="all">@import "/easywms/modules/node/node.css";</style>
+<style type="text/css" media="all">@import "/easywms/modules/poll/poll.css";</style>
+<style type="text/css" media="all">@import "/easywms/modules/system/defaults.css";</style>
+<style type="text/css" media="all">@import "/easywms/modules/system/system.css";</style>
+<style type="text/css" media="all">@import "/easywms/modules/user/user.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/archive/archive.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/geshifilter/geshifilter.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/glossary/glossary.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/logintoboggan/logintoboggan.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/quote/quote.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/tagadelic/tagadelic.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/taxonomy_context/taxonomy_context.css";</style>
+<style type="text/css" media="all">@import "/easywms/modules/comment/comment.css";</style>
+<style type="text/css" media="all">@import "/easywms/sites/all/modules/smileys/smileys.css";</style>
+<style type="text/css" media="all">@import "/easywms/themes/garland/style.css";</style>
+    <script type="text/javascript" src="/easywms/misc/jquery.js"></script>
+<script type="text/javascript" src="/easywms/misc/drupal.js"></script>
+<script type="text/javascript" src="/easywms/sites/all/modules/smileys/smileys.js"></script>
+<script type="text/javascript" src="/easywms/misc/collapse.js"></script>
+<script type="text/javascript" src="/easywms/misc/textarea.js"></script>
+    <style type="text/css" media="print">@import "/easywms/themes/garland/print.css";</style>
+    <!--[if lt IE 7]>
+    <style type="text/css" media="all">@import "/easywms/themes/garland/fix-ie.css";</style>
+    <![endif]-->
+  </head>
+  <body class="sidebars">
+
+<!-- Layout -->
+  <div id="header-region" class="clear-block"><div id="block-i18n-0" class="clear-block block block-i18n">
+
+
+  <div class="content"><div class="item-list"><ul><li><span class="i18n-link"><a href="/easywms/?q=zh-hans/node/82"><img src="/easywms/sites/all/modules/i18n/flags/zh-hans.png"  class="i18n-icon" width="16" height="12" alt="Chinese, Simplified" /></a>&nbsp;<a href="/easywms/?q=zh-hans/node/82">Chinese, Simplified</a></span></li><li><span class="i18n-link"><a href="/easywms/?q=zh-hant/node/82"><img src="/easywms/sites/all/modules/i18n/flags/zh-hant.png"  class="i18n-icon" width="16" height="12" alt="Chinese, Traditional" /></a>&nbsp;<a href="/easywms/?q=zh-hant/node/82">Chinese, Traditional</a></span></li><li><span class="i18n-link"><a href="/easywms/?q=en/node/82" class="active"><img src="/easywms/sites/all/modules/i18n/flags/en.png"  class="i18n-icon" width="16" height="12" alt="English" /></a>&nbsp;<a href="/easywms/?q=en/node/82" class="active">English</a></span></li><li><span class="i18n-link"><a href="/easywms/?q=de/node/82"><img src="/easywms/sites/all/modules/i18n/flags/de.png"  class="i18n-icon" width="16" height="12" alt="German" /></a>&nbsp;<a href="/easywms/?q=de/node/82">German</a></span></li></ul></div></div>
+</div>
+</div>
+
+    <div id="wrapper">
+    <div id="container" class="clear-block">
+
+      <div id="header">
+        <div id="logo-floater">
+        <h1><a href="/easywms/" title="EasyWMS Open Source WebGIS Projects"><span>EasyWMS</span> Open Source WebGIS Projects</a></h1>        </div>
+
+                  <ul class="links primary-links"><li  class="first menu-1-1-41"><a href="http://www.easywms.com" title="Home" class="menu-1-1-41">Home</a></li>
+<li  class="menu-1-2-41"><a href="/easywms/?q=en/taxonomy/term/76" class="menu-1-2-41">News</a></li>
+<li  class="menu-1-3-41"><a href="/easywms/?q=en/node/9" title="Projects" class="menu-1-3-41">Projects</a></li>
+<li  class="menu-1-4-41-active"><a href="/easywms/?q=en/blog" title="Blog" class="menu-1-4-41-active">Blog</a></li>
+<li  class="menu-1-5-41"><a href="/easywms/?q=en/book" title="Book" class="menu-1-5-41">Book</a></li>
+<li  class="menu-1-6-41"><a href="/easywms/?q=en/forum" title="Forum" class="menu-1-6-41">Forum</a></li>
+<li  class="last menu-1-7-41"><a href="/easywms/?q=en/contactme" title="Contact&amp;Donate" class="menu-1-7-41">Contact&amp;Donate</a></li>
+</ul>                
+      </div> <!-- /header -->
+
+              <div id="sidebar-left" class="sidebar">
+                    <div id="block-user-0" class="clear-block block block-user">
+
+  <h2>User login</h2>
+
+  <div class="content"><a href="/easywms/?q=en/user/login&amp;destination=node%2F82">Login/Register</a></div>
+</div>
+<div id="block-menu-41" class="clear-block block block-menu">
+
+
+  <div class="content">
+<ul class="menu">
+<li class="leaf"><a href="http://www.easywms.com" title="Home">Home</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/76">News</a></li>
+<li class="expanded"><a href="/easywms/?q=en/node/9" title="Projects">Projects</a>
+<ul class="menu">
+<li class="collapsed"><a href="/easywms/?q=en/suasmapserver4">SUAS MapServer 4</a></li>
+<li class="collapsed"><a href="/easywms/?q=en/phpmywms" title="SUAS MapServer 3 (PHPMyWMS)">SUAS MapServer 3</a></li>
+<li class="collapsed"><a href="/easywms/?q=en/mowms" title="MoWMS">MoWMS</a></li>
+<li class="collapsed"><a href="/easywms/?q=en/gpscal" title="GPSCal">GPSCal</a></li>
+<li class="collapsed"><a href="/easywms/?q=en/gpsphoto" title="GPSPHOTO Tracker">GPSPHOTO Tracker</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/17" title="Other Projects">Other Projects</a></li>
+
+</ul>
+</li>
+<li class="expanded"><a href="/easywms/?q=en/blog" title="Blog">Blog</a>
+<ul class="menu">
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/43" title="Blog&gt;&gt;Database">Database</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/59" title="Blog&gt;&gt;GIS">GIS</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/39" title="Blog&gt;&gt;Programming">Programming</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/50" title="Blog&gt;&gt;XML">XML</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/55" title="Blog&gt;&gt;Arbeit">Arbeit</a></li>
+<li class="leaf"><a href="/easywms/?q=en/taxonomy/term/56" title="Blog&gt;&gt;Something else">Something else</a></li>
+
+</ul>
+</li>
+<li class="leaf"><a href="/easywms/?q=en/book" title="Book">Book</a></li>
+<li class="leaf"><a href="/easywms/?q=en/forum" title="Forum">Forum</a></li>
+<li class="leaf"><a href="/easywms/?q=en/contactme" title="Contact&amp;Donate">Contact&amp;Donate</a></li>
+
+</ul>
+</div>
+</div>
+<div id="block-adsense-2" class="clear-block block block-adsense">
+
+
+  <div class="content"><!--adsense: cached-->
+<div class="adsense">
+<script type="text/javascript"><!--
+google_alternate_ad_url = "Google Adsense";
+google_ad_client = "pub-5621113494915014";
+google_ad_type = "text_image";
+google_ad_channel = "";
+google_ad_width = 120;
+google_ad_height = 240;
+google_ad_format = "120x240_as";
+google_color_border = "E8FFED";
+google_color_bg = "FFFFFF";
+google_color_link = "008F00";
+google_color_url = "008F00";
+google_color_text = "000000";
+//--></script>
+<script type="text/javascript"
+ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+</div>
+</div>
+<div id="block-user-3" class="clear-block block block-user">
+
+
+  <div class="content">There are currently <em>1 user</em> and <em>63 guests</em> online.<div class="item-list"><h3>Online users</h3><ul><li><a href="/easywms/?q=en/user/253" title="View user profile.">rhobbie</a></li></ul></div></div>
+</div>
+<div id="block-block-3" class="clear-block block block-block">
+
+  <h2>Links</h2>
+
+  <div class="content"> <p><a title="Prof. Behr's GIS Site" target="_blank" href="http://gis-news.de/">gis-news</a><br />
+<a title="Gis Wiki" target="_blank" href="http://www.giswiki.net/">giswiki</a><br />
+<a title="Prof. Behr's Blog Site" target="_blank" href="http://www.gis-management.de">gis-management</a><br />
+<a title="SVG WebGIS" target="_blank" href="http://carto.net/">carto.net</a> <br />
+<a title="ZhaoBo's Blog" target="_blank" href="http://www.geoinformatics.cn">geoinformatics.cn</a> <br />
+<a title="FreeGIS Database" target="_blank" href="http://freegis.org/">freegis.org</a> <br />
+<a title="Open Source Geospatial Foundation Website" target="_blank" href="http://www.osgeo.org/">osgeo.org</a> <br />
+<a title="Open Source's Wiki" target="_blank" href="http://swik.net/">swik.net</a> <br />
+<a title="Free Mobile Multi-language Dictionary and other mobile softwares" target="_blank" href="http://www.mobabel.net/">Mobabel.net</a><br />
+<a href="?q=en/contactme">Your Link Here</a></p>
+ </div>
+</div>
+<div id="block-block-4" class="clear-block block block-block">
+
+
+  <div class="content"> <p><a href="http://del.icio.us/post?url=http://www.easywms.com&amp;title=Open Source WebGIS World" target="_blank"><img width="16" height="16" src="/easywms/files/Image/easywms/delicious.png" alt="" />  Del.icio.us<br />
+</a><a href="http://digg.com/submit?url=www.easywms.com&amp;phase=2" target="_blank"><img width="16" height="16" src="/easywms/files/Image/easywms/digg.png" alt="" />  Digg<br />
+</a><a href="http://fusion.google.com/add?feedurl=www.easywms.com/easywms/blog/1/feed" target="_blank"><img width="16" height="16" src="/easywms/files/Image/easywms/google.png" alt="" />  Google<br />
+</a><a href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=www.easywms.com&amp;t=Open Source WebGIS World&amp;d=&amp;ei=UTF-8" target="_blank"><img width="16" height="16" src="/easywms/files/Image/easywms/yahoomyweb.png" alt="" /> Y! MyWeb </a><br />
+<a href="http://www.google.com/reader/preview/*/feed/http://www.easywms.com/easywms/blog/1/feed/" target="_blank"><img width="91" height="17" align="middle" style="border: medium none ;" alt="Subscribe to Google Reader" src="/easywms/files/Image/easywms/addgoogle.gif" /></a> <br />
+<a href="http://add.my.yahoo.com/rss?url=http://www.easywms.com/easywms/?q=en/blog/1/feed" target="_blank"><img width="91" height="17" align="middle" style="border: medium none ;" alt="Subscribe to MyYahoo!" src="/easywms/files/Image/easywms/addmyyahoo.gif" /></a> <br />
+<a href="http://my.msn.com/addtomymsn.armx?id=rss&amp;ut=http://www.easywms.com/easywms/?q=en/blog/1/feed&amp;ru=http://www.easywms.com/easywms/?q=en/blog/1/feed" target="_blank"><img width="91" height="17" align="middle" style="border: medium none ;" alt="Subscribe to MyMSN" src="/easywms/files/Image/easywms/addmymsn.gif" /></a><br />
+<a href="http://www.zhuaxia.com/add_channel.php?url=http://www.easywms.com/easywms/?q=en/blog/1/feed" target="_blank"><img width="91" height="17" align="middle" style="border: medium none ;" alt="Subscribe to Zhuaxia" src="/easywms/files/Image/easywms/subscribe_zhuaxia.gif" /></a><br />
+<a href="http://www.bloglines.com/sub/http://www.easywms.com/easywms/?q=en/blog/1/feed" target="_blank"> <img width="80" height="15" align="middle" style="border: medium none ;" alt="Subscribe to bloglines" src="/easywms/files/Image/easywms/sub_bloglines.gif" /></a><br />
+<a href="http://www.rojo.com/add-subscription?resource=http://www.easywms.com/easywms/?q=en/blog/1/feed" target="_blank"> <img width="52" height="17" align="middle" style="border: medium none ;" alt="Subscribe to rojo" src="/easywms/files/Image/easywms/add-to-rojo.gif" /></a><br />
+<a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=http://www.easywms.com/easywms/?q=en/blog/1/feed" target="_blank"> <img width="91" height="17" align="middle" style="border: medium none ;" alt="Subscribe to newsgator" src="/easywms/files/Image/easywms/ngsub1.gif" /></a></p>
+ </div>
+</div>
+        </div>
+      
+      <div id="center"><div id="squeeze"><div class="right-corner"><div class="left-corner">
+          <div class="breadcrumb"><a href="/easywms/">Home</a> › <a href="/easywms/?q=en/taxonomy/vocabulary/5">Blog</a> › <a href="/easywms/?q=en/taxonomy/term/39">Programming</a> › <a href="/easywms/?q=en/taxonomy/term/49">PHP</a></div>          
+                    <h2>GIS Developing Follow Me with PHP--Visualize Geodata and create map in raster image</h2>          
+          
+                              
+<div id="node-82" class="node">
+
+
+
+      <span class="submitted">Sat, 2007-01-06 00:42 — <a href="/easywms/?q=en/user/leelight" title="View user profile.">leelight</a></span>
+  
+  <div class="content">
+    <!-- google_ad_section_start --><div class="ad-auto-inserted" style="float:left; margin: 0 1em .25em 0;"><!--adsense: cached-->
+<div class="adsense">
+<script type="text/javascript"><!--
+google_alternate_ad_url = "Google Adsense";
+google_ad_client = "pub-5621113494915014";
+google_ad_type = "text_image";
+google_ad_channel = "";
+google_ad_width = 120;
+google_ad_height = 240;
+google_ad_format = "120x240_as";
+google_color_border = "E8FFED";
+google_color_bg = "FFFFFF";
+google_color_link = "008F00";
+google_color_url = "008F00";
+google_color_text = "000000";
+//--></script>
+<script type="text/javascript"
+ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+</div> At least you should have some minimal experience with the real coordinate, screen coordinate, which could be called image coordinate. The real coordinate you maybe use everyday mostly is Cartesian coordinate system, the XY coordinate is describing in this image. <br />
+<img width="195" height="203" src="/easywms/files/Image/blog/programming/php/03fig02.jpg" alt="" /><br />
+The Cartesian coordinate system allows negative coordinates. You use the Cartesian plane as a surface that represents the world in    which your graphical objects exist. For example, a triangle can be defined    by three points (2,5), (5,2), and (2,2), as shown in image:<br />
+<img width="194" height="201" src="/easywms/files/Image/blog/programming/php/03fig03.jpg" alt="" /><br />
+Unfortunately, the computer doesnt care about real coordinate, they use screen coordinate, which reverses the Y coordinates of real coordinate as their own Y coordinate. As shown in this figure.<br />
+<img width="235" height="173" src="/easywms/files/Image/blog/programming/php/03fig01.jpg" alt="" /><br />
+<br />
+Because of the differences between a screen display and the Cartesian coordinate system, you need a way to translate points from one system to the other. You must <em>map</em> points in the Cartesian coordinate system to points in the screen coordinate system so that objects you draw onscreen are positioned correctly. Please map point (x1,y1) in the Cartesian coordinate system to point (x2,y2) in the screen coordinate system requires the following simple formulas, maxY means the height of the image you want to create.<br />
+<pre><font color="#ff00ff">x2 = x1;<br />y2 = maxY - y1;</font></pre>
+I hope you havnt forgot what you have learned at the elementary school. And the triangle will be drawn as this:<br />
+<img width="204" height="215" src="/easywms/files/Image/blog/programming/php/03fig04.jpg" alt="" /><br />
+Maybe you are wondering now, why the triangle has turned around here, but the image we see in the computer has the same shape direction. Don't worry, the screen coordinate is only understood by computer programming language during the visulization, the image will be displayed same as the real coordinate at last to the user before the monitor.<br />
+<br />
+Ok, we can enter the subject now.<br />
+Supposed that you have a vector data now, for example, one array of&nbsp;  points in longitude&amp;latitude coordinate, which are storeing the capitals' locations of countries worldwidly. <br />
+<br />
+<font color="#ff00ff">-87.3 36.28333<br />
+-90.05 30<br />
+-74 40.75<br />
+-76.2833 36.85<br />
+-81.4167 28.5<br />
+-75.1667 40<br />
+.......................<br />
+168.3 -17.75<br />
+-69.3 10.05</font><br />
+<br />
+We could draw those point geometry in one image now. How to get the screen coordinate from the lat&amp;lon coordinate? There are two ways to convert the coordinate. <br />
+<br />
+First is stretching the gemetry to fit the output image size. For example, the square geometry will be stretched to rectange to fit the image(red rectange in the middle).<br />
+<br />
+<img width="400" height="180" src="/easywms/files/Image/blog/programming/php/stretchgeo.PNG" alt="" /><br />
+For beautification of the output map , the geometry should be displayed in the middle of the image. So the margin between the boundry and image must be considered.<br />
+<font color="#993366"><br />
+//$width and $height is the width and height of the ouput image<br />
+//$minx, $miny is the leftbottom corner of geometry boundary in realworld coordinate<br />
+//$maxx, $maxy is the upright corner of geometry boundary in  realworld coordinate<br />
+//$x, $y is some point coordinate on the geometry<br />
+<br />
+function getPixelXYFromReal(</font><font color="#993366">$x,$y,</font><font color="#993366">$minx,$miny,$maxx,$maxy,$width,$height){<br />
+&nbsp;&nbsp;&nbsp; $w=$maxx-$minx;<br />
+&nbsp;&nbsp;&nbsp; $h=$maxy-$miny;<br />
+&nbsp;&nbsp;&nbsp; $s=$w/$h;<br />
+&nbsp;&nbsp;&nbsp; $coord = array();<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp; $Scale_x = ($x-$minx)/$w;<br />
+&nbsp;&nbsp;&nbsp;&nbsp; $Scale_y = ($y-$miny)/$h;<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if($s&gt;=1){<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $Length_xpixel = $width*$Scale_x;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $Length_ypixel = $width/$s*$Scale_y;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //make the image display in the middle of picture<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; $Pixel_x = $Length_xpixel;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $Pixel_y = $height-$Length_ypixel-($height-$width/$s)/2;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $scale = $w/$width;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if($s&lt;1) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $Length_xpixel = $height*$s*$Scale_x;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $Length_ypixel = $height*$Scale_y;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //make the image display in the middle of picture<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; $Pixel_x = $Length_xpixel+($width-$height*$s)/2;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $Pixel_y = $height-$Length_ypixel;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $scale = $h/$height;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;//</font><font color="#993366">$Pixel_x and </font><font color="#993366">$Pixel_y are the pixel coordinate in the screen</font><br />
+<font color="#993366">&nbsp;&nbsp;&nbsp; $coord[0]=$Pixel_x;<br />
+&nbsp;&nbsp;&nbsp; $coord[1]=$Pixel_y;<br />
+&nbsp;&nbsp;&nbsp; $coord[2]=$scale;<br />
+&nbsp;&nbsp;&nbsp; return $coord;<br />
+}<br />
+<br />
+<font color="#000000">Now we have one world map image with size 620 * 310 pixels,</font></font><font color="#993366"><font color="#000000"> the&nbsp; </font></font><font color="#993366"><font color="#000000">proportion is </font></font><font color="#993366"><font color="#000000">620:310=2:1.<br />
+<br />
+<img src="/easywms/files/Image/blog/programming/php/earth_620.jpg" alt="" /><br />
+<br />
+</font></font><font color="#993366"><font color="#000000">Fortunately the proportion of longitude and latitude is also 360:180=2:1. And minx =-180, miny=-90, maxx=180,maxy=90<br />
+So our function could be simplified as that:</font><br />
+</font><br />
+<font color="#993366">function getPixelXYFromReal($x,$y,$width,$height</font><font color="#993366">){<br />
+&nbsp;&nbsp;&nbsp; $coord = array();<br />
+</font><font color="#993366"><br />
+&nbsp;&nbsp;&nbsp; $Pixel_x = </font><font color="#993366">(($x + 180) * ($width / 360));</font><font color="#993366"><br />
+&nbsp;&nbsp;&nbsp; $Pixel_y = </font><font color="#993366">((($y * -1) + 90) * ($height / 180));&nbsp;&nbsp;&nbsp; </font><font color="#993366"><br />
+&nbsp;&nbsp;&nbsp; $scale = 360/$width;<br />
+<br />
+&nbsp;//</font><font color="#993366">$Pixel_x and </font><font color="#993366">$Pixel_y are the pixel coordinate in the screen</font><br />
+<font color="#993366">&nbsp;&nbsp;&nbsp; $coord[0]=$Pixel_x;<br />
+&nbsp;&nbsp;&nbsp; $coord[1]=$Pixel_y;<br />
+&nbsp;&nbsp;&nbsp; $coord[2]=$scale;<br />
+&nbsp;&nbsp;&nbsp; return $coord;<br />
+}</font><br />
+<br />
+Now read the coordinate and drop points in the image:<br />
+<br />
+<font color="#993366">$coord_array = file(&quot;capitals.txt&quot;);<br />
+<br />
+$im = imagecreatefromjpeg(&quot;earth_620.jpg&quot;);<br />
+<br />
+$red = imagecolorallocate ($im, 255,0,0);<br />
+<br />
+//get the output image width and height<br />
+$image_x = imagesx($im);<br />
+$image_y = imagesy($im);<br />
+<br />
+// Loop though each element of the array loaded from the<br />
+// text file<br />
+<br />
+foreach($coord_array as $value)<br />
+{<br />
+// Explode out the latitude and longitude coordinates<br />
+<br />
+&nbsp;&nbsp;&nbsp; $coord = explode(&quot; &quot;,$value);<br />
+<br />
+// And we have done all this before ......<br />
+<br />
+&nbsp;&nbsp;&nbsp; $pt = getPixelXYFromReal($coord[0], $coord[1], $image_x, $image_y);<br />
+&nbsp;&nbsp;&nbsp; imageellipse($im, $pt[0], $pt[1], 4, 4, $red);<br />
+}<br />
+<br />
+// Return the image as a JPEG - it would be @ 230k as PNG!<br />
+<br />
+header(&quot;Content-Type: image/jpeg&quot;);<br />
+imagejpeg($im,&quot;&quot;,80);<br />
+imagedestroy($im);</font><br />
+<br />
+The result output image will be like this:<br />
+<br />
+<img width="620" height="310" src="/easywms/files/Image/blog/programming/php/visulizeGeodata.jpg" alt="" /><br />
+<br />
+Second is stretching the output image size to fit the geometry boundary. The output image will change it's size to keep the shape of geometry. This method was used mostly in WebGIS field because the real geocoordinate will not be transformed.<br />
+<br />
+<img width="400" height="180" src="/easywms/files/Image/blog/programming/php/stretchimage.PNG" alt="" /><br />
+<br />
+<font color="#993366">/*<br />
+*@Description: get the new width&amp;height<br />
+*@params:minx,miny,maxx,maxy: boundinbox of the map<br />
+*@params:width,height: width and height of map in pixel<br />
+*@params enablestretchmap: flag to enable stretch map.<br />
+* false: The map will display in the middle of the map according the scale<br />
+* true:&nbsp; The map will stretch according the scale<br />
+*@return get thenew width&amp;height array<br />
+*<br />
+*/<br />
+function getStretchWidthHeight($minx,$miny,$maxx,$maxy,$width,$height){<br />
+&nbsp;&nbsp;&nbsp; $size = array();<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $w=$maxx-$minx;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $h=$maxy-$miny;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $s=$w/$h;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $scale = $width/$height;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //if w&gt;h, the width will be kept, but height will be stretched<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if ($s&gt;=1) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $size[0]=$width;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $size[1]=$width/$s;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //if w&lt;h, the height will be kept, but width will be stretched<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if ($s&lt;1) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $size[0]=$height*$s;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $size[1]=$height;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; return $size;<br />
+}</font><br />
+<br />
+Now we want to show only the capitals in the area longitude between 0-75 and latitude between 0-70 and the output image would be 400*300.<br />
+<br />
+<font color="#993366">$coord_array = file(&quot;capitals.txt&quot;);<br />
+<br />
+//get the new output image size<br />
+$newsize = getStretchWidthHeight(0,0,75,70,400,300);<br />
+$newwidth =$newsize[0];<br />
+$newheight =$newsize[1];<br />
+<br />
+$im = imagecreate($newwidth,$newheight);<br />
+<br />
+$red = imagecolorallocate ($im, 255,0,0);<br />
+$sea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = imagecolorallocate ($im, 0xB5,0xC7,0xD6);<br />
+<br />
+imagefilledrectangle($im,0,0,$newwidth,$newheight,$sea);<br />
+<br />
+// Loop though each element of the array loaded from the<br />
+// text file<br />
+<br />
+foreach($coord_array as $value)<br />
+{<br />
+// Explode out the latitude and longitude coordinates<br />
+<br />
+&nbsp;&nbsp;&nbsp; $coord = explode(&quot; &quot;,$value);<br />
+<br />
+// And we have done all this before ......<br />
+&nbsp;&nbsp;&nbsp; $pt = getPixelXYFromReal($coord[0], $coord[1], 0,0,75,70, $newwidth, $newheight);<br />
+&nbsp;&nbsp;&nbsp; imageellipse($im, $pt[0], $pt[1], 4, 4, $red);<br />
+}<br />
+<br />
+// Return the image as a JPEG - it would be @ 230k as PNG!<br />
+<br />
+header(&quot;Content-Type: image/jpeg&quot;);<br />
+imagejpeg($im,&quot;&quot;,80);<br />
+imagedestroy($im);</font><br />
+<br />
+The output image's size has changed, it is not 400*300 but 400*373 to fit the <font color="#993366"><font color="#000000">proportion of the boundary of geometry.<br />
+<img width="400" height="373" src="/easywms/files/Image/blog/programming/php/visulizeGeodata2.jpg" alt="" /><br />
+<br />
+The source code, image and capital data could be downloaded from here. <a href="/easywms/files/File/blog/programm/php/visulizeGeodata.rar">visulizeGeodata.rar</a><br />
+<br />
+Ref:</font></font> Programming 2D Computer Graphics<br />
+http://www.informit.com/articles/article.asp?p=98117&amp;rl=1 <br class="clear"/><!--adsense: cached-->
+<div class="adsense">
+<script type="text/javascript"><!--
+google_alternate_ad_url = "Google Adsense";
+google_ad_client = "pub-5621113494915014";
+google_ad_type = "text_image";
+google_ad_channel = "";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_color_border = "E8FFED";
+google_color_bg = "FFFFFF";
+google_color_link = "008F00";
+google_color_url = "008F00";
+google_color_text = "000000";
+//--></script>
+<script type="text/javascript"
+ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<!-- google_ad_section_end --><h3 class="title"><a href="/easywms/?q=en/taxonomy/vocabulary/5">Blog</a></h3>
+<ul>
+  <li class="vocabulary-list"><a href="/easywms/?q=en/taxonomy/term/49">PHP</a></li>
+</ul>
+  </div>
+
+  <div class="clear-block clear">
+    <div class="meta">
+        </div>
+
+          <div class="links"><ul class="links inline"><li  class="first blog_usernames_blog"><a href="/easywms/?q=en/blog/leelight" title="Read leelight&#039;s latest blog entries." class="blog_usernames_blog">leelight&#039;s blog</a></li>
+<li  class="statistics_counter"><span class="statistics_counter">34628 reads</span></li>
+<li  class="last quote"><a href="/easywms/?q=en/comment/reply/82&amp;quote=1" title="Quote this post in your reply." class="quote">Quote</a></li>
+</ul></div>
+      </div>
+
+</div><div id="comments"><h2 class="comments">Comments</h2><a id="comment-8004"></a>
+<div class="comment odd">
+
+  <div class="clear-block">
+      <span class="submitted">Wed, 2010-10-20 15:16 — <a href="http://www.whitepestcontrol.com/c-3-pest-control.aspx">pest control business</a> (not verified)</span>
+  
+  
+  
+    <h3><a href="/easywms/?q=en/node/82#comment-8004" class="active">Re: GIS DevelVisualize Geodata and create map in raster image</a></h3>
+
+    <div class="content">
+       <p>so hey there, i totally realized that some new information won't be enough to improve such topics, soyou need the hell more of it as well</p>
+     </div>
+
+  </div>
+
+      <div class="links"><ul class="links"><li  class="first comment_reply"><a href="/easywms/?q=en/comment/reply/82/8004" class="comment_reply">reply</a></li>
+<li  class="last quote"><a href="/easywms/?q=en/comment/reply/82/8004&amp;quote=1" title="Jump to the first comment of this posting." class="quote">Quote</a></li>
+</ul></div>
+  </div>
+<a id="comment-6546"></a>
+<div class="comment even">
+
+  <div class="clear-block">
+      <span class="submitted">Wed, 2009-02-18 17:54 — <a href="/easywms/?q=en/user/leelight" title="View user profile.">leelight</a></span>
+  
+  
+  
+    <h3><a href="/easywms/?q=en/node/82#comment-6546" class="active">Re: Visualize Geodata and create map in raster image</a></h3>
+
+    <div class="content">
+       <p>This is what javascript can do, you can use div+js+css to do that</p>
+     </div>
+
+  </div>
+
+      <div class="links"><ul class="links"><li  class="first comment_reply"><a href="/easywms/?q=en/comment/reply/82/6546" class="comment_reply">reply</a></li>
+<li  class="last quote"><a href="/easywms/?q=en/comment/reply/82/6546&amp;quote=1" title="Jump to the first comment of this posting." class="quote">Quote</a></li>
+</ul></div>
+  </div>
+<a id="comment-6531"></a>
+<div class="comment odd">
+
+  <div class="clear-block">
+      <span class="submitted">Thu, 2009-02-12 01:03 — Anonymous (not verified)</span>
+  
+  
+  
+    <h3><a href="/easywms/?q=en/node/82#comment-6531" class="active">Re: Visualize Geodata and create map in raster image</a></h3>
+
+    <div class="content">
+       <p>Very nice. And how to display text on mouse hover?</p>
+     </div>
+
+  </div>
+
+      <div class="links"><ul class="links"><li  class="first comment_reply"><a href="/easywms/?q=en/comment/reply/82/6531" class="comment_reply">reply</a></li>
+<li  class="last quote"><a href="/easywms/?q=en/comment/reply/82/6531&amp;quote=1" title="Jump to the first comment of this posting." class="quote">Quote</a></li>
+</ul></div>
+  </div>
+<a id="comment-6432"></a>
+<div class="comment even">
+
+  <div class="clear-block">
+      <span class="submitted">Mon, 2008-12-22 15:20 — <a href="/easywms/?q=en/user/leelight" title="View user profile.">leelight</a></span>
+  
+  
+  
+    <h3><a href="/easywms/?q=en/node/82#comment-6432" class="active">Re: Visualize Geodata and create map in raster image</a></h3>
+
+    <div class="content">
+       <p>The example given here is PHP function, you can use it in your PHP project directly and easily.</p>
+     </div>
+
+  </div>
+
+      <div class="links"><ul class="links"><li  class="first comment_reply"><a href="/easywms/?q=en/comment/reply/82/6432" class="comment_reply">reply</a></li>
+<li  class="last quote"><a href="/easywms/?q=en/comment/reply/82/6432&amp;quote=1" title="Jump to the first comment of this posting." class="quote">Quote</a></li>
+</ul></div>
+  </div>
+<a id="comment-6429"></a>
+<div class="comment odd">
+
+  <div class="clear-block">
+      <span class="submitted">Sat, 2008-12-20 21:09 — Anonymous (not verified)</span>
+  
+  
+  
+    <h3><a href="/easywms/?q=en/node/82#comment-6429" class="active">Visualize Geodata and create map in raster image</a></h3>
+
+    <div class="content">
+       <p>Great Example, Thanks so much for the tutorial.  How could I implement this code to produce a set of polygons or points that fall between Long -81 and -82 and Lat 28 to 29.  I need the map to zoom to this area so I can see the points.  Thanks in advance</p>
+     </div>
+
+  </div>
+
+      <div class="links"><ul class="links"><li  class="first comment_reply"><a href="/easywms/?q=en/comment/reply/82/6429" class="comment_reply">reply</a></li>
+<li  class="last quote"><a href="/easywms/?q=en/comment/reply/82/6429&amp;quote=1" title="Jump to the first comment of this posting." class="quote">Quote</a></li>
+</ul></div>
+  </div>
+<div class="box">
+
+  <h2>Post new comment</h2>
+
+  <div class="content"><form action="/easywms/?q=en/comment/reply/82"  accept-charset="UTF-8" method="post" id="comment-form">
+<div><fieldset class=" collapsible"><legend>Smileys</legend><div id="smileys"><span><img src="/easywms/sites/all/modules/smileys/packs/example/smile.png" title="Smiling" alt="{:)}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/wink.png" title="Eye-wink" alt="{;)}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/sad.png" title="Sad" alt="{:(}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/lol.png" title="Laughing out loud" alt="{:D}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/evil.png" title="Evil" alt="{}:)}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/tongue.png" title="Sticking out tongue" alt="{:P}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/shock.png" title="Shocked" alt="{:O}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/puzzled.png" title="Puzzled" alt="{:?}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/cool.png" title="Cool" alt="{8)}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/jawdrop.gif" title="Jawdropping!" alt="{:jawdrop:}" class="smiley-class"/></span><span><img src="/easywms/sites/all/modules/smileys/packs/example/barf.gif" title="Barf!" alt="{:sick:}" class="smiley-class"/></span></div></fieldset>
+<div class="form-item" id="edit-name-wrapper">
+ <label for="edit-name">Your name: <span class="form-required" title="This field is required.">*</span></label>
+ <input type="text" maxlength="60" name="name" id="edit-name"  size="30" value="Anonymous" class="form-text required" />
+</div>
+<div class="form-item" id="edit-mail-wrapper">
+ <label for="edit-mail">E-mail: <span class="form-required" title="This field is required.">*</span></label>
+ <input type="text" maxlength="64" name="mail" id="edit-mail"  size="30" value="" class="form-text required" />
+ <div class="description">The content of this field is kept private and will not be shown publicly.</div>
+</div>
+<div class="form-item" id="edit-homepage-wrapper">
+ <label for="edit-homepage">Homepage: </label>
+ <input type="text" maxlength="255" name="homepage" id="edit-homepage"  size="30" value="" class="form-text" />
+</div>
+<div class="form-item" id="edit-subject-wrapper">
+ <label for="edit-subject">Subject: </label>
+ <input type="text" maxlength="64" name="subject" id="edit-subject"  size="60" value="Re: GIS Developing Follow Me with PHP--Visualize Geodata and create map in raster image" class="form-text" />
+</div>
+<div class="form-item" id="edit-comment-wrapper">
+ <label for="edit-comment">Comment: <span class="form-required" title="This field is required.">*</span></label>
+ <textarea cols="60" rows="15" name="comment" id="edit-comment"  class="form-textarea resizable required"></textarea>
+</div>
+<ul class="tips"><li>Allowed HTML tags: &lt;a&gt; &lt;em&gt; &lt;strong&gt; &lt;cite&gt; &lt;code&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;dl&gt; &lt;dt&gt; &lt;dd&gt; &lt;img&gt;</li><li>Lines and paragraphs break automatically.</li><li>You may quote other posts using <a href="<em>/easywms/?q=en/filter/tips/1#filter-quote</em>">[quote] tags</a>.</li><li>Glossary terms will be automatically marked with links to their descriptions.</li><li>Textual smileys will be replaced with graphical ones.</li></ul><p><a href="/easywms/?q=en/filter/tips">More information about formatting options</a></p><input type="hidden" name="form_id" id="edit-comment-form" value="comment_form"  />
+<fieldset class="captcha"><legend>CAPTCHA</legend><div class="description">This question is for testing whether you are a human visitor and to prevent automated spam submissions.</div><div class="form-item" id="edit-captcha-response-wrapper">
+ <label for="edit-captcha-response">Enter the missing character from the following word: <span class="form-required" title="This field is required.">*</span></label>
+ <span class="field-prefix">_ecurity: </span> <input type="text" maxlength="3" name="captcha_response" id="edit-captcha-response"  size="3" value="" class="form-text required" />
+</div>
+<input type="hidden" name="random_captcha_type" id="edit-random-captcha-type" value="lost_character_captcha/Lost characters"  />
+<input type="hidden" name="captcha_token" id="edit-captcha-token" value="07505449d3d71c56e4360b5044b05fef"  />
+</fieldset>
+<input type="submit" name="op" id="edit-preview" value="Preview comment"  class="form-submit" />
+
+</div></form>
+</div>
+</div>
+</div>          <span class="clear"></span>
+                    <div id="footer"><div align="center">Copyright©EasyWMS 2006-2008 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<a rel="license" href="http://creativecommons.org/licenses/by/2.5/"><img alt="Creative Commons License" border="0" src="http://www.easywms.com/easywms/files/Image/easywms/cclogo.gif" /></a> Unless otherwise stated or the articles which have titles with (T), this site's works are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/2.5/">Creative Commons Attribution 2.5 License</a>.
+</div>
+</div>
+      </div></div></div></div> <!-- /.left-corner, /.right-corner, /#squeeze, /#center -->
+
+              <div id="sidebar-right" class="sidebar">
+                    <div id="block-block-1" class="clear-block block block-block">
+
+
+  <div class="content"> <!-- SiteSearch Google -->
+<form id="search-theme-form" action="http://www.google.com/custom" method="get" target="google_window">
+    <div>
+    <div class="container-inline" id="search">
+    <div class="form-item"><input type="hidden" name="domains" value="www.easywms.com" /> <input class="form-text" id="edit-search-theme-form-keys" title="Keywords" maxlength="255" size="15" name="q" type="text" /></div>
+    <input class="form-submit" id="edit-submit" type="submit" name="sa" value="Google Search" /> <br />
+    <input type="radio" checked="checked" name="sitesearch" value="on" /> <font color="#000000" size="-1">Web</font> <input type="radio" name="sitesearch" value="www.easywms.com" /> <font color="#000000" size="-1">Easywms.com</font> <input type="hidden" name="client" value="pub-5621113494915014" /> <input type="hidden" name="forid" value="1" /> <input type="hidden" name="ie" value="UTF-8" /> <input type="hidden" name="oe" value="UTF-8" /> <input type="hidden" name="cof" value="GALT:#008000;GL:1;DIV:#336699;VLC:663399;AH:center;BGC:FFFFFF;LBGC:E6E6E6;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;FORID:1" /> <input type="hidden" name="hl" value="en" /></div>
+    </div>
+</form>
+<!-- SiteSearch Google -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8614099-1");
+pageTracker._trackPageview();
+} catch(err) {}</script> </div>
+</div>
+<div id="block-blog-0" class="clear-block block block-blog">
+
+  <h2>Recent blog posts</h2>
+
+  <div class="content"><div class="item-list"><ul><li><a href="/easywms/?q=en/node/3633">Downgrade .net Framework to CF 2.0</a></li><li><a href="/easywms/?q=en/node/3631">Test Push service with MDS and BlackBerry Widgets</a></li><li><a href="/easywms/?q=en/node/3613">(T)Android - Driving Direction (Route Path) </a></li><li><a href="/easywms/?q=en/node/3612">Get boundary coodinate from Google static map</a></li><li><a href="/easywms/?q=en/node/3611">Google Maps API in Java ME</a></li><li><a href="/easywms/?q=en/node/3610">Some Andorid WMS clients</a></li><li><a href="/easywms/?q=en/node/3608">Turn Apache or Tomcat server to reverse proxy server</a></li><li><a href="/easywms/?q=en/node/3607">[WARN] Unknown module requested &#039;missingplugin&#039;; all active GWT modules must be specified in the command line arguments </a></li><li><a href="/easywms/?q=en/node/3605">Hibernate Exception: org.hibernate.HibernateException: unknown Oracle major version [0] </a></li><li><a href="/easywms/?q=en/node/3602">Determining whether or not a polygon (2D) has its vertices ordered clockwise or counterclockwise(T)</a></li></ul></div><div class="more-link"><a href="/easywms/?q=en/blog" title="Read the latest blog entries.">more</a></div></div>
+</div>
+<div id="block-adsense-1" class="clear-block block block-adsense">
+
+
+  <div class="content"><!--adsense: ad limit reached for type--></div>
+</div>
+<div id="block-poll-0" class="clear-block block block-poll">
+
+
+  <div class="content"><form action="/easywms/?q=en/which-feature-do-you-want-implemented-suas-next"  accept-charset="UTF-8" method="post" id="poll-view-voting">
+<div><div class="poll">  <div class="vote-form">    <div class="choices"><div class="form-item">
+ <label>Which feature do you want implemented for SUAS next?: </label>
+ <div class="form-radios"><div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="0"   class="form-radio" /> More data formats, E00,AutoCAD...</label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="1"   class="form-radio" /> Postgre database</label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="2"   class="form-radio" /> WFS(T)-GetGmlObject,Transaction </label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="3"   class="form-radio" /> SVG map viewer client(already finished)</label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="4"   class="form-radio" /> Database backup&amp;operation</label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="5"   class="form-radio" /> VML map or FireFox Canvas map</label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="6"   class="form-radio" /> Multidata import, better user interface</label>
+</div>
+<div class="form-item" id="edit-choice-wrapper">
+ <label class="option"><input type="radio" name="choice" value="7"   class="form-radio" /> GetThematicMap request</label>
+</div>
+</div>
+</div>
+    </div><input type="hidden" name="nid" id="edit-nid" value="162"  />
+<input type="submit" name="op" id="edit-vote" value="Vote"  class="form-submit" />
+  </div><input type="hidden" name="form_id" id="edit-poll-view-voting" value="poll_view_voting"  />
+</div>
+</div></form>
+</div>
+</div>
+<div id="block-forum-1" class="clear-block block block-forum">
+
+  <h2>New forum topics</h2>
+
+  <div class="content"><div class="item-list"><ul><li><a href="/easywms/?q=en/node/3632" title="1 comment">OpenLayer with google map problem</a></li><li><a href="/easywms/?q=en/node/3617" title="1 comment">multiple SRS output ... reprojections?</a></li><li><a href="/easywms/?q=en/node/3616" title="5 comments">how to create a custom WMS from my own PHP code</a></li><li><a href="/easywms/?q=en/node/3609">Please use  downgrade PHP(under 5.3.0) to test SUAS Map Server</a></li><li><a href="/easywms/?q=en/node/3601" title="2 comments">Problems on installing Suas on Vista</a></li><li><a href="/easywms/?q=en/node/3599" title="4 comments">Raster data import</a></li></ul></div><div class="more-link"><a href="/easywms/?q=en/forum" title="Read the latest forum topics.">more</a></div></div>
+</div>
+<div id="block-comment-0" class="clear-block block block-comment">
+
+  <h2>Recent comments</h2>
+
+  <div class="content"><div class="item-list"><ul><li><a href="/easywms/?q=en/node/74#comment-8629">Re: Would you like to have your own blog here? </a><br />13 min 47 sec ago</li><li><a href="/easywms/?q=en/node/16#comment-8586">Re: MoWMS 1.03 was released</a><br />1 day 45 min ago</li><li><a href="/easywms/?q=en/node/3632#comment-8585">Re: OpenLayer with google map problem</a><br />1 day 2 hours ago</li><li><a href="/easywms/?q=en/show-us-map-45-minutes-build-your-own-3d-city-map-server-suas-mapserver3#comment-8584">Re: Show Us Map! 45 Minutes to Build Your Own 3D City</a><br />1 day 5 hours ago</li><li><a href="/easywms/?q=en/node/3613#comment-8550">Re: (T)Android - Driving Direction (Route Path) </a><br />2 days 7 hours ago</li><li><a href="/easywms/?q=en/show-us-map-45-minutes-build-your-own-3d-city-map-server-suas-mapserver3#comment-8405">Re: Show Us Map! 45 Minutes to Build Your Own 3D City</a><br />1 week 13 hours ago</li><li><a href="/easywms/?q=en/node/104#comment-8371">Re: Touch J2ME Polish--5. First Application</a><br />1 week 3 days ago</li><li><a href="/easywms/?q=en/node/3602#comment-8327">Re: Determining whether or not a polygon (2D)</a><br />1 week 5 days ago</li><li><a href="/easywms/?q=en/how-send-cross-site-request-ajax#comment-8236">Re: How to send cross site request in Ajax?</a><br />2 weeks 2 days ago</li><li><a href="/easywms/?q=en/node/3585#comment-8179">Re: 50 Websites that make amazing use of javascript (T)</a><br />2 weeks 5 days ago</li></ul></div></div>
+</div>
+        </div>
+      
+    </div> <!-- /container -->
+  </div>
+<!-- /layout -->
+
+    </body>
+</html>
