@@ -1,6 +1,7 @@
 #include <QUrl>
 #include <QDebug>
 #include <QDesktopServices>
+#include <QWebView>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "locationengine.h"
@@ -12,17 +13,38 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QString style("background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #2198c0, stop: 1 #0d5ca6);");
+    ui->locationLabel->setStyleSheet(style);
+
+
+    // set transparency to view
+    decorate(ui->webView);
+
+    // Create image view
+    mImageWebView = new QWebView(this);
+    decorate(mImageWebView);
+    int webViewIndex = ui->verticalLayout->indexOf(ui->webView);
+    ui->verticalLayout->insertWidget(webViewIndex+1,mImageWebView,0,Qt::AlignCenter);
+
     ui->locationLabel->resize(360,20);
     connect(ui->buttonNext,SIGNAL(clicked()),this,SLOT(handleAnotherLocation()));
     connect(ui->buttonMore,SIGNAL(clicked()),this,SLOT(handleMoreAboutLocation()));
-//    QString style("background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #2198c0, stop: 1 #0d5ca6);");
-//    ui->locationLabel->setStyleSheet(style);
     ui->locationLabel->resize(10,10);
     mLocationEngine = new LocationEngine(this);
     connect(mLocationEngine,SIGNAL(newLocationAvailable()),this,SLOT(handleAnotherLocation()));
     connect(mLocationEngine,SIGNAL(errorOccured(QString)),this,SLOT(handleErrorOccured(QString)));
-    requestNewLocations();
+//    requestNewLocations();
+    handleAnotherLocation();
 
+}
+
+void MainWindow::decorate(QWidget* widget)
+{
+    QPalette palette = widget->palette();
+    palette.setBrush(QPalette::Base,QBrush(QColor(0,0,0,0)));
+    widget->setPalette(palette);
+    widget->setAttribute(Qt::WA_OpaquePaintEvent,false);
+    widget->setAttribute(Qt::WA_AcceptTouchEvents,true);
 }
 
 void MainWindow::requestNewLocations()
@@ -32,12 +54,12 @@ void MainWindow::requestNewLocations()
 
 void MainWindow::handleAnotherLocation()
 {
-    if(mLocationEngine->count() == mLocationEngine->currentIndex() || 0 == mLocationEngine->count())
-    {
-        requestNewLocations();
-    }
+//    if(mLocationEngine->count() == mLocationEngine->currentIndex() || 0 == mLocationEngine->count())
+//    {
+//        requestNewLocations();
+//    }
 
-    else
+//    else
     {
     LocationDetails* details = mLocationEngine->nextLocation();
     qDebug()<<details->title;
@@ -45,6 +67,7 @@ void MainWindow::handleAnotherLocation()
     QString html(KHtmlFormat);
     html = html.arg(details->summary);
     ui->webView->setHtml(html);
+    mImageWebView->setUrl(details->imageLink);
     }
 }
 
@@ -64,3 +87,4 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+

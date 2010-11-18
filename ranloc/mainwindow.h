@@ -8,6 +8,7 @@ namespace Ui {
 }
 
 class LocationEngine;
+class QWebView;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -15,6 +16,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
 protected slots:
     void requestNewLocations();
     void handleAnotherLocation();
@@ -22,9 +24,13 @@ protected slots:
     void handleErrorOccured(QString error);
 
 private:
+    void decorate(QWidget* widget);
+
+private:
     Ui::MainWindow *ui;
 
 private:
+    QWebView* mImageWebView;
     LocationEngine* mLocationEngine;
 };
 
