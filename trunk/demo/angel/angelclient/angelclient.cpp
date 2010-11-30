@@ -50,27 +50,29 @@ void AngelClient::handleReadyRead()
     qDebug()<<__FUNCTION__;
     QDataStream in(mClientSocket);
     in.setVersion(QDataStream::Qt_4_0);
-    if (blockSize == 0)
-    {
-        if (mClientSocket->bytesAvailable() < (int)sizeof(quint16))
-        {
-            qDebug()<<"Invalid bytes available";
-            return;
-        }
-        in >> blockSize;
-    }
+    int bytes = mClientSocket->bytesAvailable();
+    qDebug()<<bytes;
+//    if (blockSize == 0)
+//    {
+//        if (mClientSocket->bytesAvailable() < (int)sizeof(quint16))
+//        {
+//            qDebug()<<"Invalid bytes available";
+//            return;
+//        }
+//        in >> blockSize;
+//    }
 
-    if (mClientSocket->bytesAvailable() < blockSize)
-    {
-        qDebug()<<"Invalid block size available";
-        return;
-    }
+//    if (mClientSocket->bytesAvailable() < blockSize)
+//    {
+//        qDebug()<<"Invalid block size available";
+//        return;
+//    }
 
-    qDebug()<<blockSize;
-    QString nextFortune;
-    in >> nextFortune;
+//    qDebug()<<blockSize;
+    QByteArray nextFortune;
+    in.device()->seek(0);
+    nextFortune = in.device()->readAll();
     qDebug()<<nextFortune;
-
     ui->msgLabel->setText(nextFortune);
 }
 
