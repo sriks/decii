@@ -22,6 +22,8 @@ public slots:
     void handleReadyRead();
     void connectToServer();
     void handleError(QAbstractSocket::SocketError error);
+
+    void testCommand();
 private:
     Ui::AngelClient *ui;
 private:
