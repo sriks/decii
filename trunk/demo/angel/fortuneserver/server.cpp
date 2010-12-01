@@ -40,18 +40,31 @@
 
 #include <QtGui>
 #include <QtNetwork>
-
+#include <QDebug>
+#include <QProcess>
 #include <stdlib.h>
-
+#include <QXmlQuery>
 #include "server.h"
 
+const QString KXmlFileName = "xmlfilename";
+const QString KId = "id";
+const QString KSource = "source";
+const QString KPlayer = "player";
+const QString KXqReadCommandForPlayer = "let $root:=doc($xmlfilename)//commands where $root/@player=$player return data($root/@command)";
+const QString KXqReadOperation = "let $root:=doc($xmlfilename)//commands for $operation in $root/operation where $operation/@id=$id return $operation";
+const QString KXqReadOptions = "let $root:=doc($source)//operation return data($root/option)";
+const QString KLinuxCommandFileName = "linux_commands.xml";
+
 Server::Server(QWidget *parent)
-:   QDialog(parent), tcpServer(0), networkSession(0)
+:   QDialog(parent), tcpServer(0), networkSession(0),
+    mIsLastRequestSuccess(false)
 {
     statusLabel = new QLabel;
     quitButton = new QPushButton(tr("Quit"));
     quitButton->setAutoDefault(false);
 
+    mProcess = new QProcess(this);
+    mXmlQuery = new QXmlQuery;
     QNetworkConfigurationManager manager;
     if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
         // Get saved network configuration
@@ -104,6 +117,11 @@ Server::Server(QWidget *parent)
         setWindowTitle(tr("Fortune Server"));
 }
 
+Server::~Server()
+{
+    delete mXmlQuery;
+}
+
 void Server::sessionOpened()
 {
     // Save the used configuration
@@ -153,26 +171,129 @@ void Server::sessionOpened()
 //! [4]
 void Server::sendFortune()
 {
-//! [5]
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_0);
-//! [4] //! [6]
-//    out << (quint16)0;
-//    out << fortunes.at(qrand() % fortunes.size());
-//    out.device()->seek(0);
-//    out << (quint16)(block.size() - sizeof(quint16));
-//! [6] //! [7]
 
-    out.device()->write("test");
-    out.device()->seek(0);
-    QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-    connect(clientConnection, SIGNAL(disconnected()),
-            clientConnection, SLOT(deleteLater()));
+    QByteArray response = "Conneted Successfully";
+    mCommandForPlayer = commandForPlayer("rhythmbox");
+
+    if(mCommandForPlayer.isEmpty())
+    {
+        response = "no command for player found";
+    }
+
+
+
+//    QDataStream out(&block, QIODevice::WriteOnly);
+//    out.setVersion(QDataStream::Qt_4_0);
+////! [4] //! [6]
+////    out << (quint16)0;
+////    out << fortunes.at(qrand() % fortunes.size());
+////    out.device()->seek(0);
+////    out << (quint16)(block.size() - sizeof(quint16));
+////! [6] //! [7]
+
+//    out.device()->write("test");
+//    out.device()->seek(0);
+    mClientConnection = tcpServer->nextPendingConnection();
+    connect(mClientConnection, SIGNAL(disconnected()),
+            mClientConnection, SLOT(deleteLater()));
+
+    connect(mClientConnection,SIGNAL(readyRead()),this,SLOT(handleCommand()));
 //! [7] //! [8]
 
-    clientConnection->write(block);
-    clientConnection->disconnectFromHost();
+    mClientConnection->write(response);
+//    clientConnection->disconnectFromHost();
 //! [5]
 }
 //! [8]
+
+void Server::handleCommand()
+{
+    QString requestFromClient = mClientConnection->readAll();
+    qDebug()<<"requestFromClient: "<<requestFromClient;
+
+    if("islastcommandsuccess" == requestFromClient)
+    {
+        QByteArray response = (mIsLastRequestSuccess)?("true"):("false");
+        mClientConnection->write(response);
+        return;
+    }
+
+    mIsLastRequestSuccess = false;
+    if("next" == requestFromClient)
+    {
+        qDebug()<<mCommandForPlayer;
+        QString operation = operationDetails(requestFromClient);
+        operation = operation.trimmed();
+        QString opt = option(operation);
+        qDebug()<<opt;
+        QString commandToExecute = mCommandForPlayer+opt;
+        qDebug()<<"commandToExecute:"<<commandToExecute;
+
+        mProcess->setStandardOutputFile("stdout.txt");
+        int stat = mProcess->execute(commandToExecute);
+        mIsLastRequestSuccess = !stat; // on success return is 0
+        qDebug()<<"stdout:"<<mProcess->readAllStandardError();
+        qDebug()<<stat;
+        qDebug()<<mProcess->exitStatus();
+        qDebug()<<mProcess->exitCode();
+    }
+}
+
+bool Server::isProcessSuccess(QProcess* aProcess)
+{
+}
+
+QString Server::commandForPlayer(QString aPlayerName)
+{
+    QXmlQuery* xmlQuery = new QXmlQuery;
+#ifdef Q_OS_LINUX
+    xmlQuery->bindVariable(KXmlFileName,QVariant(KLinuxCommandFileName));
+#endif
+    xmlQuery->bindVariable(KPlayer,QVariant(aPlayerName));
+    xmlQuery->setQuery(KXqReadCommandForPlayer);
+    QString result = QString();
+    if(xmlQuery->isValid())
+    {
+        xmlQuery->evaluateTo(&result);
+    }
+    delete xmlQuery;
+    return result;
+}
+
+QString Server::operationDetails(QString aId)
+{
+#ifdef Q_OS_LINUX
+    mXmlQuery->bindVariable(KXmlFileName,QVariant(KLinuxCommandFileName));
+#endif
+    mXmlQuery->bindVariable(KId,QVariant(aId));
+    mXmlQuery->setQuery(KXqReadOperation);
+    QString result = QString();
+    if(mXmlQuery->isValid())
+    {
+       mXmlQuery->evaluateTo(&result);
+    }
+    qDebug()<<result;
+    return result;
+}
+
+QString Server::option(QString aOperation)
+{
+    QByteArray tmp = aOperation.toUtf8();
+    QBuffer buffer(&tmp);
+    buffer.open(QIODevice::ReadOnly|QIODevice::Text);
+    QXmlQuery* xmlQuery = new QXmlQuery;
+    xmlQuery->bindVariable(KSource,&buffer);
+    xmlQuery->setQuery(KXqReadOptions);
+    QString result = QString();
+    if(xmlQuery->isValid())
+    {
+        xmlQuery->evaluateTo(&result);
+    }
+    result = result.trimmed();
+    qDebug()<<result;
+    delete xmlQuery;
+    buffer.close();
+    return result;
+}
+
+//eof

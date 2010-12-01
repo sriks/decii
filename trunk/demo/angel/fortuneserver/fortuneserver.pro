@@ -1,7 +1,7 @@
 HEADERS       = server.h
 SOURCES       = server.cpp \
                 main.cpp
-QT           += network
+QT           += network xmlpatterns
 
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/network/fortuneserver

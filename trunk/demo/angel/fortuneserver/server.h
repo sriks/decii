@@ -51,16 +51,27 @@ class QNetworkSession;
 QT_END_NAMESPACE
 
 //! [0]
+class QTcpSocket;
+class QProcess;
+class QXmlQuery;
 class Server : public QDialog
 {
     Q_OBJECT
 
 public:
     Server(QWidget *parent = 0);
+    ~Server();
 
 private slots:
     void sessionOpened();
     void sendFortune();
+
+    void handleCommand();
+    QString commandForPlayer(QString aPlayerName);
+    QString operationDetails(QString aId);
+    QString option(QString aOperation);
+private:
+    bool isProcessSuccess(QProcess* aProcess);
 
 private:
     QLabel *statusLabel;
@@ -68,6 +79,11 @@ private:
     QTcpServer *tcpServer;
     QStringList fortunes;
     QNetworkSession *networkSession;
+    QTcpSocket *mClientConnection;
+    QProcess *mProcess;
+    QXmlQuery* mXmlQuery;
+    bool mIsLastRequestSuccess;
+    QString mCommandForPlayer;
 };
 //! [0]
 

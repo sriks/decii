@@ -13,6 +13,8 @@ AngelClient::AngelClient(QWidget *parent) :
     connect(mClientSocket,SIGNAL(connected()),this,SLOT(handleHostFound()));
     connect(mClientSocket,SIGNAL(readyRead()),this,SLOT(handleReadyRead()));
     connect(mClientSocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(handleError(QAbstractSocket::SocketError)));
+
+    connect(ui->nextButton,SIGNAL(clicked()),this,SLOT(testCommand()));
 }
 
 AngelClient::~AngelClient()
@@ -74,6 +76,12 @@ void AngelClient::handleReadyRead()
     nextFortune = in.device()->readAll();
     qDebug()<<nextFortune;
     ui->msgLabel->setText(nextFortune);
+}
+
+void AngelClient::testCommand()
+{
+    qDebug()<<__FUNCTION__;
+    mClientSocket->write("next");
 }
 
 // eof
