@@ -54,6 +54,7 @@ QT_END_NAMESPACE
 class QTcpSocket;
 class QProcess;
 class QXmlQuery;
+class QFile;
 class Server : public QDialog
 {
     Q_OBJECT
@@ -63,13 +64,12 @@ public:
     ~Server();
 
 private slots:
-    void sessionOpened();
-    void sendFortune();
+    void openSession();
+    void handleNewConnection();
 
-    void handleCommand();
+    void handleRequest();
     QString commandForPlayer(QString aPlayerName);
-    QString operationDetails(QString aId);
-    QString option(QString aOperation);
+    QString option(QString aId);
 private:
     bool isProcessSuccess(QProcess* aProcess);
 
@@ -84,6 +84,9 @@ private:
     QXmlQuery* mXmlQuery;
     bool mIsLastRequestSuccess;
     QString mCommandForPlayer;
+    QString mPlayerName;
+    QFile* mCommands;
+    bool mError;
 };
 //! [0]
 
