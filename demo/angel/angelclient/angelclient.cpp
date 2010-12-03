@@ -2,12 +2,19 @@
 #include <QDebug>
 #include "angelclient.h"
 #include "ui_angelclient.h"
+#include "qtsvgbutton.h"
 
 AngelClient::AngelClient(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AngelClient)
 {
     ui->setupUi(this);
+//    QtSvgButton* svgButton = new QtSvgButton(this);
+//    svgButton->setSkin("MetallicBrush");
+//    svgButton->show();
+    ui->prevButton->setSkin("MetallicBrush");
+    ui->prevButton->show();
+    ui->prevButton->setText("Prev");
     connect(ui->bindButton,SIGNAL(clicked()),this,SLOT(connectToServer()));
     mClientSocket = new QTcpSocket(this);
     connect(mClientSocket,SIGNAL(connected()),this,SLOT(handleHostFound()));
