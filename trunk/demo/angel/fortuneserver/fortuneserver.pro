@@ -15,3 +15,6 @@ symbian {
     TARGET.CAPABILITY = "NetworkServices ReadUserData"
     TARGET.EPOCHEAPSIZE = 0x20000 0x2000000
 }
+
+RESOURCES += \
+    resources.qrc
