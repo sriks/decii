@@ -15,8 +15,13 @@ SOURCES += main.cpp\
 
 HEADERS  += angelclient.h
 
-FORMS    += angelclient.ui
+#embedd widgets dependency
+include(../../../embedded-widgets-1.1.0/src/svgbutton/svgbutton.pri)
+include(../../../embedded-widgets-1.1.0/src/common/common.pri)
+RESOURCES += ../../../embedded-widgets-1.1.0/skins/metallicbrush_svgbutton.qrc
+# embed widgets dependency
 
+FORMS    += angelclient.ui
 CONFIG += mobility
 MOBILITY = 
 
