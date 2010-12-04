@@ -9,12 +9,11 @@ AngelClient::AngelClient(QWidget *parent) :
     ui(new Ui::AngelClient)
 {
     ui->setupUi(this);
-//    QtSvgButton* svgButton = new QtSvgButton(this);
-//    svgButton->setSkin("MetallicBrush");
-//    svgButton->show();
     ui->prevButton->setSkin("MetallicBrush");
     ui->prevButton->show();
     ui->prevButton->setText("Prev");
+    ui->hostAddressTextEdit->setPlainText(hostAddressToConnect());
+    ui->hostPortTextEdit->setPlainText("1500");
     connect(ui->bindButton,SIGNAL(clicked()),this,SLOT(connectToServer()));
     mClientSocket = new QTcpSocket(this);
     connect(mClientSocket,SIGNAL(connected()),this,SLOT(handleHostFound()));
@@ -29,13 +28,29 @@ AngelClient::~AngelClient()
     delete ui;
 }
 
+QString AngelClient::hostAddressToConnect()
+{
+    QString ipAddress;
+    QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
+    // use the first non-localhost IPv4 address
+    for (int i = 0; i < ipAddressesList.size(); ++i)
+    {
+        if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
+            ipAddressesList.at(i).toIPv4Address())
+        {
+            ipAddress = ipAddressesList.at(i).toString();
+            qDebug()<<"host address to connect "<<ipAddress;
+            return ipAddress;
+        }
+    }
+}
+
 void AngelClient::handleError(QAbstractSocket::SocketError error)
 {
     qDebug()<<__FUNCTION__;
     qDebug()<<error;
     qDebug()<<mClientSocket->errorString();
     ui->statusLabel->setText(mClientSocket->errorString());
-
 }
 
 void AngelClient::connectToServer()
@@ -88,7 +103,7 @@ void AngelClient::handleReadyRead()
 void AngelClient::testCommand()
 {
     qDebug()<<__FUNCTION__;
-    mClientSocket->write("next");
+    mClientSocket->write("nowplaying");
 }
 
 // eof
