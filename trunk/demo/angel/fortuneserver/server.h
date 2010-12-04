@@ -42,6 +42,7 @@
 #define SERVER_H
 
 #include <QDialog>
+#include <QProcess>
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -70,6 +71,10 @@ private slots:
     void handleRequest();
     QString commandForPlayer(QString aPlayerName);
     QString option(QString aId);
+    void sendResponse(int aStatus, QString aResponseText);
+
+    void readProcessOutput();
+    void processFinished (int exitCode,QProcess::ExitStatus exitStatus);
 private:
     bool isProcessSuccess(QProcess* aProcess);
 

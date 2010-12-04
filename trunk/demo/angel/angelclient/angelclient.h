@@ -22,7 +22,7 @@ public slots:
     void handleReadyRead();
     void connectToServer();
     void handleError(QAbstractSocket::SocketError error);
-
+    QString hostAddressToConnect();
     void testCommand();
 private:
     Ui::AngelClient *ui;

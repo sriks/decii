@@ -56,6 +56,13 @@ const QString KLinuxCommandFileName = "linux_commands.xml";
 const QString KWindowsCommandFileName = "win_commands.xml";
 const QString KRhythmbox = "rhythmbox";
 const QString KWinamp    = "winamp";
+const QString KResponseTemplate = "<response><status>%1</status><text>%2</text></response>";
+const int KStatusSuccess =  200;
+const int KStatusInternalError = 500;
+
+//void msgOutput(QtMsgType type, const char *msg);
+//static QString processOutput;
+//static bool readOutput = false;
 
 Server::Server(QWidget *parent)
 :   QDialog(parent), tcpServer(0), networkSession(0),
@@ -64,10 +71,9 @@ Server::Server(QWidget *parent)
     statusLabel = new QLabel;
     quitButton = new QPushButton(tr("Quit"));
     quitButton->setAutoDefault(false);
-
-
     mProcess = new QProcess(this);
     mXmlQuery = new QXmlQuery;
+    connect(mProcess,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(processFinished(int,QProcess::ExitStatus)));
 
 // Populate command filename depending on the underlying platform
     QString commandsFileName;
@@ -150,8 +156,7 @@ void Server::handleNewConnection()
             mClientConnection, SLOT(deleteLater()));
 
     connect(mClientConnection,SIGNAL(readyRead()),this,SLOT(handleRequest()));
-
-    mClientConnection->write(response);
+    sendResponse(KStatusSuccess,response);
 }
 
 void Server::handleRequest()
@@ -167,7 +172,7 @@ void Server::handleRequest()
     }
 
     mIsLastRequestSuccess = false;
-    if("next" == requestFromClient)
+//    if("next" == requestFromClient)
     {
         QString opt = option(requestFromClient);
         QString commandToExecute = mCommandForPlayer+opt;
@@ -175,14 +180,7 @@ void Server::handleRequest()
         qDebug()<<"commandToExecute:"<<commandToExecute;
 
         // Execute command
-        mProcess->execute(commandToExecute);
-
-//        mIsLastRequestSuccess = !stat; // on success return is 0
-        qDebug()<<"stderr:"<<mProcess->readAllStandardError();
-        qDebug()<<"stdout:"<<mProcess->readAllStandardOutput();
-//        qDebug()<<stat;
-        qDebug()<<mProcess->exitStatus();
-        qDebug()<<mProcess->exitCode();
+        mProcess->start(commandToExecute);
     }
 }
 
@@ -220,6 +218,30 @@ QString Server::option(QString aId)
     }
     qDebug()<<result;
     return result;
+}
+
+void Server::sendResponse(int aStatus, QString aResponseText)
+{
+    qDebug()<<__FUNCTION__;
+    QString resp = KResponseTemplate.arg(aStatus).arg(aResponseText);
+    qDebug()<<resp;
+    mClientConnection->write(resp.toUtf8());
+}
+
+void Server::processFinished (int exitCode,QProcess::ExitStatus exitStatus)
+{
+qDebug()<<__FUNCTION__;
+qDebug()<<"exitcode:"<<exitCode;
+qDebug()<<"exitStatus:"<<exitStatus;
+qDebug()<<mProcess->readAllStandardOutput();
+
+}
+
+void Server::readProcessOutput()
+{
+    qDebug()<<__FUNCTION__;
+    qDebug()<<mProcess->exitStatus();
+    qDebug()<<mProcess->exitCode();
 }
 
 //eof
