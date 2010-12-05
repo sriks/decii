@@ -220,21 +220,15 @@ QString Server::option(QString aId)
     return result;
 }
 
-void Server::sendResponse(int aStatus, QString aResponseText)
-{
-    qDebug()<<__FUNCTION__;
-    QString resp = KResponseTemplate.arg(aStatus).arg(aResponseText);
-    qDebug()<<resp;
-    mClientConnection->write(resp.toUtf8());
-}
-
 void Server::processFinished (int exitCode,QProcess::ExitStatus exitStatus)
 {
 qDebug()<<__FUNCTION__;
 qDebug()<<"exitcode:"<<exitCode;
 qDebug()<<"exitStatus:"<<exitStatus;
-qDebug()<<mProcess->readAllStandardOutput();
-
+    QString response = mProcess->readAllStandardOutput().simplified();
+qDebug()<<response;
+    int stat = (0 == exitCode)?(KStatusSuccess):(KStatusInternalError);
+    sendResponse(stat,response);
 }
 
 void Server::readProcessOutput()
@@ -242,6 +236,14 @@ void Server::readProcessOutput()
     qDebug()<<__FUNCTION__;
     qDebug()<<mProcess->exitStatus();
     qDebug()<<mProcess->exitCode();
+}
+
+void Server::sendResponse(int aStatus, QString aResponseText)
+{
+    qDebug()<<__FUNCTION__;
+    QString resp = KResponseTemplate.arg(aStatus).arg(aResponseText);
+    qDebug()<<resp;
+    mClientConnection->write(resp.toUtf8());
 }
 
 //eof
