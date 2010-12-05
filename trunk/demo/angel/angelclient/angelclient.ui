@@ -6,89 +6,204 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
+    <width>299</width>
     <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>AngelClient</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QPlainTextEdit" name="hostAddressTextEdit">
-     <property name="plainText">
-      <string>192.168.1.2</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTextEdit" name="hostPortTextEdit"/>
-   </item>
-   <item>
-    <widget class="QTextEdit" name="playerConsole"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="statusLabel">
-     <property name="text">
-      <string>status</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="connectionLabel">
-     <property name="text">
-      <string>not connected</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="msgLabel">
-     <property name="text">
-      <string>message</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="bindButton">
-     <property name="text">
-      <string>Bind</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="nextButton">
-     <property name="text">
-      <string>next</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QtSvgButton" name="prevButton">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Prev</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <widget class="QPushButton" name="bindButton">
+   <property name="geometry">
+    <rect>
+     <x>8</x>
+     <y>400</y>
+     <width>80</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>94</x>
+     <y>400</y>
+     <width>80</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Setup</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>400</y>
+     <width>80</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="console">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>470</y>
+     <width>261</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>300</y>
+     <width>261</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QLabel" name="elapsed">
+      <property name="text">
+       <string>0:0</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="duration">
+      <property name="text">
+       <string>4:00</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>271</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="connectionStatus">
+      <property name="text">
+       <string>Not connected</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="playingStatus">
+      <property name="text">
+       <string>Not playing</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="title">
+      <property name="text">
+       <string>Title</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="album">
+      <property name="text">
+       <string>Album</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="artist">
+      <property name="text">
+       <string>Artist</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>360</y>
+     <width>254</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="prevButton">
+      <property name="baseSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>prev</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="playPauseButton">
+      <property name="text">
+       <string>play/pause</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="nextButton">
+      <property name="text">
+       <string>next</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>262</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <widget class="QLineEdit" name="lineEdit"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEdit_2"/>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>QtSvgButton</class>
-   <extends>QPushButton</extends>
-   <header location="global">qtsvgbutton.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
