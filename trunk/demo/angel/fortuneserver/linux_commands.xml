@@ -1,5 +1,13 @@
 <commands player="rhythmbox" command="rhythmbox-client ">
 
+<operation id="nowplaying">
+<option>--print-playing</option>
+</operation>
+
+<operation id="trackduration">
+<option>--print-playing --%td</option>
+</operation>
+
 <operation id="play">
 <option>--play</option>
 </operation>
@@ -13,13 +21,9 @@
 </operation>
 
 <operation id="prev">
-<option>--prev</option>
+<option>--previous</option>
 </operation>
 
-<operation id="nowplaying">
-<option>--print-playing</option>
-<readresult>true</readresult>
-</operation>
 
 <operation id="quit">
 <option>--quit</option>
