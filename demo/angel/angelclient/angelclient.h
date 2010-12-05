@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QAbstractSocket>
+#include <QTime>
+#include <QBasicTimer>
 namespace Ui {
     class AngelClient;
 }
@@ -27,16 +29,31 @@ public slots:
     void playPause();
     void next();
     void prev();
-
+    void trackDuration();
+    void trackPosition();
     void sendRequest(QByteArray aRequest);
+
 private slots:
+    void setupNetworkSession();
     QString readResponse(QString aSourceXml,QString aResponseType);
+    void sliderValueChanged(int aNewValue);
+    void updateElapsedTime();
+
+private:
+    int timeInSecs(QString aTimeInText);
+    void timerEvent(QTimerEvent *aEvent);
 
 private:
     Ui::AngelClient *ui;
 private:
     QTcpSocket* mClientSocket;
     QByteArray mCurrentRequest;
+    int mTrackDurationInSec;
+    QTime mTrackElapsedTime;
+    bool mHasHourPart;
+    bool mIsPaused;
+    int mSyncTimerId;
+    QBasicTimer mTrackTimer;
 };
 
 #endif // ANGELCLIENT_H

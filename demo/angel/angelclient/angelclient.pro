@@ -26,6 +26,8 @@ CONFIG += mobility
 MOBILITY = 
 
 symbian {
+    LIBS += -lesock
+
     TARGET.UID3 = 0xea32c6e1
     TARGET.CAPABILITY += NetworkServices ReadUserData WriteUserData
     TARGET.EPOCSTACKSIZE = 0x14000
