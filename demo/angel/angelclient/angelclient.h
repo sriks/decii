@@ -19,16 +19,24 @@ public:
 
 public slots:
     void handleHostFound();
-    void handleReadyRead();
+    void readServerResponse();
     void connectToServer();
     void handleError(QAbstractSocket::SocketError error);
     QString hostAddressToConnect();
-    void testCommand();
+
+    void playPause();
+    void next();
+    void prev();
+
+    void sendRequest(QByteArray aRequest);
+private slots:
+    QString readResponse(QString aSourceXml,QString aResponseType);
+
 private:
     Ui::AngelClient *ui;
 private:
     QTcpSocket* mClientSocket;
-    quint16 blockSize;
+    QByteArray mCurrentRequest;
 };
 
 #endif // ANGELCLIENT_H
