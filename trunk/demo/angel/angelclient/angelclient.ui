@@ -162,20 +162,20 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <widget class="QLineEdit" name="lineEdit"/>
+     <widget class="QLineEdit" name="hostAddress"/>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit_2"/>
+     <widget class="QLineEdit" name="port"/>
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>11</x>
      <y>300</y>
      <width>261</width>
-     <height>16</height>
+     <height>23</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
