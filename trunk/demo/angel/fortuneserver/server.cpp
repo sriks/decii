@@ -56,21 +56,23 @@ const QString KLinuxCommandFileName = "linux_commands.xml";
 const QString KWindowsCommandFileName = "win_commands.xml";
 const QString KRhythmbox = "rhythmbox";
 const QString KWinamp    = "winamp";
+const QString KNowPlaying    = "nowplaying";
+const QString KPlay          = "play";
+const QString KSyncNow       = "syncnow";
 const QString KResponseTemplate = "<response><status>%1</status><text>%2</text></response>";
+
 const int KStatusSuccess =  200;
 const int KStatusInternalError = 500;
-
-//void msgOutput(QtMsgType type, const char *msg);
-//static QString processOutput;
-//static bool readOutput = false;
+const int KOneSecondInMs = 1000;
 
 Server::Server(QWidget *parent)
 :   QDialog(parent), tcpServer(0), networkSession(0),
-    mError(false)
+    mInternalSync(false)
 {
     statusLabel = new QLabel;
     quitButton = new QPushButton(tr("Quit"));
     quitButton->setAutoDefault(false);
+    mCurrentTrackName.clear();
     mProcess = new QProcess(this);
     mXmlQuery = new QXmlQuery;
     connect(mProcess,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(processFinished(int,QProcess::ExitStatus)));
@@ -89,7 +91,7 @@ Server::Server(QWidget *parent)
     mCommands = new QFile(commandsFileName,this);
     if(!mCommands->open(QIODevice::ReadOnly))
     {
-        mError = true;
+
     }
 
     openSession();
@@ -157,35 +159,77 @@ void Server::handleNewConnection()
 
     connect(mClientConnection,SIGNAL(readyRead()),this,SLOT(handleRequest()));
     sendResponse(KStatusSuccess,response);
+
+    // start sync timer
+    startTimer(KOneSecondInMs*4);
 }
 
 void Server::handleRequest()
 {
     QString requestFromClient = mClientConnection->readAll();
     qDebug()<<"requestFromClient: "<<requestFromClient;
+    mCurrentRequest = requestFromClient.simplified();
+    executeCommand(requestFromClient);
+}
 
-    if("islastcommandsuccess" == requestFromClient)
+void Server::executeCommand(QString aRequest)
+{
+    QString opt = option(aRequest);
+    QString commandToExecute = mCommandForPlayer+opt;
+    commandToExecute = commandToExecute.simplified();
+    qDebug()<<"commandToExecute:"<<commandToExecute;
+    mProcess->start(commandToExecute);
+}
+
+void Server::processFinished (int exitCode,QProcess::ExitStatus exitStatus)
+{
+qDebug()<<__FUNCTION__;
+    QString response = mProcess->readAllStandardOutput().simplified();
+
+//    if(!mInternalSync && KNowPlaying == mCurrentRequest)
+//    {
+//        // cache now playing track title
+//        mCurrentTrackName = response;
+//    }
+
+    // check if track changed
+    if(mInternalSync && mCurrentTrackName != response)
     {
-        QByteArray response = (mIsLastRequestSuccess)?("true"):("false");
-        mClientConnection->write(response);
-        return;
+        qDebug()<<"sync required: "<<mCurrentTrackName<<" "<<response;
+        mInternalSync = false;
+        mCurrentTrackName = response;
+//        sync();
     }
 
-    mIsLastRequestSuccess = false;
-//    if("next" == requestFromClient)
+    else
     {
-        QString opt = option(requestFromClient);
-        QString commandToExecute = mCommandForPlayer+opt;
-        commandToExecute = commandToExecute.simplified();
-        qDebug()<<"commandToExecute:"<<commandToExecute;
-
-        // Execute command
-        mProcess->start(commandToExecute);
+    int stat = (0 == exitCode)?(KStatusSuccess):(KStatusInternalError);
+    sendResponse(stat,response);
     }
 }
 
-bool Server::isProcessSuccess(QProcess* aProcess)
+void Server::readProcessOutput()
 {
+    qDebug()<<__FUNCTION__;
+    qDebug()<<mProcess->exitStatus();
+    qDebug()<<mProcess->exitCode();
+}
+
+void Server::timerEvent(QTimerEvent *event)
+{
+    checkIsSyncRequired();
+}
+
+void Server::checkIsSyncRequired()
+{
+    // get track title
+    mInternalSync = true;
+    executeCommand(KNowPlaying);
+}
+
+void Server::sync()
+{
+    sendResponse(KStatusSuccess,KSyncNow);
 }
 
 QString Server::commandForPlayer(QString aPlayerName)
@@ -218,24 +262,6 @@ QString Server::option(QString aId)
     }
     qDebug()<<result;
     return result;
-}
-
-void Server::processFinished (int exitCode,QProcess::ExitStatus exitStatus)
-{
-qDebug()<<__FUNCTION__;
-qDebug()<<"exitcode:"<<exitCode;
-qDebug()<<"exitStatus:"<<exitStatus;
-    QString response = mProcess->readAllStandardOutput().simplified();
-qDebug()<<response;
-    int stat = (0 == exitCode)?(KStatusSuccess):(KStatusInternalError);
-    sendResponse(stat,response);
-}
-
-void Server::readProcessOutput()
-{
-    qDebug()<<__FUNCTION__;
-    qDebug()<<mProcess->exitStatus();
-    qDebug()<<mProcess->exitCode();
 }
 
 void Server::sendResponse(int aStatus, QString aResponseText)

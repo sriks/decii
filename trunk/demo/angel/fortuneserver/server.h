@@ -76,7 +76,10 @@ private slots:
     void readProcessOutput();
     void processFinished (int exitCode,QProcess::ExitStatus exitStatus);
 private:
-    bool isProcessSuccess(QProcess* aProcess);
+    void executeCommand(QString aRequest);
+    void timerEvent(QTimerEvent *event);
+    void checkIsSyncRequired();
+    void sync();
 
 private:
     QLabel *statusLabel;
@@ -91,7 +94,9 @@ private:
     QString mCommandForPlayer;
     QString mPlayerName;
     QFile* mCommands;
-    bool mError;
+    QString mCurrentTrackName;
+    QString mCurrentRequest;
+    bool mInternalSync;
 };
 //! [0]
 

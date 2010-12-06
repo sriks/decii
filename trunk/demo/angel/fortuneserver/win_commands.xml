@@ -8,6 +8,14 @@
 <option>/pause</option>
 </operation>
 
+<operation id="trackduration">
+<option>/trackinfo length</option>
+</operation>
+
+<operation id="trackposition">
+<option>/trackinfo pos</option>
+</operation>
+
 <operation id="next">
 <option>/next</option>
 </operation>
