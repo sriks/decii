@@ -1,7 +1,5 @@
 #include <QtNetwork>
 #include <QDebug>
-#include <QXmlQuery>
-#include <QBuffer>
 #include "angelclient.h"
 #include "ui_angelclient.h"
 #include "qtsvgbutton.h"
@@ -11,7 +9,7 @@ const QString KResponseStatus = "status";
 const QString KResponseText = "text";
 const QString KResponseType = "responsetype";
 const QString KXqReadResponse = "let $root := doc($xmlsource)//response return data($root/%1)";
-const int KOneSecondInMs = 1000+100;
+const int KOneSecondInMs = 1000;
 
 // commands
 const QByteArray KPlay          = "play";
@@ -22,7 +20,7 @@ const QByteArray KNowPlaying    = "nowplaying";
 const QByteArray KTrackDuration = "trackduration";
 const QByteArray KTrackPosition = "trackposition";
 const QByteArray KConnect       = "connect";
-
+const QByteArray KSyncNow       = "syncnow";
 
 #ifdef Q_OS_SYMBIAN
 #include <es_sock.h>
@@ -73,16 +71,9 @@ AngelClient::AngelClient(QWidget *parent) :
     mCurrentRequest.clear();
     ui->setupUi(this);
     ui->playPauseButton->setText(KPause);
-//    ui->slider->setSingleStep(1);
-//    ui->slider->setMinimum(0);
-//    ui->slider->setMaximum(0);
+    mXmlQuery = new QXmlQuery;
+    mBuffer = new QBuffer(this);
 
-//    ui->prevButton->setSkin(KSkin);
-//    ui->nextButton->setSkin(KSkin);
-//    ui->playPauseButton->setSkin(KSkin);
-
-//    ui->hostAddressTextEdit->setPlainText(hostAddressToConnect());
-//    ui->hostPortTextEdit->setPlainText("1500");
     connect(ui->bindButton,SIGNAL(clicked()),this,SLOT(connectToServer()));
     mClientSocket = new QTcpSocket(this);
     connect(mClientSocket,SIGNAL(connected()),this,SLOT(handleHostFound()));
@@ -94,39 +85,19 @@ AngelClient::AngelClient(QWidget *parent) :
     connect(ui->nextButton,SIGNAL(clicked()),this,SLOT(next()));
     connect(ui->prevButton,SIGNAL(clicked()),this,SLOT(prev()));
     connect(ui->slider,SIGNAL(valueChanged(int)),this,SLOT(sliderValueChanged(int)));
+#ifdef Q_OS_SYBIAN
     setDefaultIap();
+#endif
+
+    ui->hostAddress->setText(hostAddressToConnect());
+    ui->port->setText("1500");
     connectToServer();
 }
 
 AngelClient::~AngelClient()
 {
     delete ui;
-}
-
-void AngelClient::setupNetworkSession()
-{
-//QNetworkConfigurationManager manager;
-//if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
-//    // Get saved network configuration
-//    QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
-//    settings.beginGroup(QLatin1String("QtNetwork"));
-//    const QString id = settings.value(QLatin1String("DefaultNetworkConfiguration")).toString();
-//    settings.endGroup();
-
-//    // If the saved network configuration is not currently discovered use the system default
-//    QNetworkConfiguration config = manager.configurationFromIdentifier(id);
-//    if ((config.state() & QNetworkConfiguration::Discovered) !=
-//        QNetworkConfiguration::Discovered) {
-//        config = manager.defaultConfiguration();
-//    }
-
-//    networkSession = new QNetworkSession(config, this);
-//    connect(networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
-
-//    getFortuneButton->setEnabled(false);
-//    statusLabel->setText(tr("Opening network session."));
-//    networkSession->open();
-//}
+    delete mXmlQuery;
 }
 
 QString AngelClient::hostAddressToConnect()
@@ -136,6 +107,7 @@ QString AngelClient::hostAddressToConnect()
     // use the first non-localhost IPv4 address
     for (int i = 0; i < ipAddressesList.size(); ++i)
     {
+        qDebug()<<"ipaddress:"<<ipAddressesList.at(i);
         if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
             ipAddressesList.at(i).toIPv4Address())
         {
@@ -149,22 +121,24 @@ QString AngelClient::hostAddressToConnect()
 void AngelClient::handleError(QAbstractSocket::SocketError error)
 {
     qDebug()<<__FUNCTION__;
-    ui->connectionStatus->setText(mClientSocket->errorString());
+    qDebug()<<"errornum:"<<error;
+    ui->connectionStatus->setText(QString().setNum(error) + " " + mClientSocket->errorString());
 }
 
 void AngelClient::connectToServer()
 {
     qDebug()<<__FUNCTION__;
     mCurrentRequest = KConnect;
-    QHostAddress hostAddress(hostAddressToConnect());
-    int port = 1500;
+    QHostAddress hostAddress(ui->hostAddress->text());
+    int port = ui->port->text().toInt();
     mClientSocket->abort();
     mClientSocket->connectToHost(hostAddress,port);
 }
 
 void AngelClient::handleHostFound()
 {
-
+    qDebug()<<__FUNCTION__;
+    ui->console->setText("connected to host");
 }
 
 void AngelClient::readServerResponse()
@@ -182,6 +156,11 @@ void AngelClient::readServerResponse()
         responseText = "Request failed!";
     }
 
+    else if(KSyncNow == responseText)
+    {
+        sync();
+    }
+
     // TODO: Use a statemachine to handle it more elegantly
     else
     {
@@ -189,12 +168,21 @@ void AngelClient::readServerResponse()
            KNext == mCurrentRequest ||
            KPrev == mCurrentRequest)
         {
+            if(KPlay == mCurrentRequest)
+            {
+                ui->playPauseButton->setEnabled(true);
+                ui->playPauseButton->setText(KPause);
+            }
+
+            qDebug()<<"requesting now playing";
             sendRequest(KNowPlaying);
             ui->playingStatus->setText("Playing");
         }
 
         else if(KPause == mCurrentRequest)
         {
+            ui->playPauseButton->setEnabled(true);
+            ui->playPauseButton->setText(KPlay);
             ui->playingStatus->setText("Paused");
         }
 
@@ -208,19 +196,18 @@ void AngelClient::readServerResponse()
         {
             mTrackDurationInSec = timeInSecs(responseText);
             ui->duration->setText(responseText);
-//            this->startTimer(KOneSecondInMs);
-            mTrackTimer.start(KOneSecondInMs,this);
-            mSyncTimerId = this->startTimer(KOneSecondInMs*4);
             trackPosition();
         }
 
         else if(KTrackPosition == mCurrentRequest)
         {
-            ui->console->setText(responseText);
+            qDebug()<<"updated position";
             int secs = timeInSecs(responseText);
             ui->slider->setRange(0,mTrackDurationInSec);
             ui->slider->setValue(secs);
-            mTrackElapsedTime.setHMS(0,0,secs,0);
+            mTrackTimer.stop();
+            mTrackTimer.start(KOneSecondInMs,this);
+            mTrackElapsedTime.setHMS(0,0,secs+1,0); // +1 adding network delay
         }
 
         else if(KConnect == mCurrentRequest)
@@ -230,24 +217,23 @@ void AngelClient::readServerResponse()
             ui->playPauseButton->setText(KPlay);
             playPause();
         }
+
     }
 }
 
 QString AngelClient::readResponse(QString aSourceXml,QString aResponseType)
 {
-    QXmlQuery* xmlQuery = new QXmlQuery;
-    QBuffer* buffer = new QBuffer(this);
-    buffer->setData(aSourceXml.toUtf8());
-    buffer->open(QIODevice::ReadOnly);
-    xmlQuery->bindVariable(KXmlSource,buffer);
+    mBuffer->setData(aSourceXml.toUtf8());
+    mBuffer->open(QIODevice::ReadOnly);
+    mXmlQuery->bindVariable(KXmlSource,mBuffer);
     QString query = KXqReadResponse.arg(aResponseType);
-    xmlQuery->setQuery(query);
+    mXmlQuery->setQuery(query);
     QString result = QString();
-    if(xmlQuery->isValid())
+    if(mXmlQuery->isValid())
     {
-       xmlQuery->evaluateTo(&result);
+       mXmlQuery->evaluateTo(&result);
     }
-    delete xmlQuery;
+    mBuffer->close();
     return result;
 }
 
@@ -256,18 +242,17 @@ void AngelClient::playPause()
     if(ui->playPauseButton->text() == KPlay)
     {
         sendRequest(KPlay);
-        ui->playPauseButton->setText(KPause);
+        ui->playPauseButton->setEnabled(false);
         mIsPaused = false;
     }
 
     else if(ui->playPauseButton->text() == KPause)
     {
         sendRequest(KPause);
-        ui->playPauseButton->setText(KPlay);
+        ui->playPauseButton->setEnabled(false);
         mIsPaused = true;
         mTrackTimer.stop();
     }
-
 }
 
 void AngelClient::next()
@@ -320,17 +305,9 @@ return -1;
 
 void AngelClient::timerEvent(QTimerEvent *aEvent)
 {
-    if(aEvent->timerId() == mSyncTimerId)
+    if(!mIsPaused)
     {
-        sendRequest(KNowPlaying);
-        ui->console->setText("syncing");
-    }
-    else
-    {
-        if(!mIsPaused)
-        {
-            ui->slider->setValue(ui->slider->value()+1);
-        }
+//        ui->slider->setValue(ui->slider->value()+1);
     }
 }
 
@@ -362,6 +339,15 @@ void AngelClient::updateElapsedTime()
 
 }
 
+void AngelClient::sync()
+{
+//    static int cnt = 0;
+//    cnt++;
+//    qDebug()<<"synching...";
+//    mTrackTimer.stop();
+//    sendRequest(KNowPlaying);
+//    ui->console->setText("syncing..." + QString().setNum(cnt));
+}
 
 void AngelClient::sendRequest(QByteArray aRequest)
 {
@@ -369,4 +355,30 @@ void AngelClient::sendRequest(QByteArray aRequest)
     mClientSocket->write(aRequest);
 }
 
+
+void AngelClient::setupNetworkSession()
+{
+//QNetworkConfigurationManager manager;
+//if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
+//    // Get saved network configuration
+//    QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
+//    settings.beginGroup(QLatin1String("QtNetwork"));
+//    const QString id = settings.value(QLatin1String("DefaultNetworkConfiguration")).toString();
+//    settings.endGroup();
+
+//    // If the saved network configuration is not currently discovered use the system default
+//    QNetworkConfiguration config = manager.configurationFromIdentifier(id);
+//    if ((config.state() & QNetworkConfiguration::Discovered) !=
+//        QNetworkConfiguration::Discovered) {
+//        config = manager.defaultConfiguration();
+//    }
+
+//    networkSession = new QNetworkSession(config, this);
+//    connect(networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
+
+//    getFortuneButton->setEnabled(false);
+//    statusLabel->setText(tr("Opening network session."));
+//    networkSession->open();
+//}
+}
 // eof

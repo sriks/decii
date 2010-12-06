@@ -5,9 +5,12 @@
 #include <QAbstractSocket>
 #include <QTime>
 #include <QBasicTimer>
+#include <QXmlQuery>
+#include <QBuffer>
 namespace Ui {
     class AngelClient;
 }
+
 
 class QTcpSocket;
 class QAbstractSocket;
@@ -35,11 +38,12 @@ public slots:
 
 private slots:
     void setupNetworkSession();
-    QString readResponse(QString aSourceXml,QString aResponseType);
     void sliderValueChanged(int aNewValue);
     void updateElapsedTime();
+    void sync();
 
 private:
+    QString readResponse(QString aSourceXml,QString aResponseType);
     int timeInSecs(QString aTimeInText);
     void timerEvent(QTimerEvent *aEvent);
 
@@ -54,6 +58,8 @@ private:
     bool mIsPaused;
     int mSyncTimerId;
     QBasicTimer mTrackTimer;
+    QXmlQuery* mXmlQuery;
+    QBuffer* mBuffer;
 };
 
 #endif // ANGELCLIENT_H
