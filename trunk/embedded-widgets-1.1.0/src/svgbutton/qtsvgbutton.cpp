@@ -99,7 +99,8 @@ void QtSvgButton::setSkin(const QString& skin)
     QPainter painter;
 
     if (renderer.load(base + "normal.svg")) {
-        m_defaultSize = renderer.defaultSize();
+//        m_defaultSize = renderer.defaultSize();
+        m_defaultSize = size(); // ssombhatla : adding support for resize
         painter.begin(&m_normal);
         renderer.render(&painter, QRectF(0.0, 0.0, 1.0, 1.0));
         painter.end();
@@ -205,6 +206,9 @@ void QtSvgButton::paintEvent(QPaintEvent * event)
 */
 QSize QtSvgButton::sizeHint() const
 {
+    // ssombhatla: adding support for resize
+    return size();
+
     if (!m_defaultSize.isEmpty()) {
         return m_defaultSize;
     } else {
