@@ -186,19 +186,17 @@ void Server::processFinished (int exitCode,QProcess::ExitStatus exitStatus)
 qDebug()<<__FUNCTION__;
     QString response = mProcess->readAllStandardOutput().simplified();
 
-//    if(!mInternalSync && KNowPlaying == mCurrentRequest)
-//    {
-//        // cache now playing track title
-//        mCurrentTrackName = response;
-//    }
-
-    // check if track changed
-    if(mInternalSync && mCurrentTrackName != response)
+    // check if sycn is required
+    if(mInternalSync)
     {
-        qDebug()<<"sync required: "<<mCurrentTrackName<<" "<<response;
         mInternalSync = false;
+        qDebug()<<"sync required: "<<mCurrentTrackName<<" "<<response;
+        if(mCurrentTrackName != response)
+        {
         mCurrentTrackName = response;
-//        sync();
+        sync();
+        }
+
     }
 
     else
@@ -266,6 +264,7 @@ QString Server::option(QString aId)
 
 void Server::sendResponse(int aStatus, QString aResponseText)
 {
+    // TODO: add request string in response
     qDebug()<<__FUNCTION__;
     QString resp = KResponseTemplate.arg(aStatus).arg(aResponseText);
     qDebug()<<resp;
