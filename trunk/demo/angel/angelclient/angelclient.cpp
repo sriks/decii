@@ -80,9 +80,12 @@ AngelClient::AngelClient(QWidget *parent) :
 #else
     resize(250,400);
 #endif
-
+    QSize buttonSize(90,90);
+    ui->playPauseButton->resize(buttonSize);
     ui->playPauseButton->setSkin(KSkin);
+    ui->nextButton->resize(buttonSize);
     ui->nextButton->setSkin(KSkin);
+    ui->prevButton->resize(buttonSize);
     ui->prevButton->setSkin(KSkin);
     ui->playPauseButton->setText(KPause);
     ui->slider->setTracking(false);
