@@ -185,6 +185,17 @@ void QtSvgButton::paintEvent(QPaintEvent * event)
     } else {
         m_normal.play(&painter);
     }
+
+    // ssombhatla : added support to display button text
+    painter.resetTransform();
+    QString buttonText = text();
+    QFontMetrics metrics(this->font(),this);
+    int textWidth = metrics.width(buttonText);
+    QRect bRect = buttonRect();
+    int offset = (bRect.width() - textWidth)/2;
+    QPoint textPoint = buttonRect().center();
+    textPoint.setX(offset);
+    painter.drawText(textPoint,text());
 }
 
 /*!
