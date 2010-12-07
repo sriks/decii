@@ -1,4 +1,5 @@
 #include <QtNetwork>
+#include <QDesktopWidget>
 #include <QDebug>
 #include "angelclient.h"
 #include "ui_angelclient.h"
@@ -67,10 +68,24 @@ AngelClient::AngelClient(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AngelClient)
 {
-    const QString KSkin("MetallicBrush");
+    const QString KSkin("Beryl");
     mCurrentRequest.clear();
     ui->setupUi(this);
+    setLayout(ui->masterLayout);
+
+#ifdef Q_OS_SYMBIAN
+    QDesktopWidget dw;
+    QRect screenRect = dw.screenGeometry();
+    resize(screenRect.size());
+#else
+    resize(250,400);
+#endif
+
+    ui->playPauseButton->setSkin(KSkin);
+    ui->nextButton->setSkin(KSkin);
+    ui->prevButton->setSkin(KSkin);
     ui->playPauseButton->setText(KPause);
+    ui->slider->setTracking(false);
     mXmlQuery = new QXmlQuery;
     mBuffer = new QBuffer(this);
 
@@ -144,6 +159,7 @@ void AngelClient::handleHostFound()
 void AngelClient::readServerResponse()
 {
     qDebug()<<__FUNCTION__;
+    ui->console->clear();
     QDataStream in(mClientSocket);
     in.setVersion(QDataStream::Qt_4_0);
     in.device()->seek(0);
@@ -173,8 +189,6 @@ void AngelClient::readServerResponse()
                 ui->playPauseButton->setEnabled(true);
                 ui->playPauseButton->setText(KPause);
             }
-
-            qDebug()<<"requesting now playing";
             sendRequest(KNowPlaying);
             ui->playingStatus->setText("Playing");
         }
@@ -207,7 +221,7 @@ void AngelClient::readServerResponse()
             ui->slider->setValue(secs);
             mTrackTimer.stop();
             mTrackTimer.start(KOneSecondInMs,this);
-            mTrackElapsedTime.setHMS(0,0,secs+1,0); // +1 adding network delay
+            mTrackElapsedTime.setHMS(0,0,secs,0);
         }
 
         else if(KConnect == mCurrentRequest)
@@ -217,7 +231,6 @@ void AngelClient::readServerResponse()
             ui->playPauseButton->setText(KPlay);
             playPause();
         }
-
     }
 }
 
@@ -297,7 +310,6 @@ int AngelClient::timeInSecs(QString aTimeInText)
     index++;
     int sec = timeList.at(index).toInt();
     int result = (hr*60)*60 + min*60 + sec;
-    qDebug()<<hr<<" "<<min<<" "<<sec<<" in sec:"<<result;
     return result;
     }
 return -1;
@@ -307,7 +319,7 @@ void AngelClient::timerEvent(QTimerEvent *aEvent)
 {
     if(!mIsPaused)
     {
-//        ui->slider->setValue(ui->slider->value()+1);
+        ui->slider->setValue(ui->slider->value()+1);
     }
 }
 
@@ -341,44 +353,14 @@ void AngelClient::updateElapsedTime()
 
 void AngelClient::sync()
 {
-//    static int cnt = 0;
-//    cnt++;
-//    qDebug()<<"synching...";
-//    mTrackTimer.stop();
-//    sendRequest(KNowPlaying);
-//    ui->console->setText("syncing..." + QString().setNum(cnt));
+    mTrackTimer.stop();
+    sendRequest(KNowPlaying);
+    ui->console->setText("syncing...");
 }
 
 void AngelClient::sendRequest(QByteArray aRequest)
 {
     mCurrentRequest = aRequest;
     mClientSocket->write(aRequest);
-}
-
-
-void AngelClient::setupNetworkSession()
-{
-//QNetworkConfigurationManager manager;
-//if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
-//    // Get saved network configuration
-//    QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
-//    settings.beginGroup(QLatin1String("QtNetwork"));
-//    const QString id = settings.value(QLatin1String("DefaultNetworkConfiguration")).toString();
-//    settings.endGroup();
-
-//    // If the saved network configuration is not currently discovered use the system default
-//    QNetworkConfiguration config = manager.configurationFromIdentifier(id);
-//    if ((config.state() & QNetworkConfiguration::Discovered) !=
-//        QNetworkConfiguration::Discovered) {
-//        config = manager.defaultConfiguration();
-//    }
-
-//    networkSession = new QNetworkSession(config, this);
-//    connect(networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
-
-//    getFortuneButton->setEnabled(false);
-//    statusLabel->setText(tr("Opening network session."));
-//    networkSession->open();
-//}
 }
 // eof

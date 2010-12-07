@@ -37,7 +37,6 @@ public slots:
     void sendRequest(QByteArray aRequest);
 
 private slots:
-    void setupNetworkSession();
     void sliderValueChanged(int aNewValue);
     void updateElapsedTime();
     void sync();
