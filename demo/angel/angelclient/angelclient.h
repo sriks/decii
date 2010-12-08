@@ -21,8 +21,9 @@ class AngelClient : public QWidget
 public:
     explicit AngelClient(QWidget *parent = 0);
     ~AngelClient();
+    QSize sizeHint();
 
-public slots:
+private slots:
     void handleHostFound();
     void readServerResponse();
     void connectToServer();
@@ -34,10 +35,12 @@ public slots:
     void prev();
     void trackDuration();
     void trackPosition();
+    void showHelp();
     void sendRequest(QByteArray aRequest);
 
-private slots:
+
     void sliderValueChanged(int aNewValue);
+    void sliderMoved(int aNewValue);
     void updateElapsedTime();
     void sync();
 
@@ -45,6 +48,9 @@ private:
     QString readResponse(QString aSourceXml,QString aResponseType);
     int timeInSecs(QString aTimeInText);
     void timerEvent(QTimerEvent *aEvent);
+    void paintEvent(QPaintEvent *aPaintEvent);
+    void resizeEvent(QResizeEvent *aEvent);
+    void setButtonSize();
 
 private:
     Ui::AngelClient *ui;
