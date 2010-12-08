@@ -1,16 +1,19 @@
 #include <QtNetwork>
 #include <QDesktopWidget>
+#include <QMessageBox>
+#include <QPainter>
 #include <QDebug>
 #include "angelclient.h"
 #include "ui_angelclient.h"
 #include "qtsvgbutton.h"
 
-const QString KXmlSource = "xmlsource";
-const QString KResponseStatus = "status";
-const QString KResponseText = "text";
-const QString KResponseType = "responsetype";
-const QString KXqReadResponse = "let $root := doc($xmlsource)//response return data($root/%1)";
-const int KOneSecondInMs = 1000;
+const QString KXmlSource        = "xmlsource";
+const QString KResponseStatus   = "status";
+const QString KResponseText     = "text";
+const QString KResponseType     = "responsetype";
+const QString KRequest          = "request";
+const QString KXqReadResponse   = "let $root := doc($xmlsource)//response return data($root/%1)";
+const int KOneSecondInMs        = 1000;
 
 // commands
 const QByteArray KPlay          = "play";
@@ -68,26 +71,12 @@ AngelClient::AngelClient(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AngelClient)
 {
-    const QString KSkin("Beryl");
     mCurrentRequest.clear();
     ui->setupUi(this);
+    setFixedSize(sizeHint());
     setLayout(ui->masterLayout);
-
-#ifdef Q_OS_SYMBIAN
-    QDesktopWidget dw;
-    QRect screenRect = dw.screenGeometry();
-    resize(screenRect.size());
-#else
-    resize(250,400);
-#endif
-    QSize buttonSize(90,90);
-    ui->playPauseButton->resize(buttonSize);
-    ui->playPauseButton->setSkin(KSkin);
-    ui->nextButton->resize(buttonSize);
-    ui->nextButton->setSkin(KSkin);
-    ui->prevButton->resize(buttonSize);
-    ui->prevButton->setSkin(KSkin);
-    ui->playPauseButton->setText(KPause);
+    ui->musicControlLayout->setSizeConstraint(QLayout::SetFixedSize);
+    setButtonSize();
     ui->slider->setTracking(false);
     mXmlQuery = new QXmlQuery;
     mBuffer = new QBuffer(this);
@@ -102,7 +91,10 @@ AngelClient::AngelClient(QWidget *parent) :
     connect(ui->playPauseButton,SIGNAL(clicked()),this,SLOT(playPause()));
     connect(ui->nextButton,SIGNAL(clicked()),this,SLOT(next()));
     connect(ui->prevButton,SIGNAL(clicked()),this,SLOT(prev()));
+    connect(ui->helpButton,SIGNAL(clicked()),this,SLOT(showHelp()));
     connect(ui->slider,SIGNAL(valueChanged(int)),this,SLOT(sliderValueChanged(int)));
+    connect(ui->slider,SIGNAL(sliderMoved(int)),this,SLOT(sliderMoved(int)));
+
 #ifdef Q_OS_SYBIAN
     setDefaultIap();
 #endif
@@ -116,6 +108,17 @@ AngelClient::~AngelClient()
 {
     delete ui;
     delete mXmlQuery;
+}
+
+QSize AngelClient::sizeHint()
+{
+    QSize widgetSize(250,400);
+#ifdef Q_OS_SYMBIAN
+    QDesktopWidget dw;
+    widgetSize = dw.screenGeometry().size();
+#endif
+    qDebug()<<"setting fixed size of "<<widgetSize;
+    return widgetSize;
 }
 
 QString AngelClient::hostAddressToConnect()
@@ -168,6 +171,7 @@ void AngelClient::readServerResponse()
     in.device()->seek(0);
     QByteArray response = in.device()->readAll();
     int stat = readResponse(response,KResponseStatus).toInt();
+    QString request = readResponse(response,KRequest).simplified();
     QString responseText = readResponse(response,KResponseText).simplified();
 
     if(200 != stat)
@@ -175,19 +179,30 @@ void AngelClient::readServerResponse()
         responseText = "Request failed!";
     }
 
+    // This is a spl case, here we connect to server.
+    else if(KConnect == mCurrentRequest)
+    {
+        ui->connectionStatus->setText(responseText);
+        // Start playing after connection
+        ui->playPauseButton->setText(KPlay);
+        playPause();
+    }
+
     else if(KSyncNow == responseText)
     {
         sync();
     }
 
+
+
     // TODO: Use a statemachine to handle it more elegantly
     else
     {
-        if(KPlay == mCurrentRequest ||
-           KNext == mCurrentRequest ||
-           KPrev == mCurrentRequest)
+        if(KPlay == request ||
+           KNext == request ||
+           KPrev == request)
         {
-            if(KPlay == mCurrentRequest)
+            if(KPlay == request)
             {
                 ui->playPauseButton->setEnabled(true);
                 ui->playPauseButton->setText(KPause);
@@ -196,27 +211,27 @@ void AngelClient::readServerResponse()
             ui->playingStatus->setText("Playing");
         }
 
-        else if(KPause == mCurrentRequest)
+        else if(KPause == request)
         {
             ui->playPauseButton->setEnabled(true);
             ui->playPauseButton->setText(KPlay);
             ui->playingStatus->setText("Paused");
         }
 
-        else if(KNowPlaying == mCurrentRequest)
+        else if(KNowPlaying == request)
         {
             ui->title->setText(responseText);
             trackDuration();
         }
 
-        else if(KTrackDuration == mCurrentRequest)
+        else if(KTrackDuration == request)
         {
             mTrackDurationInSec = timeInSecs(responseText);
             ui->duration->setText(responseText);
             trackPosition();
         }
 
-        else if(KTrackPosition == mCurrentRequest)
+        else if(KTrackPosition == request)
         {
             qDebug()<<"updated position";
             int secs = timeInSecs(responseText);
@@ -227,13 +242,7 @@ void AngelClient::readServerResponse()
             mTrackElapsedTime.setHMS(0,0,secs,0);
         }
 
-        else if(KConnect == mCurrentRequest)
-        {
-            ui->connectionStatus->setText(responseText);
-            // Start playing after connection
-            ui->playPauseButton->setText(KPlay);
-            playPause();
-        }
+
     }
 }
 
@@ -291,6 +300,13 @@ void AngelClient::trackPosition()
     sendRequest(KTrackPosition);
 }
 
+void AngelClient::showHelp()
+{
+    QMessageBox msg;
+    msg.setText("Run Angel Server on your computer.\nIn case of connection error, manually set your IP address and port and then click connect.");
+    msg.exec();
+}
+
 int AngelClient::timeInSecs(QString aTimeInText)
 {
     qDebug()<<aTimeInText;
@@ -316,6 +332,37 @@ int AngelClient::timeInSecs(QString aTimeInText)
     return result;
     }
 return -1;
+}
+
+void AngelClient::paintEvent(QPaintEvent *aPaintEvent)
+{
+    Q_UNUSED(aPaintEvent);
+    QPixmap bg(":/resources/images/brushedmetal.jpg");
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.drawPixmap(rect(),bg);
+}
+
+void AngelClient::resizeEvent(QResizeEvent *aEvent)
+{
+    setButtonSize();
+}
+
+void AngelClient::setButtonSize()
+{
+    const QString KSkin("Beryl");
+#ifdef Q_OS_SYBIAN
+    QSize buttonSize(150,150);
+#else
+    QSize buttonSize(90,90);
+#endif
+    ui->playPauseButton->resize(buttonSize);
+    ui->playPauseButton->setSkin(KSkin);
+    ui->nextButton->resize(buttonSize);
+    ui->nextButton->setSkin(KSkin);
+    ui->prevButton->resize(buttonSize);
+    ui->prevButton->setSkin(KSkin);
+    ui->playPauseButton->setText(KPause);
 }
 
 void AngelClient::timerEvent(QTimerEvent *aEvent)
@@ -352,6 +399,13 @@ void AngelClient::updateElapsedTime()
         ui->elapsed->setText(elapsedTimeText);
     }
 
+}
+
+void AngelClient::sliderMoved(int aNewValue)
+{
+    Q_UNUSED(aNewValue);
+    // For simplicity, disabling slider movement
+    sync();
 }
 
 void AngelClient::sync()

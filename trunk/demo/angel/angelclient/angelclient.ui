@@ -38,21 +38,6 @@
     <item>
      <layout class="QVBoxLayout" name="trackInfoLayout">
       <item>
-       <widget class="QLabel" name="appTitle">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Angel </string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLabel" name="playingStatus">
         <property name="font">
          <font>
@@ -73,7 +58,7 @@
        <widget class="QLabel" name="title">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>11</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -145,6 +130,19 @@
      </layout>
     </item>
     <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="ipAddressLayout">
       <item>
        <widget class="QLabel" name="label">
@@ -178,7 +176,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="helpButton">
         <property name="text">
          <string>Help</string>
         </property>
@@ -187,18 +185,22 @@
      </layout>
     </item>
     <item>
-     <widget class="QLabel" name="connectionStatus">
-      <property name="text">
-       <string>Not Connected</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="console">
-      <property name="text">
-       <string>console</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="connectionStatus">
+        <property name="text">
+         <string>Not Connected</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="console">
+        <property name="text">
+         <string>console</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

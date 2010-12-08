@@ -18,7 +18,8 @@ HEADERS  += angelclient.h
 #embedd widgets dependency
 include(../../../embedded-widgets-1.1.0/src/svgbutton/svgbutton.pri)
 include(../../../embedded-widgets-1.1.0/src/common/common.pri)
-RESOURCES += ../../../embedded-widgets-1.1.0/skins/beryl_svgbutton.qrc
+RESOURCES += ../../../embedded-widgets-1.1.0/skins/beryl_svgbutton.qrc \
+    resources.qrc
 # embed widgets dependency
 
 FORMS    += angelclient.ui
