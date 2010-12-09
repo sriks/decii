@@ -6,20 +6,20 @@
 #include <QXmlQuery>
 #include "server.h"
 
-const QString KXmlFileName = "xmlfilename";
-const QString KId = "id";
-const QString KSource = "source";
-const QString KPlayer = "player";
+const QString KXmlFileName      = "xmlfilename";
+const QString KId               = "id";
+const QString KSource           = "source";
+const QString KPlayer           = "player";
 const QString KXqReadCommandForPlayer = "let $root:=doc($xmlfilename)//commands where $root/@player=$player return data($root/@command)";
-const QString KXqReadOption = "let $root:=doc($xmlfilename)//commands for $operation in $root/operation where $operation/@id=$id return data($operation/option)";
+const QString KXqReadOption     = "let $root:=doc($xmlfilename)//commands for $operation in $root/operation where $operation/@id=$id return data($operation/option)";
 const QString KLinuxCommandFileName = "linux_commands.xml";
 const QString KWindowsCommandFileName = "win_commands.xml";
-const QString KRhythmbox = "rhythmbox";
-const QString KWinamp    = "winamp";
-const QString KNowPlaying    = "nowplaying";
-const QString KPlay          = "play";
-const QString KSyncNow       = "syncnow";
-const QString KConnect       = "connect";
+const QString KRhythmbox        = "rhythmbox";
+const QString KWinamp           = "winamp";
+const QString KNowPlaying       = "nowplaying";
+const QString KPlay             = "play";
+const QString KSyncNow          = "syncnow";
+const QString KConnect          = "connect";
 const QString KResponseTemplate = "<response><status>%1</status><request>%2</request><text>%3</text></response>";
 
 const int KStatusSuccess =  200;
@@ -182,9 +182,8 @@ void Server::timerEvent(QTimerEvent *event)
 
 void Server::checkIsSyncRequired()
 {
-    // get track title
     mInternalSync = true;
-    executeCommand(KNowPlaying);
+    executeCommand(KNowPlaying); // check for track title
 }
 
 void Server::sync()
