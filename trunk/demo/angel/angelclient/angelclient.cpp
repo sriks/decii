@@ -125,6 +125,7 @@ QString AngelClient::hostAddressToConnect()
 {
     QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
+    qDebug()<<"ip list"<<ipAddressesList;
     // use the first non-localhost IPv4 address
     for (int i = 0; i < ipAddressesList.size(); ++i)
     {
@@ -137,6 +138,7 @@ QString AngelClient::hostAddressToConnect()
             return ipAddress;
         }
     }
+return QString();
 }
 
 void AngelClient::handleError(QAbstractSocket::SocketError error)
@@ -233,7 +235,6 @@ void AngelClient::readServerResponse()
 
         else if(KTrackPosition == request)
         {
-            qDebug()<<"updated position";
             int secs = timeInSecs(responseText);
             ui->slider->setRange(0,mTrackDurationInSec);
             ui->slider->setValue(secs);
@@ -241,8 +242,6 @@ void AngelClient::readServerResponse()
             mTrackTimer.start(KOneSecondInMs,this);
             mTrackElapsedTime.setHMS(0,0,secs,0);
         }
-
-
     }
 }
 
@@ -314,10 +313,11 @@ int AngelClient::timeInSecs(QString aTimeInText)
     QStringList timeList = timeInText.split(":");
     qDebug()<<timeList<<timeList.count();
     mHasHourPart = false;
-    if(2 >= timeList.count() && aTimeInText.contains(":"))
+    if(2 >= timeList.count() && aTimeInText.contains(":")) // 2: time would be in the format hh:mm:ss
     {
         int hr = 0;
         int index = 0;
+        mHasHourPart = false;
         if(3 == timeList.count()) // has hour part also
         {
             mHasHourPart = true;
@@ -375,8 +375,6 @@ void AngelClient::timerEvent(QTimerEvent *aEvent)
 
 void AngelClient::sliderValueChanged(int aNewValue)
 {
-    qDebug()<<__FUNCTION__;
-    qDebug()<<aNewValue;
     if(!mIsPaused && aNewValue <= mTrackDurationInSec)
     {
         updateElapsedTime();
@@ -388,7 +386,7 @@ void AngelClient::updateElapsedTime()
     if(!mIsPaused)
     {
         mTrackElapsedTime = mTrackElapsedTime.addSecs(1);
-        QString elapsedTimeText;
+        QString elapsedTimeText; // format time in hh:mm:ss
         elapsedTimeText = mTrackElapsedTime.toString("mm") + ":" +
                           mTrackElapsedTime.toString("ss");
 
@@ -398,7 +396,6 @@ void AngelClient::updateElapsedTime()
         }
         ui->elapsed->setText(elapsedTimeText);
     }
-
 }
 
 void AngelClient::sliderMoved(int aNewValue)

@@ -28,8 +28,6 @@ private slots:
     void readServerResponse();
     void connectToServer();
     void handleError(QAbstractSocket::SocketError error);
-    QString hostAddressToConnect();
-
     void playPause();
     void next();
     void prev();
@@ -37,12 +35,11 @@ private slots:
     void trackPosition();
     void showHelp();
     void sendRequest(QByteArray aRequest);
-
-
     void sliderValueChanged(int aNewValue);
     void sliderMoved(int aNewValue);
     void updateElapsedTime();
     void sync();
+    QString hostAddressToConnect();
 
 private:
     QString readResponse(QString aSourceXml,QString aResponseType);
@@ -52,8 +49,6 @@ private:
     void resizeEvent(QResizeEvent *aEvent);
     void setButtonSize();
 
-private:
-    Ui::AngelClient *ui;
 private:
     QTcpSocket* mClientSocket;
     QByteArray mCurrentRequest;
@@ -65,6 +60,9 @@ private:
     QBasicTimer mTrackTimer;
     QXmlQuery* mXmlQuery;
     QBuffer* mBuffer;
+
+private:
+    Ui::AngelClient *ui;
 };
 
 #endif // ANGELCLIENT_H
