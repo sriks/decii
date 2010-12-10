@@ -8,6 +8,7 @@ struct HistoryInfo
     QString title;
     QString description;
     QUrl link;
+    QString eventDate;
 };
 
 class RSSManager;

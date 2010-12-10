@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-DEFINES += SCREENSAVER
-QT       += core gui webkit
+#DEFINES += SCREENSAVER
+QT       += core gui webkit network xmlpatterns
 TARGET = thisdayinhistory
 TEMPLATE = app
 SOURCES += main.cpp\
@@ -17,6 +17,6 @@ HEADERS  += tdih.h \
 
 # Decii dependencies
 win32:{
-include(c:/decii/include/dgraphicswidget/dgraphicswidget.pri)
-include(c:/decii/include/rsssuite/rssmanager.pri)
+include(../dgraphicswidget/dgraphicswidget.pri)
+include(../rsssuite/rssmanager/rssmanager.pri)
 }

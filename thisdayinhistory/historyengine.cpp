@@ -13,7 +13,7 @@ HistoryEngine::HistoryEngine(QObject *parent) :
             connect(mRSSManager,SIGNAL(updateAvailable(QUrl,int)),
             this,SLOT(handleUpdateAvailable(QUrl,int)));
     // add subscription
-    mRSSManager->addSubscription(FeedSubscription(KTDIHUrl));
+    mRSSManager->addFeed(FeedSubscription(KTDIHUrl));
 }
 
 void HistoryEngine::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
@@ -21,15 +21,24 @@ void HistoryEngine::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
 qDebug()<<__PRETTY_FUNCTION__;
 qDebug()<<"URL:"<<sourceUrl<<"\n"<<updateditems;
     // Retrieve item
-    RSSParser* parser = mRSSManager->parser(sourceUrl);
+    RSSParser* parser = mRSSManager->parser(sourceUrl); // ownership is transfered
     mHistoryInfo.title = RSSParser::decodeHtml(parser->itemElement(1,RSSParser::title));
     mHistoryInfo.description = RSSParser::decodeHtml(parser->itemElement(1,RSSParser::description));
     mHistoryInfo.link = parser->itemElement(1,RSSParser::link);
+    mHistoryInfo.eventDate = parser->itemElement(1,"eventDate");
+
+// test
+qDebug()<<parser->channelElement("title");
+//test
+
+    // delete parser
     parser->deleteLater();
 
     qDebug()<<mHistoryInfo.title<<"\n"<<
               mHistoryInfo.description<<"\n"<<
-              mHistoryInfo.link;
+              mHistoryInfo.link<<"\n"<<
+              mHistoryInfo.eventDate;
+
     emit updateReady(mHistoryInfo);
 }
 
