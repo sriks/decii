@@ -12,11 +12,20 @@ public:
     void startSnowfall();
     void stopSnowfall();
 private:
+    void mousePressEvent(QMouseEvent *aEvent);
     void timerEvent(QTimerEvent *aEvent);
+    void animateSnowMan();
     QGraphicsWidget* createSnowflake();
+    int generateX();
+
 private:
+
+    QGraphicsWidget* mSnowMan;
+    QGraphicsPixmapItem* mSnowManPixmapItem; // non owning
     QPixmap mSnowflakePixmap;
+    QRect mScreenRect;
     int mTimerId;
+    int mDirectionOffset;
 };
 
 #endif // SNOWFLAKES_H
