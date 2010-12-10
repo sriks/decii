@@ -31,7 +31,11 @@ TDIH::TDIH(QWidget *parent)
             this,SLOT(handleUpdate(HistoryInfo)));
     mHistoryEngine->update();
     mDGraphicsWidget->setTitleText(KMainTitle+"\nLoading...");
+#ifdef Q_OS_SYMBIAN
+    mDGraphicsView->showMaximized();
+#else
     mDGraphicsView->show();
+#endif
 }
 
 TDIH::~TDIH()
