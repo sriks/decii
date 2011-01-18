@@ -48,7 +48,7 @@ public slots:
     Q_INVOKABLE QStringList itemElements(QString userElement);
     Q_INVOKABLE QStringList category(int itemIndex);
     Q_INVOKABLE QList<QStringList> categories();
-    Q_INVOKABLE int itemCount();
+    Q_INVOKABLE int count();
     bool isError();
     static QString decodeHtml(const QString& encodedHtml);
     // TODO: add method to query if an element exists
