@@ -269,8 +269,8 @@ return QStringList();
 QList<QStringList> RSSParser::categories()
 {
     QList<QStringList> list;
-    int count = itemCount();
-    for(int i=1;i<=count;i++) // XQuery indexing starts with 1
+    int itemcount = count();
+    for(int i=1;i<=itemcount;i++) // XQuery indexing starts with 1
     {
         list<<category(i);
     }
@@ -282,7 +282,7 @@ QList<QStringList> RSSParser::categories()
     \return count of items
     \sa isError()
 */
-int RSSParser::itemCount()
+int RSSParser::count()
 {
     return executeQuery(KXqItemCount).toInt();
 }
