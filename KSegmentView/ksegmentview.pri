@@ -7,4 +7,4 @@ SOURCES += $$PWD/ksegment.cpp \
            $$PWD/ksegmentwidget.cpp \
            $$PWD/ksegmentview.cpp
 
-include(../flickcharm/flickcharm.pri)
+#include(../flickcharm/flickcharm.pri)

@@ -186,8 +186,9 @@ void KSegmentWidget::paint(QPainter *painter,
 QSizeF KSegmentWidget::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     qDebug()<<__PRETTY_FUNCTION__;
-    qDebug()<<"which:"<<which<<",constraint:"<<constraint;
-    qDebug()<<contentHieght();
-    return QSizeF(300,contentHieght());
+//    qDebug()<<"which:"<<which<<",constraint:"<<constraint;
+//    qDebug()<<contentHieght();
+//    return QSizeF(300,contentHieght());
+    return KSegment::sizeHint(which,constraint);
 }
 // eof

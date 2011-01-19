@@ -13,7 +13,7 @@
 #include <QDebug>
 #include "ksegment.h"
 #include "ksegmentwidget.h"
-#include "KSegmentView.h"
+#include "ksegmentview.h"
 
 /*!
     \class KSegmentView
@@ -73,7 +73,7 @@ KSegmentView::KSegmentView(Qt::Orientation aOrientation,QWidget *aParent) :
 **/
 void KSegmentView::addSegmentWidget(KSegmentWidget* aSegmentWidget)
 {
-    aSegmentWidget->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+//    aSegmentWidget->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     aSegmentWidget->setParentContainer(mContainer->layout());
     mContainer->addItem(aSegmentWidget);
 }
