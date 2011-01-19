@@ -20,6 +20,7 @@ public:
     void addItem(QGraphicsWidget* aGraphicsLayoutItem);
     void addItem(QGraphicsItem* aGraphicsItem);
     void addItem(QWidget* aWidget);
+    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint) const;
 
 protected slots:
     void onHeightChanged();

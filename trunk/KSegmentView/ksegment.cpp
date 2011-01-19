@@ -52,7 +52,8 @@ void KSegment::addItem(QGraphicsWidget* aItem)
 
 void KSegment::addItem(QGraphicsItem* aGraphicsItem)
 {
-    QGraphicsWidget* parent = new QGraphicsWidget(this);
+//    QGraphicsWidget* parent = new QGraphicsWidget(this);
+    KSegment* parent = new KSegment(Qt::Vertical,this);
     aGraphicsItem->setParentItem(parent);
     addItem(parent);
 }
@@ -107,6 +108,14 @@ void KSegment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->drawRect(rect());
     }
 #endif
+}
+
+QSizeF KSegment::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
+{
+    qDebug()<<__PRETTY_FUNCTION__;
+    qDebug()<<"which:"<<which<<",constraint:"<<constraint;
+    qDebug()<<contentHieght();
+    return QSizeF(300,contentHieght());
 }
 
 // eof
