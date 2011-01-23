@@ -23,17 +23,20 @@ public:
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint) const;
 
 protected slots:
-    void onHeightChanged();
+    void onHeightChanged() const;
 
 protected:
     void resizeEvent(QGraphicsSceneResizeEvent *event);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    float contentHieght() const {return mContentHeight;}
+    int contentHieght() const {return mContentHeight;}
+    void setInternalContainer(bool value){mInternalContainer =  value;}
+    bool internalContainer() const {return mInternalContainer;}
 
 private:
    QList< QPointer<QGraphicsWidget> > mContentList;
    QGraphicsLinearLayout* mLayout;
-   float mContentHeight;
+   mutable int mContentHeight;
+   bool mInternalContainer;
 };
 
 #endif // KSEGMENT_H

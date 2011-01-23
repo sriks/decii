@@ -21,6 +21,7 @@ public:
     explicit KSegmentView(Qt::Orientation aOrientation = Qt::Vertical,QWidget *aParent = 0);
     void addSegmentWidget(KSegmentWidget* aSegmentWidget);
     void addSegment(KSegment* aSegment);
+    KSegment* container(){return mContainer;}
 
 protected:
     void resizeEvent(QResizeEvent *event);

@@ -13,7 +13,22 @@
 #include <QList>
 #include "ksegment.h"
 
-#define DEBUG_DRAW
+/*
+  This is an internal container class to hold QGraphicsItems so that they are sizehint aware.
+  Apart from identifying as internal container, all other methods are inherited from base class.
+  */
+class KSegmentInteralContainer : public KSegment
+{
+public:
+    KSegmentInteralContainer(Qt::Orientation aOrientation = Qt::Vertical,QGraphicsItem *aParent = 0)
+                   :KSegment(aOrientation,aParent)
+    {
+            this->setInternalContainer(true);
+            this->setObjectName("____internalcontainer");
+    }
+};
+
+//#define DEBUG_DRAW
 /*!
   \class KSegment
   \brief Atomic segment with a layout into which any widget can be added.
@@ -37,7 +52,8 @@
 
 KSegment::KSegment(Qt::Orientation aOrientation,QGraphicsItem *aParent) :
     QGraphicsWidget(aParent),
-    mContentHeight(0)
+    mContentHeight(0),
+    mInternalContainer(false)
 {
     mLayout = new QGraphicsLinearLayout(aOrientation,this);
     setLayout(mLayout);
@@ -52,8 +68,7 @@ void KSegment::addItem(QGraphicsWidget* aItem)
 
 void KSegment::addItem(QGraphicsItem* aGraphicsItem)
 {
-//    QGraphicsWidget* parent = new QGraphicsWidget(this);
-    KSegment* parent = new KSegment(Qt::Vertical,this);
+    KSegmentInteralContainer* parent = new KSegmentInteralContainer(Qt::Vertical,this);
     aGraphicsItem->setParentItem(parent);
     addItem(parent);
 }
@@ -66,28 +81,36 @@ void KSegment::addItem(QWidget* aWidget)
     addItem(proxyWidget);
 }
 
-void KSegment::onHeightChanged()
+void KSegment::onHeightChanged() const
 {
     qDebug()<<__PRETTY_FUNCTION__;
-    if(Qt::Vertical == mLayout->orientation())
+    // TODO: add support for width change also.
+
+    if(internalContainer())
     {
+        mContentHeight = 0;
+        qDebug()<<objectName();
+        qDebug()<<"childitems:"<<this->childItems();
+        for(int i=0;i<this->childItems().count();++i)
+        {
+            qDebug()<<"item height:"<<childItems().at(i)->boundingRect().height();
+            mContentHeight += childItems().at(i)->boundingRect().height();
+        }
+        qDebug()<<"calculated contentheight:"<<mContentHeight;
+        return;
+    }
+
+
+//    if(Qt::Vertical == mLayout->orientation())
+    {
+        qDebug()<<"items in layout:"<<mLayout->count();
         mContentHeight = 0;
         for(int i=0;i<mLayout->count();++i)
         {
-            mContentHeight += mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
             qDebug()<<mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
+            mContentHeight += mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
         }
-//        qDebug()<<"contentheight:"<<mContentHeight;
-//        qDebug()<<"layoutcontent:"<<mLayout->contentsRect().height();
-
-//        qDebug()<<"calculating with widget list : "<<mContentList.count();
-//        mContentHeight = 0;
-//        for(int i=0;i<mContentList.count();++i)
-//        {
-//            qDebug()<<mContentList.at(i)->size().height();
-//            mContentHeight += mContentList.at(i)->size().height();
-//            qDebug()<<"contentheight:"<<mContentHeight;
-//        }
+        qDebug()<<"calculated contentheight:"<<mContentHeight;
     }
 }
 
@@ -113,9 +136,10 @@ void KSegment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 QSizeF KSegment::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     qDebug()<<__PRETTY_FUNCTION__;
-    qDebug()<<"which:"<<which<<",constraint:"<<constraint;
-    qDebug()<<contentHieght();
-    return QSizeF(300,contentHieght());
+    // Ideally heightchanged should be emitted after adding all items to container, But not happening.
+    // Hence explicitly calling heightchanged here.
+    onHeightChanged();
+    return QSizeF(QDesktopWidget().size().width(),mContentHeight);
 }
 
 // eof

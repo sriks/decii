@@ -35,7 +35,7 @@ public slots:
     void remove();
 
 signals:
-    void clicked(QPointF clickPos);
+    void clicked(int index, QPointF clickPos);
 
 protected:
     void resizeEvent(QGraphicsSceneResizeEvent *event);
