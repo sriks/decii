@@ -4,16 +4,18 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network webkit
 
 TARGET = retro
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    feedview.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    feedview.h
 
 FORMS    += mainwindow.ui
 
@@ -22,4 +24,5 @@ FORMS    += mainwindow.ui
 # Any client willing to use rsssuite can copy the following lines in .pro
 QT += xmlpatterns
 include(../rsssuite/rssmanager/rssmanager.pri)
-include(../dgraphicswidget/dgraphicswidget.pri)
+include(../DGraphicsWidget/dgraphicswidget.pri)
+include(../KSegmentView/ksegmentview.pri)

@@ -11,6 +11,7 @@ namespace Ui {
 class QSystemTrayIcon;
 class QListWidgetItem;
 class RSSManager;
+class FeedView;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -30,6 +31,7 @@ private:
     QList<QUrl> mSourceList;
     QSystemTrayIcon* mTray;
     QUrl mCurrentNotificationUrl;
+    FeedView* mFeedView;
 };
 
 #endif // MAINWINDOW_H
