@@ -2,17 +2,33 @@
 #include <QSystemTrayIcon>
 #include <QDesktopServices>
 #include <QListWidget>
+#include <QGraphicsLineItem>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsAnchorLayout>
+#include <QGraphicsAnchor>
+#include <QVBoxLayout>
+#include <QGraphicsWebView>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "rssmanager.h"
 #include "rssparser.h"
 #include "dgraphicswidget.h"
 #include "dgraphicsview.h"
+#include "ksegment.h"
+#include "ksegmentwidget.h"
+#include "ksegmentview.h"
+#include "dgraphicstextwidget.h"
+#include "feedview.h"
+
+typedef KSegment Segment;
+typedef KSegmentWidget SegmentWidget;
+typedef KSegmentView SegmentView;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    mFeedView = NULL;
     ui->setupUi(this);
     mTray = new QSystemTrayIcon(this);
     mTray->setContextMenu(new QMenu(this));
@@ -36,32 +52,43 @@ MainWindow::~MainWindow()
 void MainWindow::handleUpdateAvailable(QUrl sourceUrl, int updateditems)
 {
     qDebug()<<__FUNCTION__;
-    qDebug()<<sourceUrl<<"\nupdates:"<<updateditems;
 
-    mCurrentNotificationUrl.clear();
     if(updateditems)
     {
         RSSParser* parser = mRSSManager->parser(sourceUrl);
+        this->setVisible(false);
         if(parser->isValid())
         {
-
-            ui->listWidget->clear();
-            QStringList titleList = parser->itemElements(RSSParser::title);
-            for(int i=0;i<titleList.count();i++)
-            {
-                titleList[i] = parser->decodeHtml(titleList[i]);
-            }
-
-            ui->listWidget->addItems(titleList);
-
-            DGraphicsWidget* notification = new DGraphicsWidget;
-            notification->resize(150,50);
-            QString titleText = QString().setNum(updateditems)+" "+"Updates available";
-            notification->setTitleText(titleText);
-            DGraphicsView* view = new DGraphicsView;
-            view->scene()->addItem(notification);
-            view->show();
+        if(NULL == mFeedView)
+        {
+            mFeedView = new FeedView();
         }
+            mFeedView->showFeedView(parser);
+            mFeedView->showMaximized();
+
+//            RSSParser* aParser    = parser;
+//            KSegmentView* view = new SegmentView(Qt::Vertical);
+//            QFont dateFont(QApplication::font());
+//            dateFont.setItalic(true);
+//            dateFont.setPixelSize(8);
+//            for(int i=1;i<=5;++i)
+//            {
+//                QGraphicsTextItem* title = new QGraphicsTextItem;
+//                title->setHtml(aParser->decodeHtml(aParser->itemElement(i,RSSParser::title)));
+//                title->setTextWidth(360);
+////                DGraphicsTextWidget* title = new DGraphicsTextWidget(aParser->decodeHtml(aParser->itemElement(i,RSSParser::title)));
+//                QGraphicsTextItem* date = new QGraphicsTextItem;
+//                date->setHtml(aParser->decodeHtml(aParser->itemElement(i,RSSParser::pubDate)));
+//                date->setFont(dateFont);
+//                SegmentWidget* segWidget = new SegmentWidget(Qt::Vertical);
+//                segWidget->addItem(title);
+//                segWidget->addItem(date);
+//                view->addSegmentWidget(segWidget);
+//            }
+//            view->showMaximized();
+        }
+
+        parser->deleteLater();
     }
 }
 
@@ -71,10 +98,11 @@ void MainWindow::addFeedUrl()
     url.setUrl(ui->urleditor->text());
     if(url.isValid())
     {
-        mRSSManager->addFeed(FeedSubscription(url,1));
+        mRSSManager->addFeed(FeedSubscription(url,30));
         mRSSManager->start(url);
         ui->urlListWidget->addItem(url.toString());
     }
+    this->setVisible(false);
 }
 
 void MainWindow::handleItemActivated(QListWidgetItem* item)
