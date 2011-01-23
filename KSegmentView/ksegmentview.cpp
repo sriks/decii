@@ -55,7 +55,6 @@ KSegmentView::KSegmentView(Qt::Orientation aOrientation,QWidget *aParent) :
 {
     QGraphicsScene* s = new QGraphicsScene;
     setScene(s);
-//    scene()->setSceneRect(0,0,270,10000);
     mContainer = new KSegment(aOrientation);
     mContainer->setObjectName("container");
     mContainer->setPos(0,0);
@@ -73,7 +72,7 @@ KSegmentView::KSegmentView(Qt::Orientation aOrientation,QWidget *aParent) :
 **/
 void KSegmentView::addSegmentWidget(KSegmentWidget* aSegmentWidget)
 {
-//    aSegmentWidget->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+    aSegmentWidget->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     aSegmentWidget->setParentContainer(mContainer->layout());
     mContainer->addItem(aSegmentWidget);
 }
@@ -94,14 +93,6 @@ void KSegmentView::addSegment(KSegment* aSegment)
 void KSegmentView::resizeEvent(QResizeEvent *event)
 {
     qDebug()<<__PRETTY_FUNCTION__;
-    qDebug()<<"size:"<<size();
-    qDebug()<<"containersize:"<<mContainer->size();
-    qDebug()<<"scene height:"<<scene()->height();
-//    resize(size());
-    if(mContainer->size() != event->size())
-    {
-    mContainer->resize(event->size().width(),mContainer->size().height());
-    }
 }
 
 // eof

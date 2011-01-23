@@ -54,7 +54,8 @@ KSegmentWidget::KSegmentWidget(Qt::Orientation aOrientation,
                :KSegment(aOrientation,aParent),
                 mRoundness(10),
                 mSelectOnClicked(true),
-                mTapPressPos(-1,-1)
+                mTapPressPos(-1,-1),
+                mContainerLayout(NULL)
 {
     mSelection = new QGraphicsPathItem(this);
     mSelection->setVisible(false);
@@ -135,6 +136,7 @@ void KSegmentWidget::resizeEvent(QGraphicsSceneResizeEvent *event)
     QPainterPath painterPath;
     painterPath.addRoundRect(rect(),mRoundness);
     mSelection->setPath(painterPath);
+    resize(event->newSize());
 }
 
 void KSegmentWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -147,8 +149,17 @@ void KSegmentWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     // If we want to enable highlight on pressevent, but selection only upon
     // releaseevent provided that press and release are in the same item within acceptable deviation,
     // then calculate the delta between press,release and apply selection.
-    emit clicked(event->scenePos());
-    toggleSelection();
+    if(mContainerLayout)
+    {
+    for(int i=0;i<mContainerLayout->count();++i)
+    {
+        if(this == mContainerLayout->itemAt(i))
+        {
+            emit clicked(i,event->scenePos());
+            toggleSelection();
+        }
+    }
+    }
 }
 
 void KSegmentWidget::paint(QPainter *painter,
@@ -186,9 +197,6 @@ void KSegmentWidget::paint(QPainter *painter,
 QSizeF KSegmentWidget::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     qDebug()<<__PRETTY_FUNCTION__;
-//    qDebug()<<"which:"<<which<<",constraint:"<<constraint;
-//    qDebug()<<contentHieght();
-//    return QSizeF(300,contentHieght());
     return KSegment::sizeHint(which,constraint);
 }
 // eof
