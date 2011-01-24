@@ -11,6 +11,7 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QGraphicsLinearLayout>
+#include <QGraphicsBlurEffect>
 #include <QDebug>
 #include "ksegmentwidget.h"
 
@@ -18,6 +19,7 @@
 const int KSelectionZOrder = 10;
 
 // Make sure no item will have a z-order less than this
+const int KBacklitZOrder = -11;
 const int KBackgroundZOrder = -10;
 
 /*!
@@ -65,7 +67,10 @@ KSegmentWidget::KSegmentWidget(Qt::Orientation aOrientation,
     selectionPen.setJoinStyle(Qt::RoundJoin);
     selectionPen.setJoinStyle(Qt::RoundJoin);
     mSelection->setPen(selectionPen);
-    mSelection->setZValue(KSelectionZOrder);
+    mSelection->setZValue(KBacklitZOrder);
+    QGraphicsBlurEffect* blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(10);
+    mSelection->setGraphicsEffect(blur);
 }
 
 void KSegmentWidget::select()

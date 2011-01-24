@@ -13,6 +13,7 @@
 #include <QList>
 #include "ksegment.h"
 
+// TODO: remove unnecessary debug statements
 /*
   This is an internal container class to hold QGraphicsItems so that they are sizehint aware.
   Apart from identifying as internal container, all other methods are inherited from base class.
@@ -97,11 +98,8 @@ void KSegment::onHeightChanged() const
             mContentHeight += childItems().at(i)->boundingRect().height();
         }
         qDebug()<<"calculated contentheight:"<<mContentHeight;
-        return;
     }
-
-
-//    if(Qt::Vertical == mLayout->orientation())
+    else
     {
         qDebug()<<"items in layout:"<<mLayout->count();
         mContentHeight = 0;
@@ -136,7 +134,7 @@ void KSegment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 QSizeF KSegment::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     qDebug()<<__PRETTY_FUNCTION__;
-    // Ideally heightchanged should be emitted after adding all items to container, But not happening.
+    // Ideally heightchanged should be emitted after adding all items to container, but not happening.
     // Hence explicitly calling heightchanged here.
     onHeightChanged();
     return QSizeF(QDesktopWidget().size().width(),mContentHeight);
