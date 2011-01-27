@@ -13,11 +13,14 @@
 #include <QList>
 #include "ksegment.h"
 
+//#define DEBUG_DRAW
+
 // TODO: remove unnecessary debug statements
 /*
   This is an internal container class to hold QGraphicsItems so that they are sizehint aware.
   Apart from identifying as internal container, all other methods are inherited from base class.
   */
+const QString KInternalContainerName("____internalcontainer");
 class KSegmentInteralContainer : public KSegment
 {
 public:
@@ -25,11 +28,10 @@ public:
                    :KSegment(aOrientation,aParent)
     {
             this->setInternalContainer(true);
-            this->setObjectName("____internalcontainer");
+            this->setObjectName(KInternalContainerName);
     }
 };
 
-//#define DEBUG_DRAW
 /*!
   \class KSegment
   \brief Atomic segment with a layout into which any widget can be added.
@@ -54,7 +56,8 @@ public:
 KSegment::KSegment(Qt::Orientation aOrientation,QGraphicsItem *aParent) :
     QGraphicsWidget(aParent),
     mContentHeight(0),
-    mInternalContainer(false)
+    mInternalContainer(false),
+    mPreferredSize(-1,-1)
 {
     mLayout = new QGraphicsLinearLayout(aOrientation,this);
     setLayout(mLayout);
@@ -63,7 +66,6 @@ KSegment::KSegment(Qt::Orientation aOrientation,QGraphicsItem *aParent) :
 void KSegment::addItem(QGraphicsWidget* aItem)
 {
     mLayout->addItem(aItem);
-    mContentList.append(aItem);
     connect(aItem,SIGNAL(heightChanged()),this,SLOT(onHeightChanged()));
 }
 
@@ -87,28 +89,36 @@ void KSegment::onHeightChanged() const
     qDebug()<<__PRETTY_FUNCTION__;
     // TODO: add support for width change also.
 
+    qDebug()<<"items in layout:"<<mLayout->count();
+    mContentHeight = 0;
+    for(int i=0;i<mLayout->count();++i)
+    {
+        qDebug()<<mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
+        mContentHeight += mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
+    }
+    mContentHeight += mLayout->spacing();
+    qDebug()<<"calculated contentheight:"<<mContentHeight;
+}
+
+/*!
+Calculates the item size that is embedded into internal container.
+**/
+QSizeF KSegment::internalItemSize() const
+{
+    qDebug()<<__PRETTY_FUNCTION__;
     if(internalContainer())
     {
-        mContentHeight = 0;
-        qDebug()<<objectName();
-        qDebug()<<"childitems:"<<this->childItems();
-        for(int i=0;i<this->childItems().count();++i)
-        {
-            qDebug()<<"item height:"<<childItems().at(i)->boundingRect().height();
-            mContentHeight += childItems().at(i)->boundingRect().height();
-        }
-        qDebug()<<"calculated contentheight:"<<mContentHeight;
+        const int internalItemIndex = 0; // internal container will always have only one item embedded into it.
+        int h=0,w=0;
+        h = childItems().at(internalItemIndex)->boundingRect().height() + mLayout->spacing();
+        w = childItems().at(internalItemIndex)->boundingRect().width();
+        QSizeF itemSize(w,h);
+        qDebug()<<"calculated itemsize:"<<itemSize;
+        return itemSize;
     }
     else
     {
-        qDebug()<<"items in layout:"<<mLayout->count();
-        mContentHeight = 0;
-        for(int i=0;i<mLayout->count();++i)
-        {
-            qDebug()<<mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
-            mContentHeight += mLayout->itemAt(i)->graphicsItem()->boundingRect().height();
-        }
-        qDebug()<<"calculated contentheight:"<<mContentHeight;
+        return QSizeF(-1,-1);
     }
 }
 
@@ -123,21 +133,26 @@ void KSegment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 {
 #ifdef DEBUG_DRAW
 //    qDebug()<<__PRETTY_FUNCTION__;
-    if("container" == objectName())
-    {
-        painter->setBrush(QBrush(QColor(Qt::blue)));
+        painter->setPen(QPen(QColor(Qt::blue)));
         painter->drawRect(rect());
-    }
+
 #endif
 }
 
 QSizeF KSegment::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     qDebug()<<__PRETTY_FUNCTION__;
+    qDebug()<<which;
+    qDebug()<<constraint;
+    if(internalContainer())
+    {
+        return internalItemSize();
+    }
+
     // Ideally heightchanged should be emitted after adding all items to container, but not happening.
     // Hence explicitly calling heightchanged here.
-    onHeightChanged();
-    return QSizeF(QDesktopWidget().size().width(),mContentHeight);
+    onHeightChanged(); // TODO : rename this method to reflect that it is recalculating height
+    return QSizeF(mPreferredSize.width(),mContentHeight);
 }
 
 // eof

@@ -9,8 +9,9 @@
 
 #include <QGraphicsWidget>
 #include <QPointer>
+
+class QSizeF;
 class QGraphicsLinearLayout;
-//class QPointer;
 class KSegment : public QGraphicsWidget
 {
     Q_OBJECT
@@ -21,6 +22,7 @@ public:
     void addItem(QGraphicsItem* aGraphicsItem);
     void addItem(QWidget* aWidget);
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint) const;
+    void setPreferredWidth(qreal width){mPreferredSize.setWidth(width);};
 
 protected slots:
     void onHeightChanged() const;
@@ -31,12 +33,13 @@ protected:
     int contentHieght() const {return mContentHeight;}
     void setInternalContainer(bool value){mInternalContainer =  value;}
     bool internalContainer() const {return mInternalContainer;}
+    QSizeF internalItemSize() const;
 
 private:
-   QList< QPointer<QGraphicsWidget> > mContentList;
    QGraphicsLinearLayout* mLayout;
    mutable int mContentHeight;
    bool mInternalContainer;
+   QSizeF mPreferredSize;
 };
 
 #endif // KSEGMENT_H
