@@ -54,6 +54,7 @@ public:
     FeedSubscription feed(QUrl sourceUrl);
     QList<FeedSubscription> feeds();
     QList<QUrl> feedUrls();
+    QString feedFileName(QUrl sourceUrl);
     int feedsCount(){return mFeedProfiles.count();}
     void updateAll();
     void update(QUrl sourceUrl);
@@ -65,6 +66,7 @@ signals:
       \arg updateditems Number of feed items that are updated.
       */
     void updateAvailable(QUrl sourceUrl, int updateditems);
+    void error(QString errorDescription,QUrl sourceUrl);
 
 private slots:
     // Internal methods, experimental support

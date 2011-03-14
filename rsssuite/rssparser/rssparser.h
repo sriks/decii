@@ -53,7 +53,8 @@ public slots:
     static QString decodeHtml(const QString& encodedHtml);
     // TODO: add method to query if an element exists
 
-private slots:
+//private slots:
+public slots:
     QString executeQuery(const QString& aQuery);
     QStringList executeQueryAsList(const QString& aQuery);
     QString enumToString(RSSParser::RSSElement aElement);

@@ -28,7 +28,7 @@ public:
 
 signals:
     void updateAvailable(QUrl sourceUrl, int updatedItems);
-    void error(QString errorDescription);
+    void error(QString errorDescription,QUrl sourceUrl);
 
 public slots:
     FeedSubscription subscription(){return mSubscription;}

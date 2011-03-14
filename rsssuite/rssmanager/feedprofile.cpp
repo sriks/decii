@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QNetworkProxyFactory>
 #include "rssmanager.h"
 #include "feedprofile.h"
 #include "rssparser.h"
@@ -22,6 +23,9 @@ FeedProfile::FeedProfile(FeedSubscription subscription,QObject *parent) :
     mNetworkManager(NULL),
     mNetworkReply(NULL)
 {
+#ifdef Q_OS_SYMBIAN
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
+#endif
     setNetworkRequestActive(false);
     mNetManCreatedCount = 0; // test only
     connect(&mTimer,SIGNAL(timeout()),this,SLOT(handleTimeOut()));
@@ -121,7 +125,8 @@ void FeedProfile::replyFinished(QNetworkReply *reply)
             // handle error
             else
             {
-                emit error(reply->errorString());
+                qWarning()<<reply->errorString();
+                emit error(reply->errorString(),mSubscription.sourceUrl());
             }
         reply->deleteLater();
         // Feeds are usually gathered in periodic intervals.
@@ -151,7 +156,7 @@ void FeedProfile::handleContent(QByteArray content)
 
             else
             {
-                emit error("Cannot store the feed");
+                emit error("Cannot store the feed",mSubscription.sourceUrl());
                 return;
             }
 
@@ -190,7 +195,7 @@ void FeedProfile::handleContent(QByteArray content)
             // Parsing error, No items found in parsing
             else
             {
-                emit error(tr("Cannot parse feed"));
+                emit error(tr("Cannot parse feed"),mSubscription.sourceUrl());
             }
 
      }
