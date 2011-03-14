@@ -84,6 +84,7 @@ void RSSManager::addFeed(FeedSubscription newSubscription)
 {
     FeedProfile* profile = new FeedProfile(newSubscription,this);
     connect(profile,SIGNAL(updateAvailable(QUrl,int)),this,SIGNAL(updateAvailable(QUrl,int)));
+    connect(profile,SIGNAL(error(QString,QUrl)),this,SIGNAL(error(QString,QUrl)));
     mFeedProfiles.insert(newSubscription.sourceUrl().toString(),profile);
 }
 
@@ -172,6 +173,13 @@ QList<QUrl> RSSManager::feedUrls()
     urlList.append(profiles[i]->subscription().sourceUrl());
     }
 return urlList;
+}
+
+QString RSSManager::feedFileName(QUrl sourceUrl)
+{
+    FeedProfile defaultProfile(FeedSubscription(QUrl(),-1));
+    FeedProfile* profile = mFeedProfiles.value(sourceUrl.toString(),&defaultProfile);
+    return profile->feedFileName();
 }
 
 /*!
