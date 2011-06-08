@@ -1,0 +1,1 @@
+A simple hybrid app to know your traffic challan in hyderabad. Works by acquiring data from hyderabad trafic police provided the users vechicle number. Under development.
