@@ -1,0 +1,1 @@
+Graphics transition effects using Qt GraphicsView
