@@ -1,0 +1,1 @@
+This effect is inspired from iPad Flipbook app page turning effect. This effect is completly implemented in Qt Graphics View.
