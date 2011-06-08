@@ -1,0 +1,1 @@
+RanLoc - RandomLocation is a location info app which shows random locations and details about the location to the user. It uses geonames as its backend. Need further development in QML.
