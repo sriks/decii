@@ -1,0 +1,1 @@
+A humble attept to write fundamental UI components in graphics view. This work is the base for segmented UI module found in KSegmentView in the repo.
