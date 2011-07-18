@@ -9,7 +9,12 @@ QML_IMPORT_PATH =
 symbian:TARGET.UID3 = 0xE1381FEC
 
 # Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
+symbian:TARGET.CAPABILITY += NetworkServices \
+                            ReadUserData \
+                            WriteUserData \
+                            ReadDeviceData \
+                            WriteDeviceData \
+                            UserEnvironment
 
 symbian:ICON = history.svg
 
@@ -24,8 +29,7 @@ symbian:ICON = history.svg
 # MOBILITY +=
 
 # The .cpp file which was generated for your project. Feel free to hack it.
-SOURCES += main.cpp \
-    History.cpp
+SOURCES += main.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -37,5 +41,9 @@ RESOURCES += \
 #include(../rsssuite/rssmanager/rssmanager.pri)
 include(HistoryEngine/HistoryEngine.pri)
 
-HEADERS += \
-    History.h
+OTHER_FILES += qml/main.qml \
+    qml/HistoryInfo.qml \
+    qml/Today.qml \
+    qml/Skin.qml \
+    qml/FavoritesList.qml \
+    qml/Favorite.qml

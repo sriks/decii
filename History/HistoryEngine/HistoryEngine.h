@@ -2,6 +2,7 @@
 #define HISTORYENGINE_H
 #include <QObject>
 #include <QUrl>
+#include <QVariant>
 
 class HistoryInfo:public QObject
 {
@@ -28,6 +29,7 @@ public:
     QString mEventDate;
 };
 
+
 class RSSManager;
 class RSSParser;
 //class HistoryInfo;
@@ -38,14 +40,18 @@ class HistoryEngine : public QObject
 public:
     explicit HistoryEngine(QObject *parent = 0);
     ~HistoryEngine();
-    Q_INVOKABLE HistoryInfo* historyInfo() const;
-//    QStringList favoriteTitles();
-//    HistoryInfo favorite(QString favTitle);
+    Q_INVOKABLE void start();
+    Q_INVOKABLE QVariant historyInfo() const;
+    Q_INVOKABLE QVariant favorites();
+    Q_INVOKABLE QObject* favorite(int favIndex);
 //    bool isFavorite(const HistoryInfo& info);
-//    bool saveAsFavorite(HistoryInfo info);
+    Q_INVOKABLE bool saveAsFavorite();
+    Q_INVOKABLE int favoritesCount();
+    QStringList favoritesList();
 
 signals:
-    void updateReady(HistoryInfo* info);
+    void updateReady(QVariant);
+    void favoriteSelected(QVariant );
     void error(QString errorDescription,QUrl sourceUrl);
 
 public slots:
@@ -56,8 +62,6 @@ private slots:
 
 private:
     HistoryInfo* parseInfo(RSSParser* parser);
-
-private:
     QString fileNameForKey(const QString& key);
     QStringList favFileList();
 
