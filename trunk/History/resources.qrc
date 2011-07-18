@@ -1,5 +1,17 @@
 <RCC>
     <qresource prefix="/">
         <file>images/bkg.png</file>
+        <file>qml/main.qml</file>
+        <file>qml/HistoryInfo.qml</file>
+        <file>qml/Today.qml</file>
+        <file>qml/Skin.qml</file>
+        <file>images/tb_back.svg</file>
+        <file>images/tb_info.svg</file>
+        <file>images/tb_menu.svg</file>
+        <file>images/tb_favorite.svg</file>
+        <file>images/tb_close.svg</file>
+        <file>images/tb_home.svg</file>
+        <file>qml/FavoritesList.qml</file>
+        <file>qml/Favorite.qml</file>
     </qresource>
 </RCC>
