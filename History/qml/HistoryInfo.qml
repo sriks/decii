@@ -24,6 +24,7 @@ ListView {
                 font.pixelSize: skin.titleFontSize;
                 color: skin.fontColor;
                 wrapMode: Text.WordWrap;
+                horizontalAlignment: Text.AlignHCenter;
                 width: parent.width;
                 anchors.margins: skin.contentMargin;
             }
@@ -53,10 +54,21 @@ ListView {
                 }
                 wrapMode: Text.WordWrap;
                 width: parent.width;
-                font.pixelSize: skin.contentFontSize;
+                font.pixelSize: skin.contentFontSize
                 color: skin.fontColor;
                 anchors.margins: skin.contentMargin;
-            }
+
+                MouseArea {
+                    id: mouseArea;
+                    anchors.fill: parent;
+                    onDoubleClicked: {
+                        var fontSizeOffset = (description.font.pixelSize == skin.contentFontSize)?(1.5):(1);
+                        description.font.pixelSize = skin.contentFontSize*fontSizeOffset;
+                        console.debug("historyinfo.qml double clicked "+description.font.pixelSize);
+                    }
+                }
+
+                }
 
             Component.onCompleted: {
                 console.debug("HistoryInfo.qml onCompleted");

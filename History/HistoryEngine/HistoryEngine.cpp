@@ -1,3 +1,15 @@
+/*
+  Author: Srikanth Sombhatla
+  Developed for: Dreamcode
+  July 2011
+  srikanthsombhatla@gmail.com
+*/
+
+/*!
+  \class HistoryEngine
+  \brief Engine to manage history content.
+**/
+//#define APPEND_TEST_TITLES
 
 #include <QDebug>
 #include <QDir>
@@ -32,7 +44,6 @@ HistoryEngine::~HistoryEngine() {
 
 void HistoryEngine::start() {
     // add subscription
-    qDebug()<<__PRETTY_FUNCTION__;
     d->rssManager->addFeed(FeedSubscription(KTDIHUrl));
     d->rssManager->startAll();
 }
@@ -47,12 +58,6 @@ void HistoryEngine::handleUpdateAvailable(QUrl sourceUrl, int updateditems) {
     RSSParser* parser = d->rssManager->parser(sourceUrl); // ownership is transfered
     d->historyInfo = parseInfo(parser);
     parser->deleteLater();
-
-//    qDebug()<<__PRETTY_FUNCTION__<<d->historyInfo.title<<"\n"<<
-//              d->historyInfo.description<<"\n"<<
-//              d->historyInfo.link<<"\n"<<
-//              d->historyInfo.eventDate;
-
     emit updateReady(qVariantFromValue( (QObject*)d->historyInfo));
 }
 
@@ -81,6 +86,12 @@ QStringList HistoryEngine::favoritesList() {
        }
        delete parser;
     }
+
+#ifdef APPEND_TEST_TITLES
+    for(int i=0;i<15;i++)
+        favTitles.append("Test title");
+#endif
+
 return favTitles;
 }
 
@@ -95,15 +106,13 @@ QVariant HistoryEngine::favorites() {
 //}
 
 bool HistoryEngine::saveAsFavorite() {
-    qDebug()<<__PRETTY_FUNCTION__;
+    // TODO: error handling is really confusing, fix it.
     bool error = false;
     QVariant v = historyInfo();
     HistoryInfo* info = qobject_cast<HistoryInfo*>(v.value<QObject*>());
     QDir dir;
-    qDebug()<<__PRETTY_FUNCTION__<<dir.absolutePath();
-    if(!dir.exists(KFavoritesFolder)) {
+    if(!dir.exists(KFavoritesFolder))
       error = !(dir.mkdir(KFavoritesFolder));
-    }
 
     if(!error) {
         // TODO: check if file exists.
@@ -111,7 +120,6 @@ bool HistoryEngine::saveAsFavorite() {
         QString target = KFavoritesFolder+"/"+fileNameForKey(info->title());
         if(!QFile::exists(target))
             error = !QFile::copy(d->rssManager->feedFileName(KTDIHUrl),target);
-        qDebug()<<__PRETTY_FUNCTION__<<" fileop error:"<<error;
     }
 
     if(!error)
@@ -127,14 +135,9 @@ QObject* HistoryEngine::favorite(int favIndex) {
     qDebug()<<__PRETTY_FUNCTION__<<" title:"<<favTitle;
         QFile f(KFavoritesFolder+"/"+fileNameForKey(favTitle));
         if(f.open(QIODevice::ReadOnly)) {
-//            qDebug()<<f.readAll();
             RSSParser* parser = new RSSParser(this);
             parser->setSource(&f);
             info = parseInfo(parser);
-//                qDebug()<<info.title<<"\n"<<
-//                          info.description<<"\n"<<
-//                          info.link<<"\n"<<
-//                          info.eventDate;
         }
         else
             qWarning()<<__PRETTY_FUNCTION__<<" unable to open "<<f.fileName();
@@ -147,13 +150,14 @@ QString HistoryEngine::fileNameForKey(const QString& key) {
 
 QStringList HistoryEngine::favFileList() {
     static QStringList favList;
-    if(d->invalidateFavList && favList.isEmpty()) {
+    if(/*d->invalidateFavList && */favList.isEmpty()) { // TODO: fix cache invalidation
         QDir d;
         d.setPath(KFavoritesFolder);
         if(d.exists()) {
            favList = d.entryList(QStringList(),QDir::Files,QDir::Time);
         }
     }
+    favList.removeDuplicates();
     d->invalidateFavList = favList.isEmpty();
     return favList;
 }

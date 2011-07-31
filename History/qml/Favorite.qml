@@ -16,6 +16,12 @@ Page {
 
             ToolButton {
                 flat: true
+                iconSource: skin.homeIcon
+                onClicked: loadToday();
+            }
+
+            ToolButton {
+                flat: true
                 iconSource: skin.closeIcon;
                 onClicked: Qt.quit();
             }
@@ -36,12 +42,8 @@ Page {
     }
 
     Component.onCompleted: {
-        pageId = "today";
-        console.debug("today.qml: formloaded:"+pageId);
-        console.debug("Today.qml onComplete")
-
-        var info = engine.historyInfo();
-        console.debug("main.qml "+arguments.callee.name);
+        pageId = "favorite";
+        console.debug("favorite.qml onComplete")
         infoLoader.source = "HistoryInfo.qml";
         infoLoader.item.viewTitle = "MY FAVORITES";
         infoLoader.item.info = engine.favorite(currentFavIndex);
