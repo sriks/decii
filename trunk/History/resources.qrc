@@ -13,5 +13,6 @@
         <file>images/tb_home.svg</file>
         <file>qml/FavoritesList.qml</file>
         <file>qml/Favorite.qml</file>
+        <file>images/bkg_h4.jpg</file>
     </qresource>
 </RCC>

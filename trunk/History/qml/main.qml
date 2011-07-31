@@ -6,6 +6,7 @@ Window {
     property QtObject skin;
     property Menu menu;
     property int currentFavIndex: 0;
+    signal error(string errorString)
     PageStack {
         id: pageStack
         visible: true
@@ -30,9 +31,39 @@ Window {
     }
 
     QueryDialog {
-        id: aboutDialog;
-        message: "History\nA quality product by Dreamcode.\nConceptualized and developed at Dreamcode Device Labs,2011.\nIcon courtesy openclipart.com"
-        acceptButtonText: "OK"
+        id: dialog;
+        property bool closeOnAccept;
+        titleText: "History";
+        onAccepted: {
+            if(dialog.closeOnAccept)
+                Qt.quit();
+        }
+    }
+
+    BusyIndicator {
+         id: busyIndicator;
+         running: true
+         width: 60
+         height: 60
+         anchors.centerIn: parent;
+         function stop() {
+             busyIndicator.running = false;
+             busyIndicator.visible = false;
+         }
+         function start() {
+             busyIndicator.running = true;
+             busyIndicator.visible = true;
+         }
+    }
+
+    Button {
+        id: defaultCloseTools;
+        iconSource: skin.closeIcon;
+        anchors.top: busyIndicator.bottom;
+        anchors.topMargin: 10;
+        anchors.horizontalCenter: parent.horizontalCenter;
+        text: "Close";
+        onClicked: Qt.quit();
     }
 
     Component {
@@ -47,7 +78,7 @@ Window {
 
                 MenuItem {
                     text: "About"
-                    onClicked: aboutDialog.open();
+                    onClicked: showAboutDialog();
                 }
 
                 MenuItem { text: "Quit"; onClicked: Qt.quit() }
@@ -57,16 +88,30 @@ Window {
 
     Component.onCompleted: {
         var skinComponent = Qt.createComponent("Skin.qml");
-        if(Component.Ready  == skinComponent.status) {
+        if(Component.Ready  == skinComponent.status)
             skin = skinComponent.createObject(root); // if not created with parent, skin is not getting recognised in device.
-            console.debug("main.qml skin created: "+skin.id);
-        }
         else
-            console.debug("main.qml cannot create skin:"+skinComponent.errorString());
+            busyIndicator.start();
         engine.start();
     }
 
+    onError: {
+        console.debug("error string:"+errorString);
+        dialog.message = skin.netErrorText+errorString;
+        dialog.acceptButtonText = "I pity, close app.";
+        dialog.closeOnAccept = true;
+        dialog.open();
+    }
+
+    function showAboutDialog() {
+        dialog.message = skin.aboutText;
+        dialog.acceptButtonText = "OK";
+        dialog.open();
+    }
+
     function onUpdateAvailable() {
+        defaultCloseTools.visible = false;
+        busyIndicator.stop();
         loadToday();
     }
 
@@ -79,6 +124,7 @@ Window {
     }
 
     function loadFavorite(favIndex) {
+        currentFavIndex = favIndex;
         var fav = engine.favorite(favIndex);
         console.debug("main.qml loadfavorite: "+fav.title());
         pageStack.push(Qt.resolvedUrl("Favorite.qml"));

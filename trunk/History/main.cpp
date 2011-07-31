@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     dv.setSource(QUrl("qrc:/qml/main.qml"));
     QObject *rootObject = dynamic_cast<QObject*>(dv.rootObject());
     QObject::connect(&engine,SIGNAL(updateReady(QVariant)),rootObject,SLOT(onUpdateAvailable()));
+    QObject::connect(&engine,SIGNAL(error(QString,QUrl)),rootObject,SLOT(error(QString)));
     dv.showFullScreen();
 
 

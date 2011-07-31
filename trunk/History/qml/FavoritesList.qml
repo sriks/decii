@@ -14,16 +14,6 @@ Page {
 
             ToolButton {
                 flat: true;
-                iconSource: skin.menuIcon;
-                onClicked: {
-                    if (!menu)
-                        menu = menuComponent.createObject(root)
-                    menu.open()
-                    }
-            }
-
-            ToolButton {
-                flat: true;
                 iconSource: skin.closeIcon;
                 onClicked: Qt.quit();
             }
@@ -38,38 +28,49 @@ Page {
         border.right: 5; border.bottom: 5
     }
 
-    Text {
-        id: title;
-        anchors {
-            left: parent.left;
-            right: parent.right
-        }
-        text: "MY FAVORITES"
-        font.pixelSize: skin.titleFontSize;
-        color: skin.fontColor;
-        wrapMode: Text.WordWrap;
-        width: parent.width;
-        anchors.margins: skin.contentMargin;
-    }
-
     ListView {
         id: favList
         width: screen.width;
-        height: 400;
-        anchors.top: title.bottom
-        anchors.topMargin: 20;
         spacing: 10;
-        model: engine.favorites();
-        delegate:
-            Rectangle {
-                width: parent.width - 10;
-                height: favItemText.height + 20;
+        anchors.fill: parent
+        model: 1
+        delegate: favListView
+
+        Component {
+            id: favListView;
+            Column {
+                id: favListColumn
+                width: screen.width;
+            Text {
+                id: title;
+                text: "MY FAVORITES"
+                font.pixelSize: skin.titleFontSize;
+                color: skin.fontColor;
+                wrapMode: Text.WordWrap;
+                horizontalAlignment: Text.AlignHCenter;
+                width: parent.width;
+                anchors.margins: skin.contentMargin;
+                }
+
+            Repeater {
+                id: listItemRepeater
+                model: engine.favorites();
+                delegate: listItem;
+            }
+
+            Component {
+                id: listItem
+            Item {
+                width: screen.width;
+                height: favItemText.height + 25;
                 anchors.horizontalCenter: parent.horizontalCenter;
-                border.width: 2;
-                border.color: "#FF44FFAA";
-                color: "transparent";
-                radius: 10;
-                smooth: true;
+
+                Rectangle {
+                    width: parent.width-10;
+                    height: 2;
+                    border.color: "white";
+                    anchors.horizontalCenter: parent.horizontalCenter;
+                }
 
                 Text {
                     id: favItemText;
@@ -82,15 +83,23 @@ Page {
                     anchors.centerIn: parent;
                 }
 
+                Rectangle {
+                    width: parent.width-10;
+                    height: 2;
+                    border.color: "white";
+                    anchors.horizontalCenter: parent.horizontalCenter;
+
+                }
+
                 MouseArea {
                     anchors.fill: parent;
-                    onClicked: {
-                        console.debug("favlist.qml onclicked at "+index);
-                        loadFavorite(index);
+                    onClicked: loadFavorite(index);
                     }
-                }
-           }
-       }
+            } }
+
+            } // column
+        }// component
+    }// listview\
 
     Component.onCompleted: {
         pageId = "favlist";
@@ -101,5 +110,7 @@ Page {
     Component.onDestruction: {
         console.debug("favlist.qml onDestruction:"+pageId);
     }
+}
 
-} //page
+
+

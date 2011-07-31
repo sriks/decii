@@ -1,5 +1,5 @@
 # Add more folders to ship with the application, here
-folder_01.source = qml/History
+folder_01.source = qml
 folder_01.target = qml
 DEPLOYMENTFOLDERS = folder_01
 
@@ -9,14 +9,9 @@ QML_IMPORT_PATH =
 symbian:TARGET.UID3 = 0xE1381FEC
 
 # Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices \
-                            ReadUserData \
-                            WriteUserData \
-                            ReadDeviceData \
-                            WriteDeviceData \
-                            UserEnvironment
+symbian:TARGET.CAPABILITY += NetworkServices
 
-symbian:ICON = history.svg
+symbian:ICON = sphinx.svg
 
 # Define QMLJSDEBUGGER to allow debugging of QML in debug builds
 # (This might significantly increase build time)

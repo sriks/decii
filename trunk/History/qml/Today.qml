@@ -9,8 +9,8 @@ Page {
             id: toolBarlayout
             ToolButton {
                 flat: true
-                iconSource: "qrc:/images/tb_favorite.svg"
-                onClicked: { console.debug("today.qml: fav clicked")
+                iconSource: skin.favIcon;
+                onClicked: {
                              if(!engine.saveAsFavorite())
                                  banner.text = "Unable to save as favorite";
                              banner.open();
@@ -18,7 +18,7 @@ Page {
             }
 
             ToolButton {
-                iconSource: "qrc:/images/tb_menu.svg"
+                iconSource: skin.menuIcon;
                 onClicked: {
                     if (!menu)
                         menu = menuComponent.createObject(root)
@@ -27,7 +27,7 @@ Page {
             }
 
             ToolButton {
-                iconSource: "qrc:/images/tb_close.svg"
+                iconSource: skin.closeIcon;
                 onClicked: Qt.quit();
 
             }
@@ -42,7 +42,7 @@ Page {
 
     BorderImage {
         id: name
-        source: skin.bkgImage;//"qrc:/images/bkg.png"
+        source: skin.bkgImage;
         width: screen.width;
         height: screen.height;
         border.left: 5; border.top: 5
@@ -56,9 +56,6 @@ Page {
 
     Component.onCompleted: {
         pageId = "today";
-        console.debug("today.qml: formloaded:"+pageId);
-        console.debug("Today.qml onComplete")
-
         var info = engine.historyInfo();
         console.debug("main.qml "+arguments.callee.name);
         infoLoader.source = "HistoryInfo.qml";

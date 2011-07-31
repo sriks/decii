@@ -32,7 +32,6 @@ public:
 
 class RSSManager;
 class RSSParser;
-//class HistoryInfo;
 class HistoryEnginePrivate;
 class HistoryEngine : public QObject
 {
