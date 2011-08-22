@@ -1,44 +1,19 @@
 import QtQuick 1.0
 import Qt.labs.components.native 1.0
-import com.nokia.extras 1.0
+import "HistoryConstants.js" as HistoryConstants;
 
 Page {
     id: today;
     property string pageId;
     tools: ToolBarLayout {
             id: toolBarlayout
-            ToolButton {
-                flat: true
-                iconSource: skin.favIcon;
-                onClicked: {
-                             if(!engine.saveAsFavorite())
-                                 banner.text = "Unable to save as favorite";
-                             banner.open();
-                           }
-            }
-
-            ToolButton {
-                iconSource: skin.menuIcon;
-                onClicked: {
-                    if (!menu)
-                        menu = menuComponent.createObject(root)
-                    menu.open()
-                }
-            }
-
-            ToolButton {
-                iconSource: skin.closeIcon;
-                onClicked: Qt.quit();
-
+            Component.onCompleted: {
+                createBackToolButton(toolBarlayout);
+                createSaveAsFavToolButton(toolBarlayout);
+                createShareToolButton(toolBarlayout);
+                createMenuToolButton(toolBarlayout);
             }
         }
-
-    InfoBanner {
-         id: banner
-         text: "Saved as favorite"
-         iconSource: skin.favIcon;
-         timeout: 3000;
-    }
 
     BorderImage {
         id: name
@@ -55,16 +30,11 @@ Page {
     }
 
     Component.onCompleted: {
-        pageId = "today";
+        pageId = HistoryConstants.todayPageId;
         var info = engine.historyInfo();
-        console.debug("main.qml "+arguments.callee.name);
         infoLoader.source = "HistoryInfo.qml";
-        infoLoader.item.viewTitle = "THIS DAY IN HISTORY";
+        infoLoader.item.viewTitle = HistoryConstants.todayTitleText;
         infoLoader.item.info = engine.historyInfo();
-    }
-
-    Component.onDestruction: {
-        console.debug("today.qml onDestruction:"+pageId);
     }
 
 } //page

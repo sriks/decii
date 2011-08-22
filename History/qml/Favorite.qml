@@ -1,29 +1,18 @@
 import QtQuick 1.0
 import Qt.labs.components.native 1.0
 import com.nokia.extras 1.0
+import "HistoryConstants.js" as HistoryConstants;
 
 Page {
     id: fav;
     property string pageId;
     tools: ToolBarLayout {
             id: toolBarlayout
-
-            ToolButton {
-                flat: true
-                iconSource: skin.backIcon
-                onClicked: goBack();
-            }
-
-            ToolButton {
-                flat: true
-                iconSource: skin.homeIcon
-                onClicked: loadToday();
-            }
-
-            ToolButton {
-                flat: true
-                iconSource: skin.closeIcon;
-                onClicked: Qt.quit();
+            Component.onCompleted: {
+                createBackToolButton(toolBarlayout);
+                createDeleteFavToolButton(toolBarlayout)
+                createShareToolButton(toolBarlayout);
+                createMenuToolButton(toolBarlayout);
             }
         }
 
@@ -42,15 +31,10 @@ Page {
     }
 
     Component.onCompleted: {
-        pageId = "favorite";
-        console.debug("favorite.qml onComplete")
+        pageId = HistoryConstants.favPageId;
         infoLoader.source = "HistoryInfo.qml";
-        infoLoader.item.viewTitle = "MY FAVORITES";
+        infoLoader.item.viewTitle = HistoryConstants.myFavoritesText;
         infoLoader.item.info = engine.favorite(currentFavIndex);
-    }
-
-    Component.onDestruction: {
-        console.debug("today.qml onDestruction:"+pageId);
     }
 
 } //page

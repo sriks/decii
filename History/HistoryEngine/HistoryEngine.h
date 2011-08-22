@@ -43,10 +43,11 @@ public:
     Q_INVOKABLE QVariant historyInfo() const;
     Q_INVOKABLE QVariant favorites();
     Q_INVOKABLE QObject* favorite(int favIndex);
-//    bool isFavorite(const HistoryInfo& info);
     Q_INVOKABLE bool saveAsFavorite();
+    Q_INVOKABLE bool deleteFavorite(int index);
+    Q_INVOKABLE bool deleteAllFavorites();
     Q_INVOKABLE int favoritesCount();
-    QStringList favoritesList();
+    QStringList favoriteTitles();
 
 signals:
     void updateReady(QVariant);
@@ -55,6 +56,7 @@ signals:
 
 public slots:
     void update();
+    bool share(int index);
 
 private slots:
     void handleUpdateAvailable(QUrl sourceUrl, int updateditems);

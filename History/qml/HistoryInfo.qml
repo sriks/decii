@@ -46,7 +46,6 @@ ListView {
 
             Text {
                 id: description;
-                anchors.top: subTitle.bottom;
                 text: info.description();
                 anchors {
                     left: parent.left;
@@ -58,21 +57,15 @@ ListView {
                 color: skin.fontColor;
                 anchors.margins: skin.contentMargin;
 
-                MouseArea {
-                    id: mouseArea;
-                    anchors.fill: parent;
-                    onDoubleClicked: {
-                        var fontSizeOffset = (description.font.pixelSize == skin.contentFontSize)?(1.5):(1);
-                        description.font.pixelSize = skin.contentFontSize*fontSizeOffset;
-                        console.debug("historyinfo.qml double clicked "+description.font.pixelSize);
-                    }
+//                MouseArea {
+//                    id: mouseArea;
+//                    anchors.fill: parent;
+//                    onDoubleClicked: {
+//                        var fontSizeOffset = (description.font.pixelSize == skin.contentFontSize)?(1.5):(1);
+//                        description.font.pixelSize = skin.contentFontSize*fontSizeOffset;
+//                        }
+//                    }
                 }
-
-                }
-
-            Component.onCompleted: {
-                console.debug("HistoryInfo.qml onCompleted");
-            }
         } // column
     }
 }
