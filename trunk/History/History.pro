@@ -6,12 +6,19 @@ DEPLOYMENTFOLDERS = folder_01
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
-symbian:TARGET.UID3 = 0xE1381FEC
+symbian:TARGET.UID3 = 0x200478B8
 
 # Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
+symbian {
+TARGET.CAPABILITY += LocalServices ReadUserData WriteUserData NetworkServices UserEnvironment ReadDeviceData WriteDeviceData
+symbian:ICON = historyappicon.svg
+DEPLOYMENT.installer_header=0xA000D7CE
+vendorinfo = "%{\"Dreamcode\"}" ":\"Dreamcode\""
 
-symbian:ICON = sphinx.svg
+my_deployment.pkg_prerules = vendorinfo
+DEPLOYMENT += my_deployment
+}
+
 
 # Define QMLJSDEBUGGER to allow debugging of QML in debug builds
 # (This might significantly increase build time)
@@ -20,8 +27,8 @@ symbian:ICON = sphinx.svg
 # If your application uses the Qt Mobility libraries, uncomment
 # the following lines and add the respective components to the 
 # MOBILITY variable. 
-# CONFIG += mobility
-# MOBILITY +=
+CONFIG += mobility
+MOBILITY += messaging
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp
@@ -33,7 +40,6 @@ qtcAddDeployment()
 RESOURCES += \
     resources.qrc
 
-#include(../rsssuite/rssmanager/rssmanager.pri)
 include(HistoryEngine/HistoryEngine.pri)
 
 OTHER_FILES += qml/main.qml \
@@ -41,4 +47,6 @@ OTHER_FILES += qml/main.qml \
     qml/Today.qml \
     qml/Skin.qml \
     qml/FavoritesList.qml \
-    qml/Favorite.qml
+    qml/Favorite.qml \
+    qml/DefaultToolButton.qml \
+    qml/HistoryConstants.js

@@ -1,21 +1,19 @@
 import QtQuick 1.0
 import Qt.labs.components.native 1.0
+import "HistoryConstants.js" as HistoryConstants;
 
 Page {
     id: favoritesList;
+    property Item deleteAllToolButton;
     property string pageId;
+    property variant favModel;
     tools: ToolBarLayout {
             id: toolBarlayout
-            ToolButton {
-                flat: true
-                iconSource: skin.backIcon;
-                onClicked: goBack();
-            }
-
-            ToolButton {
-                flat: true;
-                iconSource: skin.closeIcon;
-                onClicked: Qt.quit();
+            Component.onCompleted: {
+                createBackToolButton(toolBarlayout);
+                if(engine.favoritesCount())
+                    deleteAllToolButton = createDeleteAllFavsToolButton(toolBarlayout);
+                createMenuToolButton(toolBarlayout);
             }
         }
 
@@ -26,6 +24,14 @@ Page {
         height: screen.height;
         border.left: 5; border.top: 5
         border.right: 5; border.bottom: 5
+    }
+
+    Text {
+        id: emptyText
+        anchors.centerIn: parent;
+        text: HistoryConstants.favsEmptyText
+        font.pixelSize: skin.subTitleFontSize;
+        visible: false;
     }
 
     ListView {
@@ -43,7 +49,7 @@ Page {
                 width: screen.width;
             Text {
                 id: title;
-                text: "MY FAVORITES"
+                text: HistoryConstants.myFavoritesText;
                 font.pixelSize: skin.titleFontSize;
                 color: skin.fontColor;
                 wrapMode: Text.WordWrap;
@@ -54,7 +60,7 @@ Page {
 
             Repeater {
                 id: listItemRepeater
-                model: engine.favorites();
+                model: favModel;
                 delegate: listItem;
             }
 
@@ -63,7 +69,7 @@ Page {
             Item {
                 width: screen.width;
                 height: favItemText.height + 25;
-                anchors.horizontalCenter: parent.horizontalCenter;
+                //anchors.horizontalCenter: parent.horizontalCenter;
 
                 Rectangle {
                     width: parent.width-10;
@@ -99,18 +105,28 @@ Page {
 
             } // column
         }// component
-    }// listview\
+    }// listview
 
-    Component.onCompleted: {
-        pageId = "favlist";
-        console.debug("favlist.qml: formloaded:"+pageId);
-        console.debug("favlist.qml onComplete")
+    onStatusChanged: {
+        if(PageStatus.Active == status)
+            updatePage();
     }
 
-    Component.onDestruction: {
-        console.debug("favlist.qml onDestruction:"+pageId);
+    Component.onCompleted: {
+        pageId = HistoryConstants.favListPageId;
+    }
+
+    function updatePage() {
+        favModel = engine.favorites();
+        if(!engine.favoritesCount()) {
+            emptyText.visible = true;
+            deleteAllToolButton.visible = false;
+        }
+        else {
+            emptyText.visible = false;
+            deleteAllToolButton.visible = true;
+        }
     }
 }
 
-
-
+// eof

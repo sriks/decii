@@ -22,9 +22,6 @@ int main(int argc, char *argv[])
     QObject::connect(&engine,SIGNAL(updateReady(QVariant)),rootObject,SLOT(onUpdateAvailable()));
     QObject::connect(&engine,SIGNAL(error(QString,QUrl)),rootObject,SLOT(error(QString)));
     dv.showFullScreen();
-
-
-
 //    QmlApplicationViewer viewer;
 //    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
 //    viewer.setMainQmlFile(QLatin1String("qml/main.qml"));
