@@ -1,0 +1,257 @@
+<html>
+ <head>
+  <script type="application/x-javascript">
+    var LEFT  = 37;
+	var UP    = 38;
+	var RIGHT = 39;
+	var DOWN  = 40;
+	var OFFSET = 5;
+	var boundaryX;
+	var boundaryY;
+	var boundaryWidth;
+	var boundaryHeight;
+	var timer;
+	var timeout = 100;
+	var ctx;
+	var headX,headY;
+	var headDir;
+	var tailCleared;
+	var tailX,tailY;
+	var tailArray;
+	var gameFinished = false;
+	var foodX = 10;
+	var foodY = 10;
+	var foodSize = OFFSET;
+	var scoreX;
+	var scoreY;
+	var score = 0;
+	
+  	function radians(degrees) {
+		var radians = (Math.PI/180)*degrees;
+		return radians;
+	}
+
+	function SnakePos(x,y,direction) {
+		this.x = x;
+		this.y = y;
+		this.direction = direction;
+	}
+	
+	function gameOver() {
+		gameFinished = true;
+		clearTimeout(timer);
+		ctx.fillText("Game over",boundaryWidth/2,boundaryHeight/2);
+	}
+	
+	function handleKeyPress(event) {
+		if(event.keyCode === headDir || gameFinished)
+			return;
+			
+		// We are intrested only in arrow keys.
+		if(event.keyCode === DOWN 
+		   || event.keyCode === UP 
+		   || event.keyCode === RIGHT
+		   || event.keyCode === LEFT) {
+		   
+		    // filter opp directions
+			if( (headDir === RIGHT && event.keyCode === LEFT) || 
+				(headDir === LEFT && event.keyCode === RIGHT) ||
+				(headDir === UP && event.keyCode === DOWN) ||
+				(headDir === DOWN && event.keyCode === UP) ) 
+					return;
+			if(event.preventDefault)
+				event.preventDefault();
+			else {
+				event.returnType = false;
+				event.stopPropagation();
+			}
+				
+			headDir = event.keyCode;
+			// save current pos from where direction is changed.	
+			var endPos = new SnakePos(headX,headY,event.keyCode);			
+			tailArray.push(endPos);
+			clearTimeout(timer);
+			drawHead();
+			return false;
+		}
+	}
+
+
+	function clearTail() {
+			if(clearedTail()) {
+				finishedClearingTail()
+				tailCleared = false;
+				var tailStart = tailArray[0];
+				tailX = tailStart.x;
+				tailY = tailStart.y;
+			}
+			var tailDir = tailArray[0].direction;
+
+			if(tailDir == RIGHT) {
+				tailX += OFFSET;
+			} else if(tailDir == LEFT) {
+				tailX -= OFFSET;
+			} else if(tailDir == DOWN) {
+				tailY += OFFSET;
+			} else if(tailDir == UP) {
+				tailY -= OFFSET;
+			}
+
+			ctx.clearRect(tailX,tailY,OFFSET,OFFSET);		
+			// debug tail movement
+			/*ctx.save();
+			ctx.fillStyle = "#FF0000"; 
+			ctx.fillRect(tailX,tailY,OFFSET,OFFSET);
+			ctx.restore();*/
+			// debug tail movement
+
+	}
+
+
+	/*!
+	Clears all flags and pops the cleared target from tail array.
+	**/	
+	function finishedClearingTail() {
+		tailCleared = true;
+		tailArray.shift(); 
+	}
+	
+	function clearedTail() {
+		if(tailArray.length < 2)
+			return false;
+		var cleared = false;	
+		var tailDir = tailArray[0].direction;
+		// check if cleared till target
+		if(RIGHT == tailDir && tailX >= tailArray[1].x) 
+			cleared = true;
+		else if(LEFT == tailDir && tailX <= tailArray[1].x)	
+			cleared = true;
+		else if(DOWN == tailDir && tailY >= tailArray[1].y)
+			cleared = true;	
+		else if(UP == tailDir && tailY <= tailArray[1].y)
+			cleared = true;	
+	return cleared;	
+	}
+	
+	function produceFood() {
+		foodX = Math.floor(Math.random()*boundaryWidth-boundaryX);
+		foodY = Math.floor(Math.random()*boundaryHeight-boundaryY);
+		
+		var pixel = ctx.getImageData(foodX+(foodSize/2),foodY+(foodSize/2),1,1);
+		if(0 == pixel.data[0] && 0 == pixel.data[1] &&
+		   0 == pixel.data[2] && 0 != pixel.data[3]) 
+			produceFood();
+		
+		if((foodX%OFFSET) != 0 || (foodY%OFFSET) != 0)
+			produceFood();
+			
+		ctx.save();
+			// draw food
+			ctx.fillStyle = "#0000FF";
+			ctx.fillRect(foodX,foodY,foodSize,foodSize);
+		ctx.restore();
+		return;
+	}
+	
+	function foodEaten() {
+		ctx.clearRect(foodX,foodY,foodSize,foodSize);
+		score += 5;
+		updateScoreBoard();
+		produceFood();
+	}
+	
+	function updateScoreBoard() {
+		ctx.clearRect(scoreX,scoreY-20,40,40);
+		ctx.fillText(score,scoreX,scoreY);
+	}
+	
+	function drawHead() {
+			ctx.strokeStyle = "#000000";	
+			var pixel;
+			if(headDir == RIGHT) {
+				headX += OFFSET;
+			} else if(headDir == LEFT) {
+				headX -= OFFSET;
+			} else if(headDir == DOWN) {
+				headY += OFFSET;
+			} else if(headDir == UP) {
+				headY -= OFFSET;
+			}
+
+			var justConsumedFood = false;
+			var pixel = ctx.getImageData(headX+(OFFSET/2),headY+(OFFSET/2),1,1);
+			// check for food
+			if(255 == pixel.data[2] || ctx.isPointInPath(foodX,foodY)) {
+				foodEaten();
+				justConsumedFood = true;
+			}
+
+			// check for gameover
+			else if(pixel != undefined && 0 == pixel.data[0] && 0 == pixel.data[1] &&
+					0 == pixel.data[2] && 0 != pixel.data[3]) 
+				gameOver();
+				
+			ctx.fillRect(headX,headY,OFFSET,OFFSET);
+			if(!justConsumedFood)
+				clearTail();
+			justConsumedFood = false;
+			if(!gameFinished)
+				timer = setTimeout('drawHead()', timeout);
+	}
+	
+    function draw() {
+      var canvas = document.getElementById("canvas");
+      if (canvas.getContext) {
+        ctx = canvas.getContext("2d");
+		// prepare boundary
+		ctx.save();
+		boundaryX = 0;
+		boundaryY = 0;
+		boundaryWidth = 400;
+		boundaryHeight = 300;
+		ctx.strokeStyle = "#000000";
+		ctx.lineWidth = OFFSET;
+		ctx.strokeRect(boundaryX,boundaryY,boundaryWidth,boundaryHeight);
+		ctx.restore();
+		
+		// draw score board
+		ctx.save();
+		var scoreText = "Your score:";
+		scoreX = boundaryWidth+50+ctx.measureText(scoreText).width+10;
+		scoreY = 20;
+		ctx.fillText(scoreText,boundaryWidth+50,scoreY);
+		ctx.restore();
+		
+		// draw initial head and direction
+		var beginX = 100;
+		var beginY = 100;
+		ctx.fillRect(beginX,beginY,5*OFFSET,OFFSET);
+		headX = beginX+(4*OFFSET);
+		headY = beginY;
+		headDir = RIGHT; // DOM_VK_RIGHT
+		tailArray = new Array();
+		
+		// push initial pos
+		var startingPos = new SnakePos(beginX,beginY,headDir);
+		tailCleared = true;
+		tailX = beginX-OFFSET;
+		tailY = beginY;
+		tailArray.push(startingPos);
+		drawHead();
+		produceFood();
+		updateScoreBoard();
+      }
+    }
+	
+</script>
+  
+  
+ </head>
+ <body onload="draw()" onkeydown="handleKeyPress(event)">
+   <canvas id="canvas" width="600" height="600">
+     <p>This example requires a browser that supports the
+     <a href="http://www.w3.org/html/wg/html5/">HTML5</a> 
+     &lt;canvas&gt; feature.</p>
+   </canvas>
+ </body>
+</html>
