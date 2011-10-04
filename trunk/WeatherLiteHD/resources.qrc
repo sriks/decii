@@ -1,0 +1,88 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/WeatherSwipeView.qml</file>
+        <file>qml/SelectLocation.qml</file>
+        <file alias="hotsun.png">resources/weatherbug/hotsun.png</file>
+        <file>resources/xq/weatherdatafromnormalizedxml.xq</file>
+        <file>resources/weatherbug/converttonormalizedxml.xq</file>
+        <file alias="add.svg">resources/add.svg</file>
+        <file alias="options.svg">resources/options.svg</file>
+        <file alias="back.svg">resources/back.svg</file>
+        <file alias="bkg.png">resources/bkg.png</file>
+        <file alias="windspeed.svg">resources/windfan.svg</file>
+        <file alias="close.svg">resources/close_stop.svg</file>
+        <file alias="delete.svg">resources/delete.svg</file>
+        <file alias="day">resources/day.jpg</file>
+        <file alias="night">resources/night.jpg</file>
+        <file alias="clouds">resources/clouds.png</file>
+        <file alias="sun">resources/sun.png</file>
+        <file>resources/connectivity.svg</file>
+        <file>resources/weatherbug/locationnames/a.txt</file>
+        <file>resources/weatherbug/locationnames/b.txt</file>
+        <file>resources/weatherbug/locationnames/c.txt</file>
+        <file>resources/weatherbug/locationnames/d.txt</file>
+        <file>resources/weatherbug/locationnames/e.txt</file>
+        <file>resources/weatherbug/locationnames/extractnames.xq</file>
+        <file>resources/weatherbug/locationnames/f.txt</file>
+        <file>resources/weatherbug/locationnames/g.txt</file>
+        <file>resources/weatherbug/locationnames/getnames.pl</file>
+        <file>resources/weatherbug/locationnames/h.txt</file>
+        <file>resources/weatherbug/locationnames/i.txt</file>
+        <file>resources/weatherbug/locationnames/j.txt</file>
+        <file>resources/weatherbug/locationnames/k.txt</file>
+        <file>resources/weatherbug/locationnames/l.txt</file>
+        <file>resources/weatherbug/locationnames/m.txt</file>
+        <file>resources/weatherbug/locationnames/n.txt</file>
+        <file>resources/weatherbug/locationnames/o.txt</file>
+        <file>resources/weatherbug/locationnames/p.txt</file>
+        <file>resources/weatherbug/locationnames/q.txt</file>
+        <file>resources/weatherbug/locationnames/r.txt</file>
+        <file>resources/weatherbug/locationnames/s.txt</file>
+        <file>resources/weatherbug/locationnames/t.txt</file>
+        <file>resources/weatherbug/locationnames/u.txt</file>
+        <file>resources/weatherbug/locationnames/v.txt</file>
+        <file>resources/weatherbug/locationnames/w.txt</file>
+        <file>resources/weatherbug/locationnames/x.txt</file>
+        <file>resources/weatherbug/locationnames/y.txt</file>
+        <file>resources/weatherbug/locationnames/z.txt</file>
+        <file>qml/WeatherConstants.js</file>
+        <file>qml/Day.qml</file>
+        <file>qml/Night.qml</file>
+        <file>resources/moonphases/0.png</file>
+        <file>resources/moonphases/1.png</file>
+        <file>resources/moonphases/2.png</file>
+        <file>resources/moonphases/3.png</file>
+        <file>resources/moonphases/4.png</file>
+        <file>resources/moonphases/5.png</file>
+        <file>resources/moonphases/6.png</file>
+        <file>resources/moonphases/7.png</file>
+        <file>resources/moonphases/8.png</file>
+        <file>resources/moonphases/9.png</file>
+        <file>resources/moonphases/10.png</file>
+        <file>resources/moonphases/11.png</file>
+        <file>resources/moonphases/12.png</file>
+        <file>resources/moonphases/13.png</file>
+        <file>resources/moonphases/14.png</file>
+        <file>resources/moonphases/15.png</file>
+        <file>resources/moonphases/16.png</file>
+        <file>resources/moonphases/17.png</file>
+        <file>resources/moonphases/18.png</file>
+        <file>resources/moonphases/19.png</file>
+        <file>resources/moonphases/20.png</file>
+        <file>resources/moonphases/21.png</file>
+        <file>resources/moonphases/22.png</file>
+        <file>resources/moonphases/23.png</file>
+        <file>resources/moonphases/24.png</file>
+        <file>resources/moonphases/25.png</file>
+        <file>resources/moonphases/26.png</file>
+        <file>resources/moonphases/27.png</file>
+        <file>resources/moonphases/28.png</file>
+        <file>resources/moonphases/29.png</file>
+        <file>resources/moonphases/30.png</file>
+        <file>qml/WeatherSettings.qml</file>
+        <file>resources/clock.svg</file>
+        <file>resources/favourite.svg</file>
+        <file>resources/location.svg</file>
+    </qresource>
+</RCC>
