@@ -17,5 +17,6 @@
         <file>qml/DefaultToolButton.qml</file>
         <file>qml/HistoryConstants.js</file>
         <file>images/tb_share5.svg</file>
+        <file>qml/LoadingScreen.qml</file>
     </qresource>
 </RCC>
