@@ -1,5 +1,5 @@
 import QtQuick 1.0
-import Qt.labs.components.native 1.0
+import com.nokia.symbian 1.0
 import com.nokia.extras 1.0
 import "HistoryConstants.js" as HistoryConstants;
 
@@ -46,32 +46,6 @@ Window {
         }
     }
 
-    BusyIndicator {
-         id: busyIndicator;
-         running: true
-         width: 60
-         height: 60
-         anchors.centerIn: parent;
-         function stop() {
-             busyIndicator.running = false;
-             busyIndicator.visible = false;
-         }
-         function start() {
-             busyIndicator.running = true;
-             busyIndicator.visible = true;
-         }
-    }
-
-    Button {
-        id: defaultCloseTools;
-        iconSource: skin.closeIcon;
-        anchors.top: busyIndicator.bottom;
-        anchors.topMargin: 10;
-        anchors.horizontalCenter: parent.horizontalCenter;
-        text: "Close";
-        onClicked: Qt.quit();
-    }
-
     InfoBanner {
          id: banner
          iconSource: skin.favIcon;
@@ -104,14 +78,17 @@ Window {
         var skinComponent = Qt.createComponent("Skin.qml");
         if(Component.Ready  == skinComponent.status)
             skin = skinComponent.createObject(root); // if not created with parent, skin is not getting recognised in device.
-        else
-            busyIndicator.start();
+//        else
+//            busyIndicator.start();
 
         toolButtonComponent = Qt.createComponent("DefaultToolButton.qml");
         if(Component.Ready == toolButtonComponent.status)
             canCreateToolButton = true;
 
+        pageStack.push(Qt.resolvedUrl("LoadingScreen.qml"));
         engine.start();
+        var p = engine.testit();
+        console.debug("testit:"+p.x());
     }
 
     onError: {
@@ -131,8 +108,8 @@ Window {
     }
 
     function onUpdateAvailable() {
-        defaultCloseTools.visible = false;
-        busyIndicator.stop();
+//        defaultCloseTools.visible = false;
+//        busyIndicator.stop();
         loadToday();
     }
 
@@ -156,7 +133,8 @@ Window {
     }
 
     function goBack() {
-        if(HistoryConstants.todayPageId == pageStack.currentPage.pageId)
+        if( (HistoryConstants.todayPageId == pageStack.currentPage.pageId) ||
+            (HistoryConstants.loadingScreenPageId == pageStack.currentPage.pageId) )
             Qt.quit();
         else
             pageStack.pop();
@@ -203,6 +181,8 @@ Window {
     function handleAction(toolId) {
         if(toolId == HistoryConstants.backId)
             goBack();
+        else if(toolId == HistoryConstants.closeId)
+            Qt.quit();
         else if(toolId == HistoryConstants.menuId)
             showMenuItems();
         else if(toolId == HistoryConstants.showFavListId)
@@ -287,6 +267,16 @@ Window {
             tb.actionHandler = root;
         }
     }
+
+    function createCloseToolButton(parent) {
+        if(canCreateToolButton) {
+            var tb = toolButtonComponent.createObject(parent);
+            tb.iconSource = skin.closeIcon;
+            tb.toolId = HistoryConstants.closeId;
+            tb.actionHandler = root;
+        }
+    }
+
 }
 
 // eof

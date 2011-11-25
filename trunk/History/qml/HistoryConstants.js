@@ -9,7 +9,9 @@ var deleteAllFavsId   = "delallfavs"
 var deleteFavId       = "delfav"
 var shareId           = "share"
 var aboutId           = "about"
+var closeId           = "close"
 // pageids
+var loadingScreenPageId = "loadingscreen"
 var todayPageId       = "today"
 var favListPageId     = "favlist"
 var favPageId         = "fav"
@@ -33,5 +35,6 @@ var deleteFavConfirmationText = "Do you want to delete this favorite?"
 var aboutText             = "Conceptualized and developed at Dreamcode Device Labs, 2011.\nContent courtesy History.com.\nIcon courtesy openclipart.com"
 var netErrorText          = "Opps! Some problem with your network connection. Cannot continue.\n\n";
 var favsEmptyText         = "Empty"
+var loadingText           = "Loading..."
 // app text
 

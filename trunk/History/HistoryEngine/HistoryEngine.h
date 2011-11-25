@@ -48,7 +48,6 @@ public:
     Q_INVOKABLE bool deleteAllFavorites();
     Q_INVOKABLE int favoritesCount();
     QStringList favoriteTitles();
-
 signals:
     void updateReady(QVariant);
     void favoriteSelected(QVariant );
